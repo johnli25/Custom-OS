@@ -8,6 +8,7 @@
 *Outputs: void
 *Return Value: void
 *Side Effects: initializes the IDT 
+*/
 
 void initialize_idt(void){
     int i; 
