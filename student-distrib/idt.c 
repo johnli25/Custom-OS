@@ -14,19 +14,19 @@ void initialize_idt(void){
     int i; 
     for (i=0; i<NUM_VEC; i++){
         // what i know must be set from the documentation:
-        //set segment selector and and reserved bits if 0x20 <= i <= 0x2F
+        //set segment selector 
         idt[i].seg_selector = KERNEL_CS;
 
         // set size = 1 bc/ 32 bit
         
         idt[i].size = 1;
 
-        // if i==0x80 set descriptor privelege level to 3, else 0 
-
+        //reserved bits if 0x20 <= i <= 0x2F
         if ((i >= 0x20) && (i <= 0x2F)){
             idt[i].reserved3= 0;
         }
         else idt[i].reserved3 = 1;
+        // if i==0x80 set descriptor privelege level to 3, else 0 
         if (i== 0x80)
             idt[i].dpl = 0x03;
         else 
