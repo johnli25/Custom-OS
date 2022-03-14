@@ -18,6 +18,11 @@ void initialize_idt(void){
         // if i==0x80 set descriptor privelege level to 3, else 0 
         // perhaps more things like size... 
         //finally populate IDT w default entries
+        idt[i].size = 1;
+        if (i== 0x80)
+            idt[i].dpl = 0x03;
+        else 
+            idt[i].dpl = 0x00; 
         SET_IDT_ENTRY(idt[i], DEFAULT_EXCEPTION);
     }
 
