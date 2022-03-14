@@ -15,8 +15,8 @@ void initialize_idt(void){
     for (i=0; i<NUM_VEC; i++){
         // what i know must be set from the documentation:
         //set segment selector and and reserved bits if 0x20 <= i <= 0x2F
+        idt[i].seg_selector = KERNEL_CS;
 
-        
         // set size = 1 bc/ 32 bit
         
         idt[i].size = 1;
