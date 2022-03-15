@@ -8,6 +8,7 @@
 #include "i8259.h"
 #include "debug.h"
 #include "tests.h"
+#include "rtc.h"
 
 #include "paging.h"
 
@@ -138,8 +139,12 @@ void entry(unsigned long magic, unsigned long addr) {
         ltr(KERNEL_TSS);
     }
 
+    printf("INITIALIZING PIC . . . \n");
     /* Init the PIC */
     i8259_init();
+
+    printf("INITIALIZING RTC . . . \n");
+    initialize_RTC(); 
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
