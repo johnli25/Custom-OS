@@ -9,12 +9,12 @@
 //each PD is either gonna point to 1) 1 page (4 MB) or 2) another page TABLE (1024 Entries, each PT is 4KB)
 //each PT entry = page, will point to a 4 KB page (each page is 4 KB)
 
-typedef struct PDE_kernel_4MB{
+// typedef struct PDE_kernel_4MB{
 
-} PDE_kernel_4MB;
+// } PDE_kernel_4MB_t;
 
-extern void setup_paging_structures();
-extern void initialize_paging();
+extern void setup_paging_structures(void);
+extern void initialize_paging(void);
 
 #endif
 
