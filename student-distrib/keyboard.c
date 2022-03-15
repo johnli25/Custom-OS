@@ -44,3 +44,15 @@ from keyboard.
 Use Scan Code set 1
 
 */
+
+
+// handler has to deal with grabbing the specefic byte/data from the port - echo back to screen
+
+HANDLER FOCUS ON FUNCTION NAME LATER{
+
+    enable_irq(17) //double check 17
+
+    
+
+
+}

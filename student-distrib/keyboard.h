@@ -7,3 +7,18 @@ The read system call reads data from the keyboard, a file, device (RTC), or dire
    should include the line feed character.
 */
 
+//call enabble irq with the irq number that corresponds to the keyboard
+
+//set_IDT_Entry - IDT hex (keyboard) pass in the handler as present 
+
+// handler has to deal with grabbing the specefic byte/data from the port - echo back to screen
+
+//push all registers
+
+//push all flags
+
+//call hander name (.c) file
+
+//after returns - have to restore registers
+
+//iret
