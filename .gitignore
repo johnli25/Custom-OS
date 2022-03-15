@@ -112,3 +112,7 @@ dkms.conf
 *.qcow
 source/
 
+# I put them here
+Makefile.dep
+bootimg
+
