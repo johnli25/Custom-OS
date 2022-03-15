@@ -23,4 +23,7 @@ void disable_irq(uint32_t irq_num) {
 
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num) {
+    if (irq_num >= PICCheck) //if IRQ came from Slave, then issue command to both PIC chips
+        outb(SLAVE_8259_PORT,ICW2_MASTER);
+    outb(MASTER_8259_PORT,ICW2_MASTER);
 }

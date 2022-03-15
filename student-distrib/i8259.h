@@ -7,7 +7,8 @@
 #define _I8259_H
 
 #include "types.h"
-
+/* Checking which PIC*/
+#define PICCheck 8
 /* Ports that each PIC sits on */
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
