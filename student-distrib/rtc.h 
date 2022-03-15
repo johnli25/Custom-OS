@@ -1,0 +1,2 @@
+void initialize_RTC(void);
+void interrupt_RTC(void);
