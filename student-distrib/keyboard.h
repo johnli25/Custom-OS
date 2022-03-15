@@ -22,3 +22,9 @@ The read system call reads data from the keyboard, a file, device (RTC), or dire
 //after returns - have to restore registers
 
 //iret
+
+//i8259.c to take the interrupt correctly for the keyboard
+
+void initialize_Keyboard();
+
+//void interrupt_keyboard();

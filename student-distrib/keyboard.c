@@ -48,11 +48,26 @@ Use Scan Code set 1
 
 // handler has to deal with grabbing the specefic byte/data from the port - echo back to screen
 
-HANDLER FOCUS ON FUNCTION NAME LATER{
+#include "lib.h"
+#include "i8259.h"
+#include "keyboard.h"
 
-    enable_irq(17) //double check 17
+#define KEYBOARDIDTNUM 0x21
 
-    
+void initialize_Keyboard(){
 
+    enable_irq(KEYBOARDIDTNUM); //double check 0x21 - course notes - change magic num
 
+    //set_IDT_entry(handler?)
+
+    //scan - something to grab the character ? - inb(port = ?)? 
+
+    //scancodes??
+
+    //putc(character) - output the character
 }
+
+// void interrupt_keyboard(){
+
+//     return;
+// }
