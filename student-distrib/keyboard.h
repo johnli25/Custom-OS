@@ -27,4 +27,4 @@ The read system call reads data from the keyboard, a file, device (RTC), or dire
 
 void initialize_Keyboard();
 
-//void interrupt_keyboard();
+void interrupt_keyboard();

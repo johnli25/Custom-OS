@@ -52,22 +52,47 @@ Use Scan Code set 1
 #include "i8259.h"
 #include "keyboard.h"
 
-#define KEYBOARDIDTNUM 0x21
+#define KEYBOARDIDTNUM  0x21    //corresponds to the keyboard in the IDT
+#define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
+#define scancodesSize   10000
+#define keyboardPassPresses  87
+
+//scancodes 1 - converts the character to the correct character
+uint8_t scancodes1[scancodesSize] = {
+    ' ', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', ' ',
+    ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',
+    ' ', ' ', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 
+    ' ', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', ' ',
+    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+    ' ', ' ', ' ', '7', '8', '9', '-', '4', '5', '6', '+', '1', '2',
+    '3', '0', '.'
+
+};
 
 void initialize_Keyboard(){
 
-    enable_irq(KEYBOARDIDTNUM); //double check 0x21 - course notes - change magic num
+    enable_irq(KEYBOARDIDTNUM);     // pic stuff with keyboard
+    
+    int z = 0;
+    for(z = keyboardPassPresses; z < scancodesSize; z++){
+        scancodes1[z] = ' ';    //making everything that isn't a character to output a space for right now
+    }
 
-    //set_IDT_entry(handler?)
+    return;
 
-    //scan - something to grab the character ? - inb(port = ?)? 
-
-    //scancodes??
-
-    //putc(character) - output the character
 }
 
-// void interrupt_keyboard(){
+void interrupt_keyboard(){      //keyboard handler
 
-//     return;
-// }
+    // scan - something to grab the character ? - inb(port = ?)? 
+
+    uint32_t myInput = inb(KEYBOARDPORT); //  grabs the input data from the keyboard
+
+    // scancodes??
+    // putc(character) - output the character uint8_t
+
+    putc(scancodes1[(int)myInput]); //outputs the correct character after converting the data to a char
+
+    return;
+
+}

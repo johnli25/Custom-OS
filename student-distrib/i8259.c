@@ -17,10 +17,6 @@ void i8259_init(void) {
 void enable_irq(uint32_t irq_num) {
 }
 
-//call enabble irq with the irq number that corresponds to the keyboard
-
-//set_IDT_Entry - IDT hex (keyboard) pass in the handler as present 
-
 /* Disable (mask) the specified IRQ */
 void disable_irq(uint32_t irq_num) {
 }
