@@ -17,7 +17,7 @@ void i8259_init(void) {
     a1 = inb(MASTER_DATA);              
 	a2 = inb(SLAVE_DATA);
 
-    spin_lock_irqsave(&i8259_lock, flags) //spin lock
+    //spin_lock_irqsave(&i8259_lock, flags) //dont need
 
     outb(master_mask, MASTER_DATA);//masking our data ports
     outb(slave_mask, SLAVE_DATA);
@@ -38,7 +38,7 @@ void i8259_init(void) {
     outb(MASTER_DATA, a1);
 	outb(SLAVE_DATA, a2);
 
-    spin_unlock_irqrestore(&i8259_lock, flags);
+    //spin_unlock_irqrestore(&i8259_lock, flags); //dont need
 
     
 }
