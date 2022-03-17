@@ -67,3 +67,12 @@ void initialize_idt(void){
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
+
+void EXCEPTION_DIVIDE_BY_ZERO(){
+    printf("Divide by 0 exception occurred! \n");
+    while(1){ //infinite while loop
+
+    }
+}
+
+

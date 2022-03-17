@@ -19,6 +19,7 @@
 
 //etc.. fill in all the ones below in the same manner 
 //write interrupt_handler itself (printf statement while loop) in lib.c or wherever
+/*
 EXCEPTION_WRAPPER(DEFAULT_EXCEPTION, interrupt_handler, 0xFF);
 EXCEPTION_WRAPPER(EXCEPTION_DIVIDE_BY_ZERO, interrupt_handler, 0x00);
 EXCEPTION_WRAPPER(SINGLE_STEP_INTERRUPT, interrupt_handler, 0x01);
@@ -42,6 +43,7 @@ EXCEPTION_WRAPPER(EXCEPTION_MACHINE_CHECK, interrupt_handler, 0x12);
 EXCEPTION_WRAPPER(EXCEPTION_SIMD_FLOATING_POINT, interrupt_handler, 0x13);
 EXCEPTION_WRAPPER(EXCEPTION_VIRTUALIZATION, interrupt_handler, 0x14);
 EXCEPTION_WRAPPER(EXCEPTION_CONTROL_PROTECTION, interrupt_handler, 0x15);
+*/
 
 /*
 extern void SINGLE_STEP_INTERRUPT(void);    //0x01
