@@ -1,4 +1,4 @@
 1. 
 -Issue: System (test_debug) is boot looping
--Resolved by: 
--Date encountered: 
+-Resolved by: loading the GDT properly by inserting this line of assembly code "lgdt gdt_desc" in x86_desc.S
+-Date encountered: 3/11/2022
