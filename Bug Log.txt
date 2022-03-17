@@ -1,0 +1,4 @@
+1. 
+-Issue: System (test_debug) is boot looping
+-Resolved by: 
+-Date encountered: 
