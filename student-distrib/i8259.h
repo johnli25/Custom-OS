@@ -7,11 +7,14 @@
 #define _I8259_H
 
 #include "types.h"
-
+/* Checking which PIC*/
+#define PICCheck 8
 /* Ports that each PIC sits on */
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0
-
+/* Adding Data Ports */
+#define MASTER_DATA    (MASTER_8259_PORT+1)
+#define SLAVE_DATA     (SLAVE_8259_PORT+1)
 /* Initialization control words to init each PIC.
  * See the Intel manuals for details on the meaning
  * of each word */
@@ -21,6 +24,9 @@
 #define ICW3_MASTER         0x04
 #define ICW3_SLAVE          0x02
 #define ICW4                0x01
+
+//for second chip indiciation
+#define IRQ2 2
 
 /* End-of-interrupt byte.  This gets OR'd with
  * the interrupt number and sent out to the PIC
