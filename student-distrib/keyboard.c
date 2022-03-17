@@ -54,11 +54,12 @@ Use Scan Code set 1
 
 #define KEYBOARDIDTNUM  0x21    //corresponds to the keyboard in the IDT
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
-#define scancodesSize   10000
-#define keyboardPassPresses  87
+#define scancodesSize   84        //128
+//#define keyboardPassPresses  87
 
 //scancodes 1 - converts the character to the correct character
 uint8_t scancodes1[scancodesSize] = {
+    //have to initailize all 
     ' ', ' ', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', ' ',
     ' ', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',
     ' ', ' ', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 
@@ -73,10 +74,10 @@ void initialize_Keyboard(){
 
     enable_irq(KEYBOARDIDTNUM);     // pic stuff with keyboard
     
-    int z = 0;
-    for(z = keyboardPassPresses; z < scancodesSize; z++){
-        scancodes1[z] = ' ';    //making everything that isn't a character to output a space for right now
-    }
+    // int z = 0;
+    // for(z = keyboardPassPresses; z < scancodesSize; z++){
+    //     scancodes1[z] = ' ';    //making everything that isn't a character to output a space for right now
+    // }
 
     return;
 
@@ -84,14 +85,17 @@ void initialize_Keyboard(){
 
 void interrupt_keyboard(){      //keyboard handler
 
-    // scan - something to grab the character ? - inb(port = ?)? 
+    cli();  //prevents interrupts 
 
-    uint32_t myInput = inb(KEYBOARDPORT); //  grabs the input data from the keyboard
+    uint32_t myInput = inb(KEYBOARDPORT); // MAYBE CHANGE TO UINT8_T grabs the input data from the keyboard
 
-    // scancodes??
-    // putc(character) - output the character uint8_t
+    uint8_t myChar = scancodes1[(int)myInput];
 
-    putc(scancodes1[(int)myInput]); //outputs the correct character after converting the data to a char
+    if(myChar != ' '){ //checks if its a valid character to print
+        putc(myChar); //outputs the correct character after converting the data to a char
+    }
+
+    sti(); //interrupts can contnue
 
     return;
 
