@@ -53,6 +53,56 @@ int divide_by_zero_test(){
 	return res;
 }
 
+int basic_exception_test(int n){
+	TEST_HEADER;
+	if (n == 1)
+		asm volatile("INT $0x01");
+	if (n == 2)
+		asm volatile("INT $0x02");
+	if (n == 3)
+		asm volatile("INT $0x03");
+	if (n == 4)
+		asm volatile("INT $0x04");
+	if (n == 5)
+		asm volatile("INT $0x05");
+	if (n == 6)
+		asm volatile("INT $0x06");		
+	if (n == 7)
+		asm volatile("INT $0x07");
+	if (n == 8)
+		asm volatile("INT $0x08");	
+	if (n == 9)
+		asm volatile("INT $0x09");	
+	if (n == 0x0A)
+		asm volatile("INT $0x0A");	
+	if (n == 0x0B)
+		asm volatile("INT $0x0B");	
+	if (n == 0x0C)
+		asm volatile("INT $0x0C");		
+	if (n == 0x0D)
+		asm volatile("INT $0x0D");	
+	if (n == 0x0E)
+		asm volatile("INT $0x0E");	
+	if (n == 0x0F)
+		asm volatile("INT $0x0F");	
+	if (n == 0x10)
+		asm volatile("INT $0x10");	
+	if (n == 0x11)
+		asm volatile("INT $0x11");	
+	if (n == 0x12)
+		asm volatile("INT $0x12");	
+	if (n == 0x13)
+		asm volatile("INT $0x13");	
+	if (n == 0x14)
+		asm volatile("INT $0x14");	
+	if (n == 0x15)
+		asm volatile("INT $0x15");	
+	if (n == 0x80)
+		asm volatile("INT $0x80");		
+
+	return PASS;
+}
+
 // add more tests here
 
 /* Checkpoint 2 tests */
@@ -65,6 +115,6 @@ int divide_by_zero_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
-	TEST_OUTPUT("idt_test", divide_by_zero_test());
-
+	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
+	TEST_OUTPUT("Other exceptions (basic) test", basic_exception_test(0x80));
 }
