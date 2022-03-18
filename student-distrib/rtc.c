@@ -4,7 +4,7 @@
 
 void initialize_RTC(void){
     //from osdev 
-    outb(0x8B, RTC_PORT_CMD);	    // select register B (0x8B), and disable NMI
+    outb(0x8B, RTC_CMD);	    // select register B (0x8B), and disable NMI
     char prev = inb(RTC_DATA);	    // read the current value of register B
     outb(0x8B, RTC_CMD);	        // set the index again (a read will reset the index to register D)
     outb(prev | 0x40, RTC_DATA);    // write the previous value ORed with 0x40. This turns on bit 6 of register B
