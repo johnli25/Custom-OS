@@ -25,17 +25,17 @@ void initialize_idt(void){
         // set size = 1 bc/ 32 bit
         idt[i].size = 1;
 
-        //MAGIC NUMBER: reserved bits if vectors are 0x20 <= i <= 0x2F on IDT-for interrupts    
+        //reserved bits if 0x20 <= i <= 0x2F
         if ((i >= 0x20) && (i <= 0x2F)){
             idt[i].reserved3= 0;
         }
         else idt[i].reserved3 = 1;
 
         // if i==0x80 set descriptor privelege level to 3, else 0 
-        if (i== 0x80) //0x80 = system call #
-            idt[i].dpl = 0x03; //magic #: privilege lvl for general USER programs
+        if (i== 0x80)
+            idt[i].dpl = 0x03;
         else 
-            idt[i].dpl = 0x00; //magic #: privilege lvl for KERNEL
+            idt[i].dpl = 0x00; 
 
         //finally populate IDT w default entries
         SET_IDT_ENTRY(idt[i], DEFAULT_EXCEPTION);
@@ -65,7 +65,7 @@ void initialize_idt(void){
     SET_IDT_ENTRY(idt[0x14], EXCEPTION_VIRTUALIZATION);
     SET_IDT_ENTRY(idt[0x15], EXCEPTION_CONTROL_PROTECTION);
 
-    SET_IDT_ENTRY(idt[0x80], SYS_CALL);
+    //SET_IDT_ENTRY(idt[0x29], interrupt_keyboard);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }

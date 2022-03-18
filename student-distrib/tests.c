@@ -44,6 +44,29 @@ int idt_test(){
 
 	return result;
 }
+int null_check_test(){
+	TEST_HEADER;
+	int result = FAIL;
+	int * ptr = NULL;
+	int val = (*ptr);
+	return result; //should fail
+}
+
+int invalid_page_test(){
+	TEST_HEADER;
+	int result = FAIL;
+
+
+	return result;
+}
+int paging_test(){
+	TEST_HEADER;
+
+	int result = PASS;
+
+
+	return PASS;
+}
 
 int divide_by_zero_test(){
 	TEST_HEADER;
