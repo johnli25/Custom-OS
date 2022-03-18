@@ -5,6 +5,8 @@
  *  RETURN: NONE
  *  SIDE AFFECTS: Allows for handler to be called (saves all registers)
  */
+
+/* 
 #define DEVICE_WRAPPER(name, handler) \
     .globl name                   ;\
     name:                         ;\
@@ -19,3 +21,4 @@
 DEVICE_WRAPPER(RTC_WRAPPER, interrupt_RTC);
 
 DEVICE_WRAPPER(KEYBOARD_WRAPPER, interrupt_keyboard);
+*/

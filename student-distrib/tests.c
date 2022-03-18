@@ -45,6 +45,14 @@ int idt_test(){
 	return result;
 }
 
+int divide_by_zero_test(){
+	TEST_HEADER;
+	int quotient = 391 / 0;
+	int res = quotient;
+	res = PASS;
+	return res;
+}
+
 // add more tests here
 
 /* Checkpoint 2 tests */
@@ -57,4 +65,6 @@ int idt_test(){
 void launch_tests(){
 	TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
+	TEST_OUTPUT("idt_test", divide_by_zero_test());
+
 }

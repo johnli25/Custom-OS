@@ -143,12 +143,14 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the PIC */
     i8259_init();
 
-    printf("INITIALIZING RTC . . . \n");
-    initialize_RTC(); 
+    initialize_idt();
+
+    //printf("INITIALIZING RTC . . . \n");
+    //initialize_RTC(); 
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
-
+    clear();
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close
