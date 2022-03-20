@@ -9,6 +9,7 @@
 #include "debug.h"
 #include "tests.h"
 #include "rtc.h"
+#include "idt.h"
 
 #include "paging.h"
 
@@ -143,15 +144,18 @@ void entry(unsigned long magic, unsigned long addr) {
     /* Init the PIC */
     i8259_init();
 
+    clear();
+
     initialize_idt();
 
     //printf("INITIALIZING RTC . . . \n");
     //initialize_RTC(); 
-    //initialize_paging();
+    //clear();
+
+    initialize_paging();
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
-    clear();
     /* Enable interrupts */
     /* Do not enable the following until after you have set up your
      * IDT correctly otherwise QEMU will triple fault and simple close

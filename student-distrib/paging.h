@@ -4,15 +4,13 @@
 #include "types.h"
 
 #define TOTAL_ENTRIES 1024
-#define KB_4 1024 //4 KB = 1024
+#define KB_4 4096 //1 KB = 1024
 #define paging_vidmem 0xB8000
+#define DATA_ALIGN_SHIFT 12
 
 //create 1024 (use only first 2-ignore next 1022 entries) PDs entries, each 4 MB each
 //each PD is either gonna point to 1) 1 page (4 MB) or 2) another page TABLE (1024 Entries, each PT is 4KB)
 //each PT entry = page, will point to a 4 KB page (each page is 4 KB)
-PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
-PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096))); 
-/*above reference: https://wiki.osdev.org/Setting_Up_Paging*/
 
 typedef struct PDE_kernel_4MB{
     unsigned int p : 1;
@@ -40,7 +38,7 @@ typedef struct PDE_regular{
     unsigned int a : 1;
     unsigned int avl_1bit: 1;
     unsigned int ps : 1; //set to 0
-    unsigned int avl_3bits : 3;
+    unsigned int avl_3bits : 4;
     unsigned int base_address : 20;
 } __attribute__((packed)) PDE_regular;
 
@@ -55,7 +53,7 @@ typedef struct PTE{
     unsigned int pat : 1;
     unsigned int g : 1;
     unsigned int avl_3bits : 3;
-    unsigned int base_address : 20;
+    uint32_t base_address : 20;
 } __attribute__((packed)) PTE;
 
 typedef union PD_entry{

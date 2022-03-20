@@ -46,25 +46,55 @@ int idt_test(){
 }
 int null_check_test(){
 	TEST_HEADER;
-	int result = FAIL;
+	int result = PASS;
 	int * ptr = NULL;
-	int val = (*ptr);
-	return result; //should fail
+	int val = *ptr;
+	//val = PASS;
+	return PASS; //raise exception
 }
 
-int invalid_page_test(){
+int invalid_page_test1(){
 	TEST_HEADER;
 	int result = FAIL;
-
-
+	int * ptr = (int *)0xb8000;
+	int val = *ptr; //deref * ptr
+	printf("Lower bound of video memory.\n");
 	return result;
 }
+
+int invalid_page_test2(){
+	TEST_HEADER;
+	int result = FAIL;
+	int * ptr = (int *)0xb8000;
+	int val = *ptr; //deref * ptr
+	printf("Lower bound of video memory.\n");
+	return result;
+}
+
+int invalid_page_test3(){
+	TEST_HEADER;
+	int result = FAIL;
+	int * ptr = (int *)0xb9000;
+	int val = *ptr; //deref * ptr
+	printf("Upper bound of video memory.\n");
+	return result;
+}
+
+int invalid_page_test4(){
+	TEST_HEADER;
+	int result = FAIL;
+	int * ptr = (int *)0x00800391;
+	int val = *ptr; //deref * ptr
+	printf("Out of bounds paging.\n");
+	return result;	
+}
+
 int paging_test(){
 	TEST_HEADER;
-
 	int result = PASS;
-
-
+	int * vidmem_ptr = (int *)0xb8391; //video mem page
+	int * kernel_ptr = (int *)0x00400391; //kernel page
+	printf("Were any exceptions or weird stuff triggered? Nope. \n");
 	return PASS;
 }
 
@@ -136,8 +166,9 @@ int basic_exception_test(int n){
 
 /* Test suite entry point */
 void launch_tests(){
-	TEST_OUTPUT("idt_test", idt_test());
+	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
-	TEST_OUTPUT("Other exceptions (basic) test", basic_exception_test(0x80));
+	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0x80));
+	TEST_OUTPUT("Dereference Null Test", null_check_test());
 }

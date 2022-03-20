@@ -25,6 +25,8 @@ extern void EXCEPTION_CONTROL_PROTECTION(void);   //0x15
 
 extern void SYS_CALL(void);
 
+extern void initialize_idt(void);
+
 
 
 
