@@ -2,3 +2,14 @@
 -Issue: System (test_debug) is boot looping
 -Resolved by: 
 -Date encountered: 
+
+
+2. 
+-Issue: Character not showing up
+-Resolved by: 
+-Date encountered:
+
+3. 
+-Issue: Wrong character showing up
+-Resolved by: 
+-Date encountered:
