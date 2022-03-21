@@ -17,7 +17,7 @@ void i8259_init(void) {
     outb(slave_mask, SLAVE_DATA);
     
     outb(ICW1, MASTER_8259_PORT);
-    outb(MASTER_8259_PORT+0, MASTER_DATA);
+    outb(ICW2_MASTER, MASTER_DATA);
     outb(ICW3_MASTER, MASTER_DATA);
     
     outb(ICW4, MASTER_DATA);
