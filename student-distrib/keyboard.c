@@ -56,7 +56,7 @@ Use Scan Code set 1
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85        //128
 //#define keyboardPassPresses  87
-#define nonnumlet   0x32
+#define nonnumlet   0x33
 
 //scancodes 1 - converts the character to the correct character
 uint8_t scancodes1[scancodesSize] = {
