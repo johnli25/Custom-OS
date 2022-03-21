@@ -142,7 +142,9 @@ void entry(unsigned long magic, unsigned long addr) {
     }
 
     /* Init the PIC */
-    initialize_idt(); //idt initialization
+    // initialize_paging();
+
+    //initialize_idt(); //idt initialization
 
     //initialize_paging(); //paging initialization
     //printf("INITIALIZING PIC . . . \n");
@@ -150,14 +152,13 @@ void entry(unsigned long magic, unsigned long addr) {
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
     clear();
+    initialize_idt();
     initialize_paging();
-
-    //initialize_idt();
 
     //printf("INITIALIZING RTC . . . \n");
     //initialize_RTC(); 
     //clear();
-    printf("right before initialize paging. \n");
+    //printf("right before initialize paging. \n");
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
@@ -167,8 +168,8 @@ void entry(unsigned long magic, unsigned long addr) {
      * without showing you any output */
     /*
     */
-    printf("Enabling Interrupts\n");
-    clear();
+    //printf("Enabling Interrupts\n");
+    //clear();
     sti();
 
 #ifdef RUN_TESTS

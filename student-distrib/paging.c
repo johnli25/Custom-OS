@@ -18,7 +18,7 @@ void setup_paging_structures(void){
         page_tab[i].pat = 0;
         page_tab[i].g = 0;
         page_tab[i].avl_3bits = 0;
-        page_tab[i].base_address = i; //correct?
+        page_tab[i].base_address = 0; //correct?
 
         /*initialize the page directory as all empty*/
         page_dir[i]._PDE_regular.p = 0;
@@ -30,7 +30,7 @@ void setup_paging_structures(void){
         page_dir[i]._PDE_regular.avl_1bit = 0;
         page_dir[i]._PDE_regular.ps = 0;
         page_dir[i]._PDE_regular.avl_3bits = 0;
-        page_dir[i]._PDE_regular.base_address = i; 
+        page_dir[i]._PDE_regular.base_address = 0; 
 
         /*initialize the Page Table 4 MB portion of PD*/
         if (i == 0){
@@ -60,12 +60,12 @@ void setup_paging_structures(void){
             page_dir[i]._PDE_kernel_4MB.avl_3bits = 0;
             page_dir[i]._PDE_kernel_4MB.pat = 0;
             page_dir[i]._PDE_kernel_4MB.base_addr2 = 0;
-            page_dir[i]._PDE_kernel_4MB.rsvd = 1; //always set to 1
+            page_dir[i]._PDE_kernel_4MB.rsvd = 0; //always set to 1
             page_dir[i]._PDE_kernel_4MB.base_address = i; 
         }
     }
     
-    page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem;
+    page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem >> DATA_ALIGN_SHIFT;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
 //    printf("paging lolz. \n");
     return;

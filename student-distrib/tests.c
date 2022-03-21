@@ -44,9 +44,9 @@ int idt_test(){
 	return result;
 }
 int null_check_test(){
-	TEST_HEADER;
+	//TEST_HEADER;
 	//printf("Dereferencing NULL ptr.\n");
-	int result = PASS;
+	//int result = PASS;
 	int * ptr = NULL;
 	int val = *ptr;
 	//val = PASS;
@@ -62,13 +62,12 @@ int invalid_page_test1(){
 	return result;
 }
 
-int invalid_page_test2(){
-	TEST_HEADER;
-	int result = FAIL;
+int page_test2(){
+	//TEST_HEADER;
 	int * ptr = (int *)0xb8000;
 	int val = *ptr; //deref * ptr
-	printf("Lower bound of video memory.\n");
-	return result;
+	//printf("Lower bound of video memory.\n");
+	return PASS;
 }
 
 int invalid_page_test3(){
@@ -171,5 +170,5 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	TEST_OUTPUT("Invalid memory/paging test", null_check_test()); 
+	TEST_OUTPUT("VALID PAGING", paging_test()); 
 }
