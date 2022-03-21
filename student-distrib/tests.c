@@ -45,7 +45,7 @@ int idt_test(){
 }
 int null_check_test(){
 	TEST_HEADER;
-	printf("Dereferencing NULL ptr.\n");
+	//printf("Dereferencing NULL ptr.\n");
 	int result = PASS;
 	int * ptr = NULL;
 	int val = *ptr;
