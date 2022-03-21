@@ -7,9 +7,20 @@
 2. 
 -Issue: Character not showing up
 -Resolved by: 
+-Initializing the Pic Correctly
+-Initializing the Keyboard Correctly
 -Date encountered:
+- 3/20/2022
 
 3. 
 -Issue: Wrong character showing up
 -Resolved by: 
+-Remaking the scancodes table
 -Date encountered:
+- 3/20/2022
+
+4. 
+-Issue: Multiple Characters could not be written
+-Resolved by: 
+-Calling the assembly linkage code correctly 
+- 3/21/2022
