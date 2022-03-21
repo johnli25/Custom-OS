@@ -115,5 +115,5 @@ source/
 # I put them here
 Makefile.dep
 bootimg
-mp3.img
+*mp3.img
 
