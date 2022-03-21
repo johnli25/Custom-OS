@@ -98,6 +98,7 @@ void interrupt_keyboard(void){      //keyboard handler
             putc(myChar); //outputs the correct character after converting the data to a char
         }
     }
+    send_eoi(KEYBOARDIRQNUM);
 
     //sti(); //interrupts can contnue
 
