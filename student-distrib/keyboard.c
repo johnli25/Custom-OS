@@ -52,7 +52,7 @@ Use Scan Code set 1
 #include "i8259.h"
 #include "keyboard.h"
 
-#define KEYBOARDIDTNUM  0x21    //corresponds to the keyboard in the IDT
+#define KEYBOARDIRQNUM  1    //corresponds to the keyboard in the IDT
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   84        //128
 //#define keyboardPassPresses  87
@@ -72,7 +72,7 @@ uint8_t scancodes1[scancodesSize] = {
 
 void initialize_Keyboard(){
 
-    enable_irq(KEYBOARDIDTNUM);     // pic stuff with keyboard
+    enable_irq(KEYBOARDIRQNUM);     // pic stuff with keyboard
     
     // int z = 0;
     // for(z = keyboardPassPresses; z < scancodesSize; z++){
