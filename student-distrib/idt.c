@@ -1,7 +1,7 @@
 #include "idt.h"
 #include "lib.h"
 #include "x86_desc.h"
-
+#include "rtc.h"
 #include "keyboard.h"
 
 /*initialize_idt
