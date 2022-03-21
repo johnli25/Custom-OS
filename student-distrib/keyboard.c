@@ -54,7 +54,7 @@ Use Scan Code set 1
 
 #define KEYBOARDIRQNUM  1    //corresponds to the keyboard in the IDT
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
-#define scancodesSize   84        //128
+#define scancodesSize   85        //128
 //#define keyboardPassPresses  87
 
 //scancodes 1 - converts the character to the correct character
