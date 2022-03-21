@@ -70,7 +70,7 @@ uint8_t scancodes1[scancodesSize] = {
 
 };
 
-void initialize_Keyboard(){
+void initialize_Keyboard(void){
 
     enable_irq(KEYBOARDIRQNUM);     // pic stuff with keyboard
     
@@ -83,7 +83,7 @@ void initialize_Keyboard(){
 
 }
 
-void interrupt_keyboard(){      //keyboard handler
+void interrupt_keyboard(void){      //keyboard handler
 
     cli();  //prevents interrupts 
 
