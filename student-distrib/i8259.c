@@ -87,19 +87,20 @@ void disable_irq(uint32_t irq_num) {
 
 /* Send end-of-interrupt signal for the specified IRQ */
 void send_eoi(uint32_t irq_num) {
-    int holdOr;
+    //removing variable
+    //int holdOr;
     //changed intel outb order
     if (irq_num < PICCheck){//if IRQ came from master, then issue command to master
-        holdOr = irq_num | EOI;
-        outb(holdOr, MASTER_8259_PORT); //only master
+        //holdOr = irq_num | EOI;
+        outb(irq_num | EOI, MASTER_8259_PORT); //only master
     }
     else{ // if slave then both 
     //eoi for slave 
-        holdOr = IRQ2 | EOI; //this is for finding correct master pin
-        outb(holdOr, MASTER_8259_PORT); // send to master
+        //holdOr = IRQ2 | EOI; //this is for finding correct master pin
+        outb(IRQ2 | EOI, MASTER_8259_PORT); // send to master
 
         irq_num -= PICCheck; //for slave pin calc
-        holdOr = irq_num | EOI; //this is now new irq_num decremented by PICCheck
-        outb(holdOr, SLAVE_8259_PORT); //both master and slave
+        //holdOr = irq_num | EOI; //this is now new irq_num decremented by PICCheck
+        outb(irq_num | EOI, SLAVE_8259_PORT); //both master and slave
     }
 }
