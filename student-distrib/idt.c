@@ -3,6 +3,7 @@
 #include "x86_desc.h"
 #include "rtc.h"
 #include "keyboard.h"
+#include "devicewrappers.h"
 
 /*initialize_idt
 *Description: follows x86 standard OP and fills the IDT 
@@ -69,9 +70,9 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x80], SYS_CALL);
 
-    SET_IDT_ENTRY(idt[0x21], interrupt_keyboard);
+    SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER);
 
-    SET_IDT_ENTRY(idt[0x22], interrupt_RTC);
+    SET_IDT_ENTRY(idt[0x22], RTC_WRAPPER);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
