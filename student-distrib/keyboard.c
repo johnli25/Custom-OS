@@ -86,7 +86,7 @@ void initialize_Keyboard(void){
 
 void interrupt_keyboard(void){      //keyboard handler
 
-    cli();  //prevents interrupts 
+    //cli();  //prevents interrupts 
 
     uint8_t myInput = inb(KEYBOARDPORT); // MAYBE CHANGE TO UINT8_T grabs the input data from the keyboard
 
@@ -100,7 +100,7 @@ void interrupt_keyboard(void){      //keyboard handler
     }
     send_eoi(KEYBOARDIRQNUM);
 
-    sti(); //interrupts can contnue
+    //sti(); //interrupts can contnue
 
     return;
 
