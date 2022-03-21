@@ -87,9 +87,9 @@ void interrupt_keyboard(void){      //keyboard handler
 
     cli();  //prevents interrupts 
 
-    uint32_t myInput = inb(KEYBOARDPORT); // MAYBE CHANGE TO UINT8_T grabs the input data from the keyboard
+    uint8_t myInput = inb(KEYBOARDPORT); // MAYBE CHANGE TO UINT8_T grabs the input data from the keyboard
 
-    uint8_t myChar = scancodes1[(int)myInput];
+    uint8_t myChar = scancodes1[myInput];
 
     if(myChar != ' '){ //checks if its a valid character to print
         putc(myChar); //outputs the correct character after converting the data to a char
