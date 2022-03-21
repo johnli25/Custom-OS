@@ -156,7 +156,7 @@ void entry(unsigned long magic, unsigned long addr) {
 
     //printf("INITIALIZING RTC . . . \n");
     //initialize_RTC(); 
-    clear();
+    
 
    
 
@@ -169,6 +169,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /*
     */
     printf("Enabling Interrupts\n");
+    clear();
     sti();
 
 #ifdef RUN_TESTS
