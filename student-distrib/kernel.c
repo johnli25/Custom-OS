@@ -145,11 +145,11 @@ void entry(unsigned long magic, unsigned long addr) {
     initialize_idt(); //idt initialization
 
     //initialize_paging(); //paging initialization
-    printf("INITIALIZING PIC . . . \n");
+    //printf("INITIALIZING PIC . . . \n");
     i8259_init(); //pic initialization
-    printf("INITIALIZING KEYBOARD . . . \n");
+    //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
-
+    clear();
     initialize_paging();
 
     //initialize_idt();
