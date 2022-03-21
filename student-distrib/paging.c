@@ -64,17 +64,20 @@ void setup_paging_structures(void){
             page_dir[i]._PDE_kernel_4MB.base_address = i; 
         }
     }
-
+    
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
+    printf("paging lolz. \n");
     return;
 }
 
 void initialize_paging(void){
     setup_paging_structures();
+    printf("plz print in test_debug\n");
     /*enable paging: below from wiki.osdev.org*/
     asm volatile(
         "movl $page_dir, %%eax;"
+        "andl $0xfffffc00, %%eax;"
         "movl %%eax, %%cr3            ;"
         /*set the paging (PG) and protection (PE) bits of CR0.*/
         "movl %%cr4, %%eax        ;" 

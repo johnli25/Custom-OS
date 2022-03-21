@@ -24,7 +24,7 @@ typedef struct PDE_kernel_4MB{
     unsigned int g: 1 ;
     unsigned int avl_3bits : 3;
     unsigned int pat : 1;
-    unsigned int base_addr2 : 8;
+    unsigned int base_addr2 : 8; //these are actually reserved bits! lol
     unsigned int rsvd : 1;
     unsigned int base_address : 10;
 } __attribute__((packed)) PDE_kernel_4MB;

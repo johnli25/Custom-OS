@@ -146,13 +146,14 @@ void entry(unsigned long magic, unsigned long addr) {
 
     clear();
 
+    initialize_paging();
+
     initialize_idt();
 
     //printf("INITIALIZING RTC . . . \n");
     //initialize_RTC(); 
     //clear();
-
-    initialize_paging();
+    printf("right before initialize paging. \n");
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
