@@ -2,6 +2,8 @@
 #include "lib.h"
 #include "x86_desc.h"
 
+#include "keyboard.h"
+
 /*initialize_idt
 *Description: follows x86 standard OP and fills the IDT 
 *Inputs: void
