@@ -77,7 +77,6 @@ void initialize_paging(void){
     /*enable paging: below from wiki.osdev.org*/
     asm volatile(
         "movl $page_dir, %%eax;"
-//        "andl $0xfffffc00, %%eax;"
         "movl %%eax, %%cr3            ;"
         /*set the paging (PG) and protection (PE) bits of CR0.*/
         "movl %%cr4, %%eax        ;" 
@@ -94,3 +93,7 @@ void initialize_paging(void){
     return;
 }
 
+
+
+
+//        "andl $0xfffffc00, %%eax;"
