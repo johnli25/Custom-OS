@@ -56,6 +56,7 @@ Use Scan Code set 1
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85        //128
 //#define keyboardPassPresses  87
+#define nonnumlet   0x57
 
 //scancodes 1 - converts the character to the correct character
 uint8_t scancodes1[scancodesSize] = {
@@ -89,10 +90,13 @@ void interrupt_keyboard(void){      //keyboard handler
 
     uint8_t myInput = inb(KEYBOARDPORT); // MAYBE CHANGE TO UINT8_T grabs the input data from the keyboard
 
-    uint8_t myChar = scancodes1[myInput];
+    if(myInput < nonnumlet){ //checks if it is a character or number 
 
-    if(myChar != ' '){ //checks if its a valid character to print
-        putc(myChar); //outputs the correct character after converting the data to a char
+        uint8_t myChar = scancodes1[myInput];
+
+        if(myChar != ' '){ //checks if its a valid character to print
+            putc(myChar); //outputs the correct character after converting the data to a char
+        }
     }
 
     sti(); //interrupts can contnue
