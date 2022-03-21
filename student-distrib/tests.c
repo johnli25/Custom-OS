@@ -170,5 +170,5 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0x80));
-	//TEST_OUTPUT("Dereference Null Test", null_check_test());
+	TEST_OUTPUT("Dereference Null Test", null_check_test());
 }
