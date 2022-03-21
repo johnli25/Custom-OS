@@ -9,12 +9,14 @@
 #define DEVICE_WRAPPER(name, handler) \
     .globl name                   ;\
     name:                         ;\
+        CLI                       ;\
         pushal                    ;\
         pushfl                    ;\
-        call handler                 ;\
+        call handler                ;\
         popfl                     ;\
         popal                     ;\
-        iret
+        STI                        ;\
+        iret                        
 
 // device wrappers     
 DEVICE_WRAPPER(RTC_WRAPPER, interrupt_RTC);
