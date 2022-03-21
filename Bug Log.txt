@@ -2,3 +2,8 @@
 -Issue: System (test_debug) is boot looping
 -Resolved by: loading the GDT properly by inserting this line of assembly code "lgdt gdt_desc" in x86_desc.S
 -Date encountered: 3/11/2022
+
+2.
+-Issue: Nothing showing up to test_debug kernel when calling initializing_paging().
+-Resolved by: setting RSVD attribute to 0 and shifting video memory VALUE by 12 in PT and PDE. 
+-Date encountered: 3/16/2022
