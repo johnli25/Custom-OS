@@ -67,7 +67,7 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x80], SYS_CALL);
 
-    //SET_IDT_ENTRY(idt[0x29], interrupt_keyboard);
+    SET_IDT_ENTRY(idt[0x29], interrupt_keyboard);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
