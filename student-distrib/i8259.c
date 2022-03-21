@@ -13,8 +13,7 @@ uint8_t slave_mask = 0xff;  /* IRQs 8-15 */
 void i8259_init(void) {
     //auto_eoi is 0
     
-    outb(master_mask, MASTER_DATA);//masking our data ports
-    outb(slave_mask, SLAVE_DATA);
+    
     
     outb(ICW1, MASTER_8259_PORT);
     outb(ICW2_MASTER, MASTER_DATA);
@@ -26,6 +25,9 @@ void i8259_init(void) {
     outb(ICW2_SLAVE, SLAVE_DATA);
     outb(ICW3_SLAVE, SLAVE_DATA);
     outb(ICW4, SLAVE_DATA);
+    //masking after port setups
+    outb(master_mask, MASTER_DATA);//masking our data ports
+    outb(slave_mask, SLAVE_DATA);
     
     enable_irq(IRQ2);
 
