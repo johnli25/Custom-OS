@@ -17,7 +17,6 @@ static inline void assertion_failure(){
 	asm volatile("int $15");
 }
 
-
 /* Checkpoint 1 tests */
 
 /* IDT Test - Example
@@ -46,6 +45,7 @@ int idt_test(){
 }
 int null_check_test(){
 	TEST_HEADER;
+	printf("Dereferencing NULL ptr.\n");
 	int result = PASS;
 	int * ptr = NULL;
 	int val = *ptr;
@@ -100,7 +100,8 @@ int paging_test(){
 
 int divide_by_zero_test(){
 	TEST_HEADER;
-	int quotient = 391 / 0;
+	volatile int divisor = 0;
+	int quotient = 391 / divisor;
 	int res = quotient;
 	res = PASS;
 	return res;
@@ -169,6 +170,6 @@ void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
-	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0x80));
-	TEST_OUTPUT("Dereference Null Test", null_check_test());
+	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
+	TEST_OUTPUT("Invalid memory/paging test", null_check_test()); 
 }

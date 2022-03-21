@@ -141,7 +141,6 @@ void entry(unsigned long magic, unsigned long addr) {
         ltr(KERNEL_TSS);
     }
 
-    //printf("INITIALIZING PIC . . . \n");
     /* Init the PIC */
     initialize_idt(); //idt initialization
 
@@ -151,14 +150,14 @@ void entry(unsigned long magic, unsigned long addr) {
     printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
 
+    initialize_paging();
 
-    
+    //initialize_idt();
 
     //printf("INITIALIZING RTC . . . \n");
     //initialize_RTC(); 
-    
-
-   
+    //clear();
+    printf("right before initialize paging. \n");
 
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
