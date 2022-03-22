@@ -20,8 +20,6 @@ void initialize_idt(void){
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
-        //idt[i].reserved3 = 0;
-        //idt[i].reserved4 = 0;
         idt[i].present = 1; 
 
         //set segment selector 
@@ -252,9 +250,5 @@ void SYS_CALL(void){ //0x80
     } //infinite while loop
     return;
 }
-
-
-
-
 
 
