@@ -20,7 +20,7 @@ void initialize_idt(void){
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
-        idt[i].present = 0; 
+        idt[i].present = 1; 
 
         //set segment selector 
         idt[i].seg_selector = KERNEL_CS;
