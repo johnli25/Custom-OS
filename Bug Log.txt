@@ -12,3 +12,26 @@
 -Issue: Default exception triggered when trying to get RTC interrupt to trigger 
 -Resolved by: adding cli and changing IDT entry from 0x21 to 0x28 (0x20 +8)
 -Date encountered: 3/22/2022
+
+4. 
+-Issue: Character not showing up
+-Resolved by: 
+-Initializing the Pic Correctly
+-Initializing the Keyboard Correctly
+-Date encountered:
+- 3/20/2022
+
+5. 
+-Issue: Wrong character showing up
+-Resolved by: 
+-Remaking the scancodes table
+-Date encountered:
+- 3/20/2022
+
+6. 
+-Issue: Multiple Characters could not be written
+-Resolved by: 
+-Calling the assembly linkage code correctly 
+- 3/21/2022
+
+
