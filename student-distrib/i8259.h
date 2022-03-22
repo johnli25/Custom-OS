@@ -9,6 +9,7 @@
 #include "types.h"
 /* Checking which PIC*/
 #define PICCheck 8
+#define SlaveCheck 16
 /* Ports that each PIC sits on */
 #define MASTER_8259_PORT    0x20
 #define SLAVE_8259_PORT     0xA0

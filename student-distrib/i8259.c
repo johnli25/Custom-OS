@@ -61,18 +61,21 @@ void enable_irq(uint32_t irq_num) {
     uint16_t port;
     //uint8_t value;
      //for intel, port and value are flipped when using outb
-    if(irq_num < PICCheck){
+     //if 0<= irq <8 then master
+    if(irq_num < PICCheck && irq_num >= 0){
         port = MASTER_DATA;
         master_mask = inb(port) & ~(1 << irq_num);
         outb(master_mask,port);
               
     }
-    else{
+    //if 8<= irq <16
+    else if (irq_num < SlaveCheck && irq_num >= 8){
         port = SLAVE_DATA;
         irq_num -= PICCheck; 
         slave_mask = inb(port) & ~(1 << irq_num);
         outb(slave_mask,port);
     }
+
    // value = inb(port) & ~(1 << irq_num);
     //outb(port, value); 
 }
@@ -90,12 +93,12 @@ void disable_irq(uint32_t irq_num) {
     uint16_t port;
     //uint8_t value;
     //for intel, port and value are flipped when using outb
-    if(irq_num < PICCheck){
+    if(irq_num < PICCheck && irq_num >= 0){
         port = MASTER_DATA;
         master_mask = inb(port) | (1 << irq_num);
         outb(master_mask,port);
     }
-    else{
+    else if (irq_num < SlaveCheck && irq_num >= 8){
         port = SLAVE_DATA;
         irq_num -= PICCheck;
         slave_mask = inb(port) | (1 << irq_num);
@@ -122,11 +125,11 @@ void send_eoi(uint32_t irq_num) {
     //removing variable
     //int holdOr;
     //changed intel outb order
-    if (irq_num < PICCheck){//if IRQ came from master, then issue command to master
+    if (irq_num < PICCheck && irq_num >= 0){//if IRQ came from master, then issue command to master
         //holdOr = irq_num | EOI;
         outb(irq_num | EOI, MASTER_8259_PORT); //only master
     }
-    else{ // if slave then both 
+    else if (irq_num < SlaveCheck && irq_num >= 8){ // if slave then both 
     //eoi for slave 
         //holdOr = IRQ2 | EOI; //this is for finding correct master pin
         outb(IRQ2 | EOI, MASTER_8259_PORT); // send to master
