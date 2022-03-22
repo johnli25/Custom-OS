@@ -148,6 +148,7 @@ void entry(unsigned long magic, unsigned long addr) {
      * without showing you any output */
     /*
     */
+
     /* Init the PIC */
     //printf("INITIALIZING PIC . . . \n");
     i8259_init(); //pic initialization
@@ -155,11 +156,14 @@ void entry(unsigned long magic, unsigned long addr) {
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
  
+    //printf("INITIALIZING IDT . . . \n");
     initialize_idt(); //idt initialization
+
+    //printf("INITIALIZING PAGING . . . \n");
     initialize_paging(); //paging initialization
 
     //printf("INITIALIZING RTC . . . \n");
-    initialize_RTC(); 
+    initialize_RTC(); //RTC initialization
 
     clear();
     sti();
