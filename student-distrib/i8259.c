@@ -75,6 +75,9 @@ void enable_irq(uint32_t irq_num) {
         slave_mask = inb(port) & ~(1 << irq_num);
         outb(slave_mask,port);
     }
+    else{
+        printf("Out of Bounds IRQ");
+    }
 
    // value = inb(port) & ~(1 << irq_num);
     //outb(port, value); 
@@ -104,6 +107,9 @@ void disable_irq(uint32_t irq_num) {
         slave_mask = inb(port) | (1 << irq_num);
         outb(slave_mask,port);
           
+    }
+    else{
+        printf("Out of Bounds IRQ");
     }
     //value = inb(port) | (1 << irq_num);
     //outb(port, value);   
@@ -137,5 +143,8 @@ void send_eoi(uint32_t irq_num) {
         irq_num -= PICCheck; //for slave pin calc
         //holdOr = irq_num | EOI; //this is now new irq_num decremented by PICCheck
         outb(irq_num | EOI, SLAVE_8259_PORT); //both master and slave
+    }
+    else{
+        printf("Out of Bounds IRQ");
     }
 }
