@@ -147,6 +147,16 @@ int idt_test(){
 
 	return result;
 }
+
+/* Dereference null pointer Test - Example
+ * 
+ * Description: dereference null ptr
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: produces page fault exception
+ * Coverage: Load IDT, IDT definition, paging check, memory addresses check
+ * Files: paging.h/.s, idt.c/idt.h
+ */
 int null_check_test(){
 	//TEST_HEADER;
 	//printf("Dereferencing NULL ptr.\n");
@@ -157,15 +167,15 @@ int null_check_test(){
 	return PASS; //raise exception
 }
 
-int invalid_page_test1(){
-	TEST_HEADER;
-	int result = FAIL;
-	int * ptr = (int *)0xb8000; //start of video mem address
-	int val = *ptr; //deref * ptr
-	printf("Lower bound of video memory.\n");
-	return result;
-}
-
+/* Paging Test 2 - Example
+ * 
+ * Description: accesses a video memory page (in first 4 MB)
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: none
+ * Coverage: Load IDT, IDT definition, paging check, memory addresses check
+ * Files: paging.h/.s, idt.c/idt.h
+ */
 int page_test2(){
 	//TEST_HEADER;
 	int * ptr = (int *)0xb8000; //start of video mem address
@@ -174,6 +184,15 @@ int page_test2(){
 	return PASS;
 }
 
+/* (Invalid) Paging Test 3 - Example
+ * 
+ * Description: accesses a video memory page (in first 4 MB)
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: produces page fault exception
+ * Coverage: Load IDT, IDT definition, paging check, memory addresses check
+ * Files: paging.h/.s, idt.c/idt.h
+ */
 int invalid_page_test3(){
 	TEST_HEADER;
 	int result = FAIL;
@@ -183,6 +202,15 @@ int invalid_page_test3(){
 	return result;
 }
 
+/* (Invliad) Paging Test 4 - Example
+ * 
+ * Description: accesses a video memory page outside of 0 MB-8 MB
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: produces page fault exception
+ * Coverage: Load IDT, IDT definition, paging check, memory addresses check
+ * Files: paging.h/.s, idt.c/idt.h
+ */
 int invalid_page_test4(){
 	TEST_HEADER;
 	int result = FAIL;
@@ -192,6 +220,15 @@ int invalid_page_test4(){
 	return result;	
 }
 
+/* Regular Paging Test  - Example
+ * 
+ * Description: accesses a video memory page and kernel page
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: none
+ * Coverage: Load IDT, IDT definition, paging check, memory addresses check
+ * Files: paging.h/.s, idt.c/idt.h
+ */
 int paging_test(){
 	TEST_HEADER;
 	int result = PASS;
@@ -201,6 +238,15 @@ int paging_test(){
 	return PASS;
 }
 
+/* Divide by 0 test  - Example
+ * 
+ * Description: takes two ints and divides by 0
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: produces divide by 0 exception
+ * Coverage: Load IDT, IDT definition
+ * Files: idt.c/idt.h
+ */
 int divide_by_zero_test(){
 	TEST_HEADER;
 	volatile int divisor = 0;
@@ -210,6 +256,15 @@ int divide_by_zero_test(){
 	return res;
 }
 
+/* ALL exceptions tests  - Example
+ * 
+ * Description: produces any exception when passing in a specific int argument
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: produces an exception based on passed in argument
+ * Coverage: Load IDT, IDT definition
+ * Files: idt.c/idt.h
+ */
 int basic_exception_test(int n){
 	TEST_HEADER;
 	if (n == 1)
@@ -268,7 +323,15 @@ int basic_exception_test(int n){
 /* Checkpoint 5 tests */
 
 
-/* Test suite entry point */
+/* Test suite entry point 
+ * 
+ * Description: test suite
+ * Inputs: depends
+ * Outputs: PASS/FAIL or none
+ * Side Effects: produces exceptions, prints things to terminal, etc.
+ * Coverage: Load IDT, IDT definition, gdt, paging, rtc, PIC, keyboard
+ * Files: pretty much all of them in /student-distrib
+ */
 void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
