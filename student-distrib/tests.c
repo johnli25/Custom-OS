@@ -337,6 +337,6 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	//TEST_OUTPUT("VALID PAGING", paging_test()); 
-	TEST_OUTPUT("PIC tests", invalid_enable_irq_test());
+	TEST_OUTPUT("VALID PAGING", invalid_page_test3()); 
+	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 }
