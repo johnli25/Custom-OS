@@ -3,8 +3,9 @@
 #include "rtc.h"
 
 void initialize_RTC(void){
-    unsigned long flags;
-    cli_and_save(flags);
+    //unsigned long flags;
+    //cli_and_save(flags);
+    cli();
 
     //from osdev 
     outb(0x8B, RTC_CMD);	    // select register B (0x8B), and disable NMI
@@ -18,13 +19,14 @@ void initialize_RTC(void){
 
 
     enable_irq(RTC_IRQ);
-    restore_flags(flags);
+    //restore_flags(flags);
 
 }
 
 void interrupt_RTC(void){
-    unsigned long flags;
-    cli_and_save(flags);
+    //unsigned long flags;
+    //cli_and_save(flags);
+    cli();
 
     printf("Calling test_interrupts() . . . ");
     test_interrupts();
@@ -34,7 +36,7 @@ void interrupt_RTC(void){
     inb(RTC_DATA);		// just throw away contents
     send_eoi(RTC_IRQ);
 
-    restore_flags(flags);
+    //restore_flags(flags);
 }
 
 
