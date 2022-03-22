@@ -63,10 +63,10 @@ int enable_irq_test_slave(){
  * Coverage: enable_irq
  * Files: i8259.c
  */
-int invalid_enable_irq_test(){
+int out_of_bounds_enable_irq_test(){
 	TEST_HEADER;
 	
-	int result = FAIL;
+	int result = PASS;
 	enable_irq(50); //an out of bounds port that does not exist
 	return result;
 }
@@ -115,10 +115,10 @@ int disable_irq_test_slave(){
  * Coverage: disable_irq
  * Files: i8259.c
  */
-int invalid_disable_irq_test(){
+int out_of_bounds_disable_irq_test(){
 	TEST_HEADER;
 	
-	int result = FAIL;
+	int result = PASS;
 	disable_irq(50); //an out of bounds port that does not exist
 	return result;
 }

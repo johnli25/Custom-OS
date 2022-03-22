@@ -76,7 +76,7 @@ void enable_irq(uint32_t irq_num) {
         outb(slave_mask,port);
     }
     else{
-        printf("Out of Bounds IRQ");
+        printf("Out of Bounds IRQ\n");
     }
 
    // value = inb(port) & ~(1 << irq_num);
@@ -109,7 +109,7 @@ void disable_irq(uint32_t irq_num) {
           
     }
     else{
-        printf("Out of Bounds IRQ");
+        printf("Out of Bounds IRQ\n");
     }
     //value = inb(port) | (1 << irq_num);
     //outb(port, value);   
@@ -145,6 +145,6 @@ void send_eoi(uint32_t irq_num) {
         outb(irq_num | EOI, SLAVE_8259_PORT); //both master and slave
     }
     else{
-        printf("Out of Bounds IRQ");
+        printf("Out of Bounds IRQ\n");
     }
 }
