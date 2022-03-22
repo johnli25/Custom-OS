@@ -68,9 +68,6 @@ int invalid_disable_irq_test(){
 	return result;
 }
 
-
-
-
 /* IDT Test - Example
  * 
  * Asserts that first 10 IDT entries are not NULL
@@ -222,5 +219,6 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	TEST_OUTPUT("VALID PAGING", paging_test()); 
+	//TEST_OUTPUT("VALID PAGING", paging_test()); 
+	TEST_OUTPUT("PIC tests", invalid_enable_irq_test());
 }
