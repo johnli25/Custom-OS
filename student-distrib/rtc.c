@@ -3,6 +3,9 @@
 #include "rtc.h"
 
 void initialize_RTC(void){
+    unsigned long flags;
+    cli_and_save(flags);
+
     //from osdev 
     outb(0x8B, RTC_CMD);	    // select register B (0x8B), and disable NMI
     char prev = inb(RTC_DATA);	    // read the current value of register B
@@ -14,10 +17,15 @@ void initialize_RTC(void){
     outb(0x08, RTC_DATA);   // set the RTC freq = 256 Hz, therefore 16 - log_2(freq) = 16 - 8 = 0x08 
 
 
-    enable_irq(RTC_IRQ); 
+    enable_irq(RTC_IRQ);
+    restore_flags(flags);
+
 }
 
 void interrupt_RTC(void){
+    unsigned long flags;
+    cli_and_save(flags);
+
     printf("Calling test_interrupts() . . . ");
     test_interrupts();
 
@@ -25,6 +33,10 @@ void interrupt_RTC(void){
     outb(0x0C, RTC_CMD);	// select register C
     inb(RTC_DATA);		// just throw away contents
     send_eoi(RTC_IRQ);
+
+    restore_flags(flags);
+}
+
 
 }
 
