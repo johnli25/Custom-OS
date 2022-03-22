@@ -150,20 +150,20 @@ void entry(unsigned long magic, unsigned long addr) {
     */
 
     /* Init the PIC */
-    //printf("INITIALIZING PIC . . . \n");
+    printf("INITIALIZING PIC . . . \n");
     i8259_init(); //pic initialization
 
-    //printf("INITIALIZING KEYBOARD . . . \n");
+    printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
  
-    //printf("INITIALIZING IDT . . . \n");
+    printf("INITIALIZING IDT . . . \n");
     initialize_idt(); //idt initialization
 
-    //printf("INITIALIZING PAGING . . . \n");
+    printf("INITIALIZING PAGING . . . \n");
     initialize_paging(); //paging initialization
 
     //printf("INITIALIZING RTC . . . \n");
-    initialize_RTC(); //RTC initialization
+    //initialize_RTC(); //RTC initialization
 
     clear();
     sti();
