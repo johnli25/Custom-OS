@@ -24,7 +24,7 @@ void initialize_RTC(void){
 
 void interrupt_RTC(void){
 
-    cli();
+    //cli();
 
     printf("Calling test_interrupts() . . . ");
     test_interrupts();
