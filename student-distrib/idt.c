@@ -45,7 +45,7 @@ void initialize_idt(void){
     }
 
     //fill the specific entries we care about (taken from x86 standards)
-    //MAGIC #s 0x0-0x15, 0x21, 0x22, 0x80 are defined by the IDT vector numbers!
+    //MAGIC #s 0x0-0x15, 0x21, 0x28, 0x80 are defined by the IDT vector numbers!
     SET_IDT_ENTRY(idt[0x00], EXCEPTION_DIVIDE_BY_ZERO);
     SET_IDT_ENTRY(idt[0x01], SINGLE_STEP_INTERRUPT);
     SET_IDT_ENTRY(idt[0x02], EXCEPTION_NMI);
@@ -73,7 +73,7 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER); 
 
-    SET_IDT_ENTRY(idt[0x22], RTC_WRAPPER);
+    SET_IDT_ENTRY(idt[0x28], RTC_WRAPPER);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
