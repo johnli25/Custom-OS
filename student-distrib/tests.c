@@ -19,6 +19,16 @@ static inline void assertion_failure(){
 
 /* Checkpoint 1 tests */
 
+/* Enable IRQ Master Test
+ * 
+ * Asserts that enable IRQ can enable port on master
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: enable_irq
+ * Files: i8259.c
+ */
+
 int enable_irq_test_master(){
 	TEST_HEADER;
 
@@ -28,6 +38,15 @@ int enable_irq_test_master(){
 
 }
 
+/* Enable IRQ Slave Test
+ * 
+ * Asserts that enable IRQ can enable port on slave
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: enable_irq
+ * Files: i8259.c
+ */
 int enable_irq_test_slave(){
 	TEST_HEADER;
 	
@@ -35,7 +54,15 @@ int enable_irq_test_slave(){
 	enable_irq(10); //a slave PIC port to test enable_irq
 	return result;
 }
-
+/* Invalid Enable IRQ Test
+ * 
+ * Asserts that enable IRQ will recognize wrong port
+ * Inputs: None
+ * Outputs: FAIL
+ * Side Effects: None
+ * Coverage: enable_irq
+ * Files: i8259.c
+ */
 int invalid_enable_irq_test(){
 	TEST_HEADER;
 	
@@ -43,6 +70,16 @@ int invalid_enable_irq_test(){
 	enable_irq(50); //an out of bounds port that does not exist
 	return result;
 }
+
+/* Disable IRQ Master Test
+ * 
+ * Asserts that disable IRQ can enable port on master
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: disable_irq
+ * Files: i8259.c
+ */
 int disable_irq_test_master(){
 	TEST_HEADER;
 
@@ -52,6 +89,15 @@ int disable_irq_test_master(){
 
 }
 
+/* Disable IRQ Slave Test
+ * 
+ * Asserts that disable IRQ can enable port on slave
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: disable_irq
+ * Files: i8259.c
+ */
 int disable_irq_test_slave(){
 	TEST_HEADER;
 	
@@ -60,6 +106,15 @@ int disable_irq_test_slave(){
 	return result;
 }
 
+/* Invalid Disable IRQ Test
+ * 
+ * Asserts that disable IRQ can recognize out of bounds port
+ * Inputs: None
+ * Outputs: FAIL
+ * Side Effects: None
+ * Coverage: disable_irq
+ * Files: i8259.c
+ */
 int invalid_disable_irq_test(){
 	TEST_HEADER;
 	
