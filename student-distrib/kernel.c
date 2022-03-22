@@ -151,7 +151,7 @@ void entry(unsigned long magic, unsigned long addr) {
     i8259_init(); //pic initialization
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
-    clear();
+    //clear();
     initialize_idt();
     initialize_paging();
 
@@ -169,7 +169,7 @@ void entry(unsigned long magic, unsigned long addr) {
     /*
     */
     //printf("Enabling Interrupts\n");
-    //clear();
+    clear();
     sti();
 
 #ifdef RUN_TESTS
