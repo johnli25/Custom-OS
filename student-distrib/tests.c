@@ -19,6 +19,58 @@ static inline void assertion_failure(){
 
 /* Checkpoint 1 tests */
 
+int enable_irq_test_master(){
+	TEST_HEADER;
+
+	int result = PASS;
+	enable_irq(5); //a master PIC port to test enable_irq
+	return result;
+
+}
+
+int enable_irq_test_slave(){
+	TEST_HEADER;
+	
+	int result = PASS;
+	enable_irq(10); //a slave PIC port to test enable_irq
+	return result;
+}
+
+int invalid_enable_irq_test(){
+	TEST_HEADER;
+	
+	int result = FAIL;
+	enable_irq(50); //an out of bounds port that does not exist
+	return result;
+}
+int disable_irq_test_master(){
+	TEST_HEADER;
+
+	int result = PASS;
+	disable_irq(5); //a master PIC port to test disable_irq
+	return result;
+
+}
+
+int disable_irq_test_slave(){
+	TEST_HEADER;
+	
+	int result = PASS;
+	disable_irq(10); //a slave PIC port to test disable_irq
+	return result;
+}
+
+int invalid_disable_irq_test(){
+	TEST_HEADER;
+	
+	int result = FAIL;
+	disable_irq(50); //an out of bounds port that does not exist
+	return result;
+}
+
+
+
+
 /* IDT Test - Example
  * 
  * Asserts that first 10 IDT entries are not NULL
