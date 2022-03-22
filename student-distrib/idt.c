@@ -72,7 +72,7 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER);
 
-    SET_IDT_ENTRY(idt[0x28], RTC_WRAPPER);
+    SET_IDT_ENTRY(idt[0x22], RTC_WRAPPER);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
