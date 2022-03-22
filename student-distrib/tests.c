@@ -56,7 +56,7 @@ int null_check_test(){
 int invalid_page_test1(){
 	TEST_HEADER;
 	int result = FAIL;
-	int * ptr = (int *)0xb8000;
+	int * ptr = (int *)0xb8000; //start of video mem address
 	int val = *ptr; //deref * ptr
 	printf("Lower bound of video memory.\n");
 	return result;
@@ -64,7 +64,7 @@ int invalid_page_test1(){
 
 int page_test2(){
 	//TEST_HEADER;
-	int * ptr = (int *)0xb8000;
+	int * ptr = (int *)0xb8000; //start of video mem address
 	int val = *ptr; //deref * ptr
 	//printf("Lower bound of video memory.\n");
 	return PASS;
@@ -73,7 +73,7 @@ int page_test2(){
 int invalid_page_test3(){
 	TEST_HEADER;
 	int result = FAIL;
-	int * ptr = (int *)0xb9000;
+	int * ptr = (int *)0xb9000; //end of video mem address
 	int val = *ptr; //deref * ptr
 	printf("Upper bound of video memory.\n");
 	return result;
@@ -82,7 +82,7 @@ int invalid_page_test3(){
 int invalid_page_test4(){
 	TEST_HEADER;
 	int result = FAIL;
-	int * ptr = (int *)0x00800391;
+	int * ptr = (int *)0x00800391; //random out of bounds memory address (not paged)
 	int val = *ptr; //deref * ptr
 	printf("Out of bounds paging.\n");
 	return result;	

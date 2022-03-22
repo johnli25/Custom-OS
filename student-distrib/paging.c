@@ -8,8 +8,8 @@ PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096)));
 void setup_paging_structures(void){
     int i;
     for (i = 0; i < TOTAL_ENTRIES; i++){
-        page_tab[i].p = 0; //correct?
-        page_tab[i].r_w = 1;
+        page_tab[i].p = 0; 
+        page_tab[i].r_w = 1; //set r_w bit to 1
         page_tab[i].u_s = 0;
         page_tab[i].pwt = 0;
         page_tab[i].pcd = 0;
@@ -18,7 +18,7 @@ void setup_paging_structures(void){
         page_tab[i].pat = 0;
         page_tab[i].g = 0;
         page_tab[i].avl_3bits = 0;
-        page_tab[i].base_address = 0; //correct?
+        page_tab[i].base_address = 0; 
 
         /*initialize the page directory as all empty*/
         page_dir[i]._PDE_regular.p = 0;
@@ -80,11 +80,11 @@ void initialize_paging(void){
         "movl %%eax, %%cr3            ;"
         /*set the paging (PG) and protection (PE) bits of CR0.*/
         "movl %%cr4, %%eax        ;" 
-        "orl $0x10, %%eax        ;"
+        "orl $0x10, %%eax        ;" //0x10 is necessary to enable PSE (4 MiB pages), which sets very specific bits in register cr4.
         "movl %%eax, %%cr4        ;"
         /*enable PSE (4 MiB pages)*/
         "movl %%cr0, %%eax        ;"
-        "orl $0x80000001, %%eax  ;"
+        "orl $0x80000001, %%eax  ;" //0x80000001 sets paging (PG) and protection (PE) bits of CR0 (wiki.osdev)
         "movl %%eax, %%cr0        ;"
         : //savedd outputs
         : //saved inputs

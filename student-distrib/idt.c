@@ -5,18 +5,18 @@
 #include "keyboard.h"
 #include "devicewrappers.h"
 
-/*initialize_idt
+/*initialize_idt()
 *Description: follows x86 standard OP and fills the IDT 
 *Inputs: void
 *Outputs: void
 *Return Value: void
 *Side Effects: initializes the IDT 
 */
-
 void initialize_idt(void){
     int i; 
     for (i=0; i<NUM_VEC; i++){
         //set reserved and present bits
+        /*MAGIC #s: reserved bits sequence for idt = 0111...*/
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
@@ -28,23 +28,24 @@ void initialize_idt(void){
         // set size = 1 bc/ 32 bit
         idt[i].size = 1;
 
-        //reserved bits if 0x20 <= i <= 0x2F
+        //MAGIC #: reserved bits if 0x20 <= i <= 0x2F, which are the interrupt vector numbers (MAGIC #s)
         if ((i >= 0x20) && (i <= 0x2F)){
             idt[i].reserved3= 0;
         }
         else idt[i].reserved3 = 1;
 
         // if i==0x80 set descriptor privelege level to 3, else 0 
-        if (i== 0x80)
-            idt[i].dpl = 0x03;
+        if (i== 0x80) //0x80 is sys call number
+            idt[i].dpl = 0x03; //magic #: highest privilege #
         else 
-            idt[i].dpl = 0x00; 
+            idt[i].dpl = 0x00; //magic #: lowest privilege #
 
         //finally populate IDT w default entries
         SET_IDT_ENTRY(idt[i], DEFAULT_EXCEPTION);
     }
 
     //fill the specific entries we care about (taken from x86 standards)
+    //MAGIC #s 0x0-0x15, 0x21, 0x22, 0x80 are defined by the IDT vector numbers!
     SET_IDT_ENTRY(idt[0x00], EXCEPTION_DIVIDE_BY_ZERO);
     SET_IDT_ENTRY(idt[0x01], SINGLE_STEP_INTERRUPT);
     SET_IDT_ENTRY(idt[0x02], EXCEPTION_NMI);
@@ -70,13 +71,20 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x80], SYS_CALL);
 
-    SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER);
+    SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER); 
 
     SET_IDT_ENTRY(idt[0x22], RTC_WRAPPER);
 
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
 
+/*
+void NAME_OF_EXCEPTION_FUNCTION()
+Description: Exception handler functions
+Inputs: void
+outputs: void
+side effects: prints to kernel and then freezes it by infinite looping
+*/
 void DEFAULT_EXCEPTION(void){ 
     printf("Default exception! \n");
     while(1){
