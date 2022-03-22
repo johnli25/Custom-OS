@@ -5,5 +5,7 @@
 #define RTC_CMD         0x70
 #define RTC_DATA        0x71
 
+//RTC initialization
 extern void initialize_RTC(void);
+//RTC interrupt call 
 extern void interrupt_RTC(void);
