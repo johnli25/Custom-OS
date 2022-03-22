@@ -54,11 +54,11 @@ int enable_irq_test_slave(){
 	enable_irq(10); //a slave PIC port to test enable_irq
 	return result;
 }
-/* Invalid Enable IRQ Test
+/* Out of Bounds Enable IRQ Test
  * 
  * Asserts that enable IRQ will recognize wrong port
  * Inputs: None
- * Outputs: FAIL
+ * Outputs: PASS
  * Side Effects: None
  * Coverage: enable_irq
  * Files: i8259.c
@@ -106,11 +106,11 @@ int disable_irq_test_slave(){
 	return result;
 }
 
-/* Invalid Disable IRQ Test
+/* Out of Bounds Disable IRQ Test
  * 
  * Asserts that disable IRQ can recognize out of bounds port
  * Inputs: None
- * Outputs: FAIL
+ * Outputs: PASS
  * Side Effects: None
  * Coverage: disable_irq
  * Files: i8259.c
