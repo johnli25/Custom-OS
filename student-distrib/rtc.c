@@ -8,7 +8,7 @@ void initialize_RTC(void){
     char prev = inb(RTC_DATA);	    // read the current value of register B
     outb(0x8B, RTC_CMD);	        // set the index again (a read will reset the index to register D)
     outb(prev | 0x40, RTC_DATA);    // write the previous value ORed with 0x40. This turns on bit 6 of register B
-    enable_irq(RTC_IRQ);
+    //enable_irq(RTC_IRQ);
 
     outb(0x8A, RTC_CMD);    // select register A (0x8A), and disable NMI
     outb(0x08, RTC_DATA);   // set the RTC freq = 256 Hz, therefore 16 - log_2(freq) = 16 - 8 = 0x08 
