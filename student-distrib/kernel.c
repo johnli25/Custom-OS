@@ -140,26 +140,6 @@ void entry(unsigned long magic, unsigned long addr) {
         tss.esp0 = 0x800000;
         ltr(KERNEL_TSS);
     }
-
-    /* Init the PIC */
-    // initialize_paging();
-
-    //initialize_idt(); //idt initialization
-
-    //initialize_paging(); //paging initialization
-    //printf("INITIALIZING PIC . . . \n");
-    i8259_init(); //pic initialization
-    //printf("INITIALIZING KEYBOARD . . . \n");
-    initialize_Keyboard();//keyboard initialization
-    //clear();
-    initialize_idt();
-    initialize_paging();
-
-    //printf("INITIALIZING RTC . . . \n");
-    //initialize_RTC(); 
-    //clear();
-    //printf("right before initialize paging. \n");
-
     /* Initialize devices, memory, filesystem, enable device interrupts on the
      * PIC, any other initialization stuff... */
     /* Enable interrupts */
@@ -168,7 +148,23 @@ void entry(unsigned long magic, unsigned long addr) {
      * without showing you any output */
     /*
     */
-    //printf("Enabling Interrupts\n");
+
+    /* Init the PIC */
+    //printf("INITIALIZING PIC . . . \n");
+    i8259_init(); //pic initialization
+
+    //printf("INITIALIZING KEYBOARD . . . \n");
+    initialize_Keyboard();//keyboard initialization
+ 
+    //printf("INITIALIZING IDT . . . \n");
+    initialize_idt(); //idt initialization
+
+    //printf("INITIALIZING PAGING . . . \n");
+    initialize_paging(); //paging initialization
+
+    //printf("INITIALIZING RTC . . . \n");
+    //initialize_RTC(); //RTC initialization
+
     clear();
     sti();
 
