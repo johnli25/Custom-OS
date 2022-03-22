@@ -7,3 +7,8 @@
 -Issue: Nothing showing up to test_debug kernel when calling initializing_paging().
 -Resolved by: setting RSVD attribute to 0 and shifting video memory VALUE by 12 in PT and PDE. 
 -Date encountered: 3/16/2022
+
+3.
+-Issue: Default exception triggered when trying to get RTC interrupt to trigger 
+-Resolved by: adding cli and changing IDT entry from 0x21 to 0x28 (0x20 +8)
+-Date encountered: 3/22/2022
