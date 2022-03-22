@@ -20,9 +20,9 @@ void initialize_idt(void){
         idt[i].reserved0 = 0;
         idt[i].reserved1 = 1;
         idt[i].reserved2 = 1;
-        idt[i].reserved3 = 0;
-        idt[i].reserved4 = 0;
-        idt[i].present = 0; 
+        //idt[i].reserved3 = 0;
+        //idt[i].reserved4 = 0;
+        idt[i].present = 1; 
 
         //set segment selector 
         idt[i].seg_selector = KERNEL_CS;
@@ -31,10 +31,10 @@ void initialize_idt(void){
         idt[i].size = 1;
 
         //reserved bits if 0x20 <= i <= 0x2F
-        //if ((i >= 0x20) && (i <= 0x2F)){
-           // idt[i].reserved3= 0;
-        //}
-        //else idt[i].reserved3 = 1;
+        if ((i >= 0x20) && (i <= 0x2F)){
+            idt[i].reserved3= 0;
+        }
+        else idt[i].reserved3 = 1;
 
         // if i==0x80 set descriptor privelege level to 3, else 0 
         if (i== 0x80)
