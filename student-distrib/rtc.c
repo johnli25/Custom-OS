@@ -2,6 +2,14 @@
 #include "i8259.h"
 #include "rtc.h"
 
+/* initialize_RTC
+ * Description: Initializes RTC
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+ * Side Effects: Enables IRQ and sets control registers 
+*/ 
+
 void initialize_RTC(void){
 
     cli();
@@ -21,10 +29,15 @@ void initialize_RTC(void){
 
 
 }
-
+/* interrupt_RTC
+ * Description: Called when interrupt occurs 
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+ * Side Effects: Flashing random characters covers screen  
+*/ 
 void interrupt_RTC(void){
 
-    //cli();
 
     printf("Calling test_interrupts() . . . ");
     test_interrupts();
