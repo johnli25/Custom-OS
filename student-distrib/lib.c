@@ -7,6 +7,7 @@
 #define NUM_COLS    80
 #define NUM_ROWS    25
 #define ATTRIB      0x7
+#define BACKSPACE   0x0E
 
 static int screen_x;
 static int screen_y;
@@ -177,6 +178,24 @@ void putc(uint8_t c) {
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+    }
+    //adding if statement for backspace
+    if(c == BACKSPACE){
+        if(screen_y != 0 || screen_x != 0){
+            if (screen_x != 0){
+                screen_x--;
+        }
+            else{
+                screen_y--;
+                screen_x = 127; //can cause errors maybe 
+            } 
+        }
+        
+        // y edgecase 
+        // vidmem 
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
+        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+
     }
 }
 
