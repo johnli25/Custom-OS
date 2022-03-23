@@ -67,7 +67,7 @@ int out_of_bounds_enable_irq_test(){
 	TEST_HEADER;
 	
 	int result = PASS;
-	enable_irq(50); //an out of bounds port that does not exist
+	enable_irq(391); //an out of bounds port that does not exist
 	return result;
 }
 
@@ -119,7 +119,7 @@ int out_of_bounds_disable_irq_test(){
 	TEST_HEADER;
 	
 	int result = PASS;
-	disable_irq(50); //an out of bounds port that does not exist
+	disable_irq(391); //an out of bounds port that does not exist
 	return result;
 }
 
