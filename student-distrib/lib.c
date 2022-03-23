@@ -25,6 +25,16 @@ void clear(void) {
     }
 }
 
+/* void verticalScroll(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Alters video memory as a means to "scroll" */
+ void verticalScroll(void){
+     //delete the top line
+     //shift other lines all up
+     //clear the bottom line
+ }
+
 /* Standard printf().
  * Only supports the following format strings:
  * %%  - print a literal '%' character
