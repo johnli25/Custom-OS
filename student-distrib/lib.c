@@ -179,6 +179,14 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
+    
+    
+}
+/* void putBackspace(uint8_t c);
+ * Inputs: uint_8* c = character to print
+ * Return Value: void
+ *  Function: Output a backspace to the console */
+void putBackspace(uint8_t c){
     //adding if statement for backspace
     if(c == BACKSPACE){
         if(screen_y != 0 || screen_x != 0){
@@ -197,6 +205,7 @@ void putc(uint8_t c) {
         *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
 
     }
+
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);
