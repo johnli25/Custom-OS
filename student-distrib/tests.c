@@ -162,7 +162,7 @@ int null_check_test(){
 	//printf("Dereferencing NULL ptr.\n");
 	//int result = PASS;
 	int * ptr = NULL;
-	int val = *ptr;
+	volatile int val = *ptr;
 	//val = PASS;
 	return PASS; //raise exception
 }
@@ -179,7 +179,7 @@ int null_check_test(){
 int page_test2(){
 	//TEST_HEADER;
 	int * ptr = (int *)0xb8000; //start of video mem address
-	int val = *ptr; //deref * ptr
+	volatile int val = *ptr; //deref * ptr
 	//printf("Lower bound of video memory.\n");
 	return PASS;
 }
@@ -197,7 +197,7 @@ int invalid_page_test3(){
 	TEST_HEADER;
 	int result = FAIL;
 	int * ptr = (int *)0xb9000; //end of video mem address
-	int val = *ptr; //deref * ptr
+	volatile int val = *ptr; //deref * ptr
 	printf("Upper bound of video memory.\n");
 	return result;
 }
@@ -215,7 +215,7 @@ int invalid_page_test4(){
 	TEST_HEADER;
 	int result = FAIL;
 	int * ptr = (int *)0x00800391; //random out of bounds memory address (not paged)
-	int val = *ptr; //deref * ptr
+	volatile int val = *ptr; //deref * ptr
 	printf("Out of bounds paging.\n");
 	return result;	
 }
@@ -231,9 +231,10 @@ int invalid_page_test4(){
  */
 int paging_test(){
 	TEST_HEADER;
-	int result = PASS;
 	int * vidmem_ptr = (int *)0xb8391; //video mem page
 	int * kernel_ptr = (int *)0x00400391; //kernel page
+	volatile int vidmem_val = *vidmem_ptr;
+	volatile int kernel_val = *kernel_ptr;
 	printf("Were any exceptions or weird stuff triggered? Nope. \n");
 	return PASS;
 }
@@ -337,6 +338,6 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	TEST_OUTPUT("VALID PAGING", invalid_page_test3()); 
+	TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 }

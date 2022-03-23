@@ -5,6 +5,13 @@ PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number:
 PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096))); 
 /*above reference: https://wiki.osdev.org/Setting_Up_Paging*/
 
+ /* setup_paging_structures()
+ *   DESCRIPTION: Used to setup the paging structs-attributes, addresses, etc.
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: sets up paging memory
+ */
 void setup_paging_structures(void){
     int i;
     for (i = 0; i < TOTAL_ENTRIES; i++){
@@ -71,6 +78,13 @@ void setup_paging_structures(void){
     return;
 }
 
+/* initialize_paging()
+ *   DESCRIPTION: Used to initialize paging
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: writes to video memory, kernel memory-basically 0 MB to 8 MB, and clobbers registers eax, cr3, cr0, and cr4
+ */
 void initialize_paging(void){
     setup_paging_structures();
 //    printf("plz print in test_debug\n");
