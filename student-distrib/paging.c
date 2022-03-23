@@ -109,5 +109,3 @@ void initialize_paging(void){
 
 
 
-
-//        "andl $0xfffffc00, %%eax;"
