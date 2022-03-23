@@ -8,6 +8,28 @@
 //#define keyboardPassPresses  87
 #define nonnumlet   0x33        // the last character/number (for checkpoint 1)
 
+
+
+// SPECIAL CHARACTERS:
+#define BACKSPACEPRESS   0X0E
+#define TABPRESS     0X0F
+#define ENTERPRESS  0X1C
+#define LEFTCONTROLPRESS     0x1D
+#define LEFTCONTROLRELEASE   0x9D
+// #define RIGHTCONTROLPRESS1  0xE0
+// #define RIGHTCONTROLRELEASE1    0xE0
+#define RIGHTCONTROLPRESS  0x1D
+#define RIGHTCONTROLRELEASE 0x9D
+#define LEFTSHIFTPRESS   0x2A 
+#define LEFTSHIFTRELEASE 0x12
+#define RIGHTSHIFTPRESS     0x36
+#define RIGHTSHIFTRELEASE   0xB6
+#define SPACEPRESS  0x39
+#define CAPSLOCKPRESS   0x3A
+
+
+
+
 //scancodes1 array - converts the character to the correct character
 /* 
  * scancodes1 array
