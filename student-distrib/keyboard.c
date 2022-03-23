@@ -6,7 +6,6 @@
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
 //#define keyboardPassPresses  87
-#define nonnumlet   0x33        // the last character/number (for checkpoint 1)
 
 
 
@@ -95,18 +94,82 @@ void initialize_Keyboard(void){
  */
 void interrupt_keyboard(void){      
 
+    bool capsLock = false;
+    bool shift = false;
+
     cli();  //prevents interrupts 
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
 
-    if(myInput < nonnumlet){ //checks if it is a character or number 
+    if(myInput == BACKSPACEPRESS){
+        putBackspace();
+    }
 
-        uint8_t myChar = scancodes1[myInput]; // the corresponding character (from the table)
+    if(myInput == SPACEPRESS){
+        putc(' ');
+    }
+
+    if(myInput == TABPRESS){
+        putc(' ');
+        putc(' ');
+        putc(' ');
+        putc(' ');
+    }
+
+    if(myInput == CAPSLOCKPRESS){
+        capsLock = !capsLock;
+    }
+
+    if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
+        shift = true;
+    }
+
+    if(myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE){
+        shift = false;
+    }
+
+
+
+    uint8_t myChar;
+    if(capsLock){
+        if(shift){
+            myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
+
+            if(myChar != ' '){ //checks if its a valid character to print
+                putc(myChar); //outputs the correct character
+            }
+
+        }
+        else{
+            myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
+
+            if(myChar != ' '){ //checks if its a valid character to print
+                putc(myChar); //outputs the correct character
+            }
+        }
+    }
+
+    else if(shift){
+        myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
             putc(myChar); //outputs the correct character
         }
     }
+    else{
+        myChar = scancodes1[myInput]; // the corresponding character (from the table)
+
+        if(myChar != ' '){ //checks if its a valid character to print
+            putc(myChar); //outputs the correct character
+        }
+    }
+
+    // uint8_t myChar = scancodes1[myInput]; // the corresponding character (from the table)
+
+    // if(myChar != ' '){ //checks if its a valid character to print
+    //     putc(myChar); //outputs the correct character
+    // }
+
     send_eoi(KEYBOARDIRQNUM); //end of interrupt
 
     sti(); //interrupts can contnue
