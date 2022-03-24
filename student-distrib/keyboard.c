@@ -2,6 +2,7 @@
 #include "i8259.h"
 #include "keyboard.h"
 
+#include <stdio.h>
 #include <stdbool.h>
 
 #define KEYBOARDIRQNUM  1       //corresponds to the keyboard IRQ Number
