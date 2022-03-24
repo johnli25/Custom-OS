@@ -198,23 +198,21 @@ void putc(uint8_t c) {
  *  Function: Output a backspace to the console */
 void putBackspace(void){
     //adding if statement for backspace
-    if(c == BACKSPACE){
-        if(screen_y != 0 || screen_x != 0){
-            if (screen_x != 0){
-                screen_x--;
-        }
-            else{
-                screen_y--;
-                screen_x = 127; //can cause errors maybe 
-            } 
-        }
-        
-        // y edgecase 
-        // vidmem 
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
-        *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
 
+    if(screen_y != 0 || screen_x != 0){
+        if (screen_x != 0){
+            screen_x--;
     }
+        else{
+            screen_y--;
+            screen_x = 127; //can cause errors maybe 
+        } 
+    }
+    
+    // y edgecase 
+    // vidmem 
+    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
+    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
 
 }
 
