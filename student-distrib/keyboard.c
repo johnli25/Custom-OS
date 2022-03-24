@@ -166,7 +166,7 @@ void interrupt_keyboard(void){
         shift = TRUE;
     }
 
-    if(myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE){
+    if((myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE)){
         shift = FALSE;
     }
 
