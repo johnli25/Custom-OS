@@ -2,9 +2,6 @@
 #include "i8259.h"
 #include "keyboard.h"
 
-#include <stdio.h>
-#include <stdbool.h>
-
 #define KEYBOARDIRQNUM  1       //corresponds to the keyboard IRQ Number
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
@@ -29,7 +26,8 @@
 #define SPACEPRESS  0x39
 #define CAPSLOCKPRESS   0x3A
 
-
+#define TRUE 1
+#define FALSE 0
 
 
 //scancodes1 array - converts the character to the correct character
@@ -133,8 +131,8 @@ void initialize_Keyboard(void){
  */
 void interrupt_keyboard(void){      
 
-    bool capsLock = false;
-    bool shift = false;
+    int capsLock = FALSE;
+    int shift = FALSE;
 
     cli();  //prevents interrupts 
 
@@ -156,22 +154,27 @@ void interrupt_keyboard(void){
     }
 
     if(myInput == CAPSLOCKPRESS){
-        capsLock = !capsLock;
+        if (capsLock == FALSE){
+            capsLock = TRUE;
+        }
+        else{
+            capsLock = FALSE;
+        }
     }
 
     if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
-        shift = true;
+        shift = TRUE;
     }
 
     if(myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE){
-        shift = false;
+        shift = FALSE;
     }
 
 
 
     uint8_t myChar;
-    if(capsLock){
-        if(shift){
+    if(capsLock == TRUE){
+        if(shift == TRUE){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
@@ -188,7 +191,7 @@ void interrupt_keyboard(void){
         }
     }
 
-    else if(shift){
+    else if(shift == TRUE){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
