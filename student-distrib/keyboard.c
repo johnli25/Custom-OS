@@ -20,14 +20,18 @@
 #define RIGHTCONTROLPRESS  0x1D
 #define RIGHTCONTROLRELEASE 0x9D
 #define LEFTSHIFTPRESS   0x2A 
-#define LEFTSHIFTRELEASE 0x12
+#define LEFTSHIFTRELEASE 0xAA
 #define RIGHTSHIFTPRESS     0x36
 #define RIGHTSHIFTRELEASE   0xB6
 #define SPACEPRESS  0x39
 #define CAPSLOCKPRESS   0x3A
+#define RELEASEDCHAR 0x80
 
-#define TRUE 1
-#define FALSE 0
+#define INTTRUE 1
+#define INTFALSE 0
+
+int capsLock = INTFALSE;
+int shift = INTFALSE;
 
 
 //scancodes1 array - converts the character to the correct character
@@ -131,9 +135,6 @@ void initialize_Keyboard(void){
  */
 void interrupt_keyboard(void){      
 
-    int capsLock = FALSE;
-    int shift = FALSE;
-
     cli();  //prevents interrupts 
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
@@ -154,27 +155,32 @@ void interrupt_keyboard(void){
     }
 
     if(myInput == CAPSLOCKPRESS){
-        if (capsLock == FALSE){
-            capsLock = TRUE;
+        if (capsLock == INTFALSE){
+            capsLock = INTTRUE;
         }
         else{
-            capsLock = FALSE;
+            capsLock = INTFALSE;
         }
     }
 
     if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
-        shift = TRUE;
+        shift = INTTRUE;
     }
 
     if((myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE)){
-        shift = FALSE;
+        shift = INTFALSE;
     }
 
 
+   if(myInput > RELEASEDCHAR){
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
 
     uint8_t myChar;
-    if(capsLock == TRUE){
-        if(shift == TRUE){
+    if(capsLock == INTTRUE){
+        if(shift == INTTRUE){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
@@ -191,7 +197,7 @@ void interrupt_keyboard(void){
         }
     }
 
-    else if(shift == TRUE){
+    else if(shift == INTTRUE){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
@@ -215,6 +221,7 @@ void interrupt_keyboard(void){
     send_eoi(KEYBOARDIRQNUM); //end of interrupt
 
     sti(); //interrupts can contnue
+
 
     return;
 
