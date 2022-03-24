@@ -2,6 +2,8 @@
 #include "i8259.h"
 #include "keyboard.h"
 
+#include <stdbool.h>
+
 #define KEYBOARDIRQNUM  1       //corresponds to the keyboard IRQ Number
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
