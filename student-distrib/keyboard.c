@@ -5,7 +5,7 @@
 #define KEYBOARDIRQNUM  1       //corresponds to the keyboard IRQ Number
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
-//#define keyboardPassPresses  87
+#define keyboardBufferSize 128  //size of the keyboardBuffer 
 
 
 
@@ -26,12 +26,46 @@
 #define SPACEPRESS  0x39
 #define CAPSLOCKPRESS   0x3A
 #define RELEASEDCHAR 0x80
+#define LCHARACTER 0x26
 
 #define INTTRUE 1
 #define INTFALSE 0
 
 int capsLock = INTFALSE;
 int shift = INTFALSE;
+int control = INTFALSE;
+
+int counter = 0; //starts off as zero
+
+
+static unsigned char keyboardBuffer[keyboardBufferSize];
+
+/* 
+ *getKeyboardBuffer
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: allows other files to get the keyboard buffer
+ */
+unsigned char* getKeyboardBuffer(){
+    return keyboardBuffer;
+}
+
+/* 
+ *clearKeyboardBuffer
+ *   DESCRIPTION: used to clear the keyboard buffer
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: allows us to clear keyboard buffer
+ */
+void clearKeyboardBuffer(){
+    int i = 0;
+    for(i = 0; i < keyboardBufferSize; i++){
+        keyboardBuffer[i] = '/0';
+    }
+}
 
 
 //scancodes1 array - converts the character to the correct character
@@ -141,17 +175,38 @@ void interrupt_keyboard(void){
 
     if(myInput == BACKSPACEPRESS){
         putBackspace();
+        if(counter != 0){
+            counter--;
+            keyboardBuffer[counter] = '\0';
+        }
     }
 
     if(myInput == SPACEPRESS){
-        putc(' ');
+        if(counter != 127){
+            putc(' ');
+            keyboardBuffer[counter] = ' ';
+            counter++;
+        }
     }
-
+    if (myInput == ENTERPRESS){
+        clearKeyboardBuffer();
+        newLine();
+    }
     if(myInput == TABPRESS){
-        putc(' ');
-        putc(' ');
-        putc(' ');
-        putc(' ');
+        if(counter < 124){
+            putc(' ');
+            putc(' ');
+            putc(' ');
+            putc(' ');
+            keyboardBuffer[counter] = ' ';
+            counter++;
+            keyboardBuffer[counter] = ' ';
+            counter++;
+            keyboardBuffer[counter] = ' ';
+            counter++;
+            keyboardBuffer[counter] = ' ';
+            counter++;
+        }
     }
 
     if(myInput == CAPSLOCKPRESS){
@@ -171,6 +226,22 @@ void interrupt_keyboard(void){
         shift = INTFALSE;
     }
 
+    if((myInput == LEFTCONTROLPRESS) || (myInput == RIGHTCONTROLPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
+        control = INTTRUE;
+    }
+
+    if((myInput == LEFTCONTROLRELEASE) || (myInput == RIGHTCONTROLRELEASE)){
+        control = INTFALSE;
+    }
+
+    if(control == INTTRUE && myInput == LCHARACTER){
+        clearText();
+        counter = 0;
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
+
 
    if(myInput > RELEASEDCHAR){
         send_eoi(KEYBOARDIRQNUM);
@@ -179,12 +250,17 @@ void interrupt_keyboard(void){
     }
 
     uint8_t myChar;
+
     if(capsLock == INTTRUE){
         if(shift == INTTRUE){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
-
+            
             if(myChar != ' '){ //checks if its a valid character to print
-                putc(myChar); //outputs the correct character
+                if(counter != 127){
+                    putc(myChar); //outputs the correct character
+                    keyboardBuffer[counter] = myChar;
+                    counter++;
+                }
             }
 
         }
@@ -192,7 +268,11 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                putc(myChar); //outputs the correct character
+                if(counter != 127){
+                    putc(myChar); //outputs the correct character
+                    keyboardBuffer[counter] = myChar;
+                    counter++;
+                }
             }
         }
     }
@@ -201,14 +281,22 @@ void interrupt_keyboard(void){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            putc(myChar); //outputs the correct character
+            if(counter != 127){
+                putc(myChar); //outputs the correct character
+                keyboardBuffer[counter] = myChar;
+                counter++;
+            }
         }
     }
     else{
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            putc(myChar); //outputs the correct character
+            if(counter != 127){
+                putc(myChar); //outputs the correct character
+                keyboardBuffer[counter] = myChar;
+                counter++;
+            }
         }
     }
 

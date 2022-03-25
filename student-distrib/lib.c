@@ -25,6 +25,27 @@ void clear(void) {
     }
 }
 
+/* void clearText(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Clears text and video memory */
+void clearText(void) {
+    screen_x = 0;
+    screen_y = 0;
+    clear();
+}
+
+/* void newLine(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: goes to next line */
+void newLine(void) {
+    screen_x = 0;
+    screen_y++;
+}
+
+
+
 /* void verticalScroll(void);
  * Inputs: void
  * Return Value: none
