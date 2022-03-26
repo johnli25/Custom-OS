@@ -35,11 +35,39 @@ void clearText(void) {
     clear();
 }
 
+// /* void clearTop(void);
+//  * Inputs: void
+//  * Return Value: none
+//  * Function: Clears top line */
+// void clearTop(void) {
+//     int32_t i;
+//     for (i = 0; i < NUM_COLS; i++) {
+//         *(uint8_t *)(video_mem + (i << 1)) = ' ';
+//         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+//     }
+// }
+/* void clearBottom(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Clears top line */
+void clearBottom(void) {
+    int32_t x;
+    for (x = 0; x < NUM_COLS; x++) {
+        *(uint8_t *)(video_mem + ((NUM_COLS * 25 + x) << 1)) = ' ';
+        *(uint8_t *)(video_mem + ((NUM_COLS * 25 + x) << 1) + 1) = ATTRIB;
+    }
+}
+
 /* void newLine(void);
  * Inputs: void
  * Return Value: none
  * Function: goes to next line */
 void newLine(void) {
+    if(screen_y == 25){
+        verticalScroll();
+        screen_x = 0;
+        return;
+    }
     screen_x = 0;
     screen_y++;
 }
@@ -54,6 +82,27 @@ void newLine(void) {
      //delete the top line
      //shift other lines all up
      //clear the bottom line
+    //whenever screen y == 25 adn a newline is hit (enter or screen x > 80)
+    //delte top
+    //shift up
+    //clear bottom
+    //clearTop();
+
+    int32_t x,y;
+    for(x = 0; x < NUM_COLS; x++){
+        for(y = 0; y < NUM_ROWS; y++){
+            *(uint8_t *)(video_mem + ((NUM_COLS * y + x) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (y+1) + x) << 1));
+            //ASK ABOUT ATTRIB STUFF 
+            //*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+    }
+    clearBottom();
+    screen_y = 25;
+    screen_x = 0;
+    
+
+
+
  }
 
 /* Standard printf().
@@ -223,15 +272,32 @@ void putBackspace(void){
     if(screen_y != 0 || screen_x != 0){
         if (screen_x != 0){
             screen_x--;
-    }
+        }
         else{
             screen_y--;
-            screen_x = 127; //can cause errors maybe 
+            screen_x = 79; //can cause errors maybe 
+
+            // int x = 0;
+            // for(x = 79; x > 0; x--){
+            //     if(*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1)) != '\0'){
+            //         break;
+            //     }
+            // }
+            // screen_x = x;
+
+            // while(*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) == ' '){
+            //     screen_x--;
+            //     if(screen_x == 0){
+            //         break;
+            //     }
+            // }
+            // screen_x++;
         } 
     }
     
     // y edgecase 
     // vidmem 
+    
     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
 

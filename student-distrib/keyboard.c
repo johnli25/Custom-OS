@@ -174,7 +174,15 @@ void interrupt_keyboard(void){
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
 
     if(myInput == BACKSPACEPRESS){
+        if (keyboardBuffer[counter - 1] == '\t'){
+            putBackspace();
+            putBackspace();
+            putBackspace();
+        }
+        //put 4 back
+        
         putBackspace();
+       
         if(counter != 0){
             counter--;
             keyboardBuffer[counter] = '\0';
@@ -183,6 +191,9 @@ void interrupt_keyboard(void){
 
     if(myInput == SPACEPRESS){
         if(counter != 127){
+            if(counter == 80){
+                newLine();
+            }
             putc(' ');
             keyboardBuffer[counter] = ' ';
             counter++;
@@ -193,18 +204,16 @@ void interrupt_keyboard(void){
         newLine();
     }
     if(myInput == TABPRESS){
+        //flag 1
         if(counter < 124){
+            if(counter > 76){
+                newLine();
+            }
             putc(' ');
             putc(' ');
             putc(' ');
             putc(' ');
-            keyboardBuffer[counter] = ' ';
-            counter++;
-            keyboardBuffer[counter] = ' ';
-            counter++;
-            keyboardBuffer[counter] = ' ';
-            counter++;
-            keyboardBuffer[counter] = ' ';
+            keyboardBuffer[counter] = '\t';
             counter++;
         }
     }
@@ -257,6 +266,9 @@ void interrupt_keyboard(void){
             
             if(myChar != ' '){ //checks if its a valid character to print
                 if(counter != 127){
+                    if(counter == 80){
+                        newLine();
+                    }
                     putc(myChar); //outputs the correct character
                     keyboardBuffer[counter] = myChar;
                     counter++;
@@ -269,6 +281,9 @@ void interrupt_keyboard(void){
 
             if(myChar != ' '){ //checks if its a valid character to print
                 if(counter != 127){
+                    if(counter == 80){
+                        newLine();
+                    }
                     putc(myChar); //outputs the correct character
                     keyboardBuffer[counter] = myChar;
                     counter++;
@@ -282,6 +297,9 @@ void interrupt_keyboard(void){
 
         if(myChar != ' '){ //checks if its a valid character to print
             if(counter != 127){
+                if(counter == 80){
+                    newLine();
+                }
                 putc(myChar); //outputs the correct character
                 keyboardBuffer[counter] = myChar;
                 counter++;
@@ -293,6 +311,9 @@ void interrupt_keyboard(void){
 
         if(myChar != ' '){ //checks if its a valid character to print
             if(counter != 127){
+                if(counter == 80){
+                    newLine();
+                }
                 putc(myChar); //outputs the correct character
                 keyboardBuffer[counter] = myChar;
                 counter++;

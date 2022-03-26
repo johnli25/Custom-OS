@@ -20,6 +20,7 @@ void clearText(void);
 void newLine(void);
 void verticalScroll(void);
 void test_interrupts(void);
+void clearBottom(void);
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);
