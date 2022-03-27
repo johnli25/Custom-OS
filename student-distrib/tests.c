@@ -403,14 +403,16 @@ int ls_dir_test(){
 	char buf[33];
 	int i;
 	int result = 0;
-	for (i = 0; i < 15; i++){
-		int result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
-		//buf[result] = '\0';		
+	printf("    \n");
+	for (i = 0; i < 20; i++){
+		result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
+		//buf[result] = '\0';	
+
 		printf(buf);
 		printf("\n");
 	}
 	printf("%d \n", sizeof(buf));
-	if (result < 49)
+	if (result < 0)
 		return FAIL;
 	return PASS;
 }
