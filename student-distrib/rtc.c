@@ -95,6 +95,7 @@ int32_t write_RTC (int32 t fd, const void* buf, int32 t nbytes){
 
     if (freq > 1024 || freq < 2 || freq & (*freq - 1)) return -1; 
 
+    //https://stackoverflow.com/questions/994593/how-to-do-an-integer-log2-in-c
     uint32_t log_freq;
     asm ( "\tbsr %1, %0\n"
       : "=r"(log_freq)
