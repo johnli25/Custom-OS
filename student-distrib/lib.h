@@ -21,6 +21,13 @@ void newLine(void);
 void verticalScroll(void);
 void test_interrupts(void);
 void clearBottom(void);
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+void disable_cursor();
+void update_cursor(int x, int y);
+uint16_t get_cursor_position(void);
+
+
+
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);
