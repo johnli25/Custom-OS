@@ -56,7 +56,7 @@ void interrupt_RTC(void){
  * Return Value: 0 upon success 
  * Side Effects: Set RTC freq to 2Hz  
 */ 
-int32_t open_RTC (const uint8 t* filename){
+int32_t open_RTC (const uint8_t* filename){
     cli();
     //from osdev
     char rate = 0x0F;			// set the RTC freq = 2 Hz, therefore 16 - log_2(freq) = 16 - 1 = 0x0F 
@@ -75,7 +75,7 @@ int32_t open_RTC (const uint8 t* filename){
  * Return Value: 0 upon success 
  * Side Effects: Set interrupt bool within state_data to true (1)
 */ 
-int32_t read_RTC (int32 t fd, void* buf, int32 t nbytes){
+int32_t read_RTC (int32_t fd, void* buf, int32_t nbytes){
     while (!state_data[0]);
     state_data[0] = 1; 
     return 0;
@@ -88,7 +88,7 @@ int32_t read_RTC (int32 t fd, void* buf, int32 t nbytes){
  * Return Value: 0 upon success 
  * Side Effects: Set RTC freq to 2Hz  
 */ 
-int32_t write_RTC (int32 t fd, const void* buf, int32 t nbytes){
+int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     if (!buf || nbytes!=4)  return -1;
 
     uint32_t freq =  *((uint32_t*)buf);
@@ -112,6 +112,6 @@ int32_t write_RTC (int32 t fd, const void* buf, int32 t nbytes){
     return 0; 
 }
 
-int32_t close_RTC (int32 t fd){
+int32_t close_RTC (int32_t fd){
     return 0; 
 }
