@@ -112,6 +112,6 @@ int32_t write_RTC (int32 t fd, const void* buf, int32 t nbytes){
     return 0; 
 }
 
-int32 t close_RTC (int32 t fd){
+int32_t close_RTC (int32 t fd){
     return 0; 
 }
