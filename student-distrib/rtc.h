@@ -9,3 +9,8 @@
 extern void initialize_RTC(void);
 //RTC interrupt call 
 extern void interrupt_RTC(void);
+//RTC system calls
+extern int32_t open_RTC (const uint8 t* filename);
+extern int32_t read_RTC (int32 t fd, void* buf, int32 t nbytes);  
+extern int32_t write_RTC (int32 t fd, const void* buf, int32 t nbytes);
+extern int32 t close_RTC (int32 t fd);
