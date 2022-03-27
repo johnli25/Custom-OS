@@ -13,6 +13,7 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none
@@ -266,7 +267,7 @@ void putc(uint8_t c) {
  * Inputs: uint_8* c = character to print
  * Return Value: void
  *  Function: Output a backspace to the console */
-void putBackspace(void){
+void putBackspace(uint8_t c){
     //adding if statement for backspace
 
     if(screen_y != 0 || screen_x != 0){
@@ -275,11 +276,11 @@ void putBackspace(void){
         }
         else{
             screen_y--;
-            screen_x = 79; //can cause errors maybe 
+            screen_x = 80; //can cause errors maybe 
 
             // int x = 0;
             // for(x = 79; x > 0; x--){
-            //     if(*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1)) != '\0'){
+            //     if(*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1)) == c){
             //         break;
             //     }
             // }

@@ -1,5 +1,6 @@
 #include "terminal.h"
 #include "keyboard.h"
+#include "lib.h"
 
 //HAVE TO ADD IN INTERFACES
 
@@ -18,18 +19,16 @@ int terminal_read(int n, unsigned char * buf){
 
     unsigned char * myKeyboardBuffer = getKeyboardBuffer();
 
-//    strcpy(buf, getKeyboardBuffer());
-
-
-
     //check if the keyboard buffer size is greater thatn n or not 
 
-    int p = 0;
-    for(p = 0; p < n; p++){
-        if(buf[p] != '/0'){
-            buf[p] = myKeyboardBuffer[p];
-        }
-    }
+    buf = strncpy(buf, myKeyboardBuffer, n);
+
+
+    // int p = 0;
+    // for(p = 0; p < n; p++){
+    //     if(buf[p] != '/0'){
+    //         buf[p] = myKeyboardBuffer[p];
+    //     }
 
     clearKeyboardBuffer();
 

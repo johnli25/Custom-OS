@@ -175,13 +175,13 @@ void interrupt_keyboard(void){
 
     if(myInput == BACKSPACEPRESS){
         if (keyboardBuffer[counter - 1] == '\t'){
-            putBackspace();
-            putBackspace();
-            putBackspace();
+            putBackspace(keyboardBuffer[counter-1]);
+            putBackspace(keyboardBuffer[counter-1]);
+            putBackspace(keyboardBuffer[counter-1]);
         }
         //put 4 back
         
-        putBackspace();
+        putBackspace(keyboardBuffer[counter-1]);
        
         if(counter != 0){
             counter--;
