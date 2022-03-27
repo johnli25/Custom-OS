@@ -2,6 +2,7 @@
 #include "lib.h"
 #include "i8259.h"
 #include "rtc.h"
+#include <stdio.h>
 #include <math.h>
 volatile int state_data [2] = {0, 0}; //{interrupt (bool), freq (int)}
 
