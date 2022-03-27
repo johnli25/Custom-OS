@@ -13,6 +13,7 @@
 #include "keyboard.h"
 
 #include "paging.h"
+#include "filesys.h"
 
 #define RUN_TESTS
 
@@ -25,7 +26,8 @@
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
-
+    uint32_t modStartAddr = 0;
+    int flag = 0;
     /* Clear the screen. */
     clear();
 
@@ -57,6 +59,8 @@ void entry(unsigned long magic, unsigned long addr) {
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
+        modStartAddr = (uint32_t)mod->mod_start;
+        flag = 1;
         while (mod_count < mbi->mods_count) {
             printf("Module %d loaded at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_start);
             printf("Module %d ends at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_end);
@@ -156,8 +160,13 @@ void entry(unsigned long magic, unsigned long addr) {
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
  
-    //printf("INITIALIZING IDT . . . \n");
+    printf("INITIALIZING IDT . . . \n");
     initialize_idt(); //idt initialization
+
+    if (flag == 1){
+        printf("INITIALIZING File System \n");
+        initialize_filesys(modStartAddr);
+    }
 
     //printf("INITIALIZING PAGING . . . \n");
     initialize_paging(); //paging initialization

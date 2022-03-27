@@ -316,9 +316,106 @@ int basic_exception_test(int n){
 	return PASS;
 }
 
-// add more tests here
-
 /* Checkpoint 2 tests */
+int read_valid_file() {
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	uint8_t buf[391];
+	const uint8_t * input = (const uint8_t *)("frame1.txt");
+	int result = read_dentry_name(input, test_dentry);
+	if (result == -1){
+		printf("fail read_dentry_name");
+		return FAIL;
+	}
+	result = read_data(test_dentry->inode, 0, buf, 187);
+	if (187 != result){
+		printf("read_data fail- %d \n", result);
+		return FAIL;
+	}
+
+	printf("read_data pass- %d \n", result);
+	printf(buf);
+	return PASS;
+}
+
+int read_valid_file2(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	uint8_t buf[391];
+	const uint8_t * input = (const uint8_t *)("frame1.txt");
+	int	result = read_dentry_name(input, test_dentry);
+	if (result == -1)
+		return FAIL;
+	if (174 != read_data(test_dentry->inode, 0, buf, 391))
+		return FAIL;
+
+	return PASS;
+}
+
+int read_nonexisting_file(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	const uint8_t * input1 = (const uint8_t *)("fake_name_hahaha.txt");
+	// const uint8_t * input2 = (const uint8_t *)("get_rickrolled_again.txt");
+
+	int result = read_dentry_name(input1, test_dentry);
+	// int result2 = read_dentry_name(input2, test_dentry);
+	if (result == 0/* && result2 == 0*/)
+		return FAIL;
+
+	return PASS;
+}
+
+int read_invalid_large_file(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.txt");
+	int result = read_dentry_name(input, test_dentry);
+	if (result == 0)
+		return FAIL;
+	return PASS;
+}
+
+int read_file_index(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+
+	int result1 = read_dentry_index(0, test_dentry);
+	int result2 = read_dentry_index(40, test_dentry);
+	if (result1 == -1 || result2 == -1)
+		return FAIL;
+
+	return PASS;
+}
+
+int read_file_index_invalid(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	int result = read_dentry_index(65, test_dentry);
+	if (result == 0)
+		return FAIL;
+	return PASS;
+}
+
+int ls_dir_test(){
+	TEST_HEADER;
+	//dentry_t * test_dentry;
+	char buf[33];
+	int i;
+	int result = 0;
+	for (i = 0; i < 15; i++){
+		int result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
+		//buf[result] = '\0';		
+		printf(buf);
+		printf("\n");
+	}
+	printf("%d \n", sizeof(buf));
+	if (result < 49)
+		return FAIL;
+	return PASS;
+}
+
+
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -338,6 +435,8 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	TEST_OUTPUT("VALID PAGING", paging_test()); 
+	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
+
+	TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
 }
