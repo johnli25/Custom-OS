@@ -153,6 +153,8 @@ void initialize_Keyboard(void){
 
     enable_irq(KEYBOARDIRQNUM);     // pic stuff with keyboard
 
+    enable_cursor(0, 25); //cursor goes from 0 to 25 - max rows 
+
     return;
 
 }

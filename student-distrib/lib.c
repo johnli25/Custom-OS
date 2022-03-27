@@ -14,6 +14,43 @@ static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
 
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
+	//have to swap inputs and ouputs
+	outb(0x0A,0x3D4);
+	outb((inb(0x3D5) & 0xC0) | cursor_start, 0x3D5);
+ 
+	outb(0x0B, 0x3D4);
+	outb((inb(0x3D5) & 0xE0) | cursor_end, 0x3D5);
+}
+
+void disable_cursor(){
+//have to swap inputs and outputs
+	outb(0x0A, 0x3D4);
+	outb(0x20, 0x3D5);
+}
+
+void update_cursor(int x, int y){
+	//have to swap inputs and outputs
+	uint16_t pos = y * NUM_COLS+ x;
+ 
+	outb(0x0F, 0x3D4);
+	outb( (uint8_t) (pos & 0xFF), 0x3D5);
+	outb( 0x0E, 0x3D4);
+	outb((uint8_t) ((pos >> 8) & 0xFF), 0x3D5);
+}
+
+uint16_t get_cursor_position(void){
+    //have to swap inputs and outputs
+    uint16_t pos = 0;
+    outb(0x0F, 0x3D4);
+    pos |= inb(0x3D5);
+    outb(0x0E, 0x3D4);
+    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    return pos;
+}
+
+
+
 /* void clear(void);
  * Inputs: void
  * Return Value: none
@@ -33,6 +70,7 @@ void clear(void) {
 void clearText(void) {
     screen_x = 0;
     screen_y = 0;
+    update_cursor(screen_x, screen_y);
     clear();
 }
 
@@ -67,10 +105,15 @@ void newLine(void) {
     if(screen_y == 25){
         verticalScroll();
         screen_x = 0;
+        update_cursor(screen_x, screen_y);
         return;
     }
     screen_x = 0;
     screen_y++;
+
+    update_cursor(screen_x, screen_y);
+
+    return;
 }
 
 
@@ -101,8 +144,7 @@ void newLine(void) {
     screen_y = 25;
     screen_x = 0;
     
-
-
+    return;
 
  }
 
@@ -260,7 +302,7 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
-    
+    update_cursor(screen_x, screen_y);
     
 }
 /* void putBackspace(uint8_t c);
@@ -301,6 +343,10 @@ void putBackspace(uint8_t c){
     
     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
     *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+
+    update_cursor(screen_x, screen_y);
+
+    return;
 
 }
 
@@ -597,42 +643,5 @@ void test_interrupts(void) {
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         video_mem[i << 1]++;
     }
-
-
-
-void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
-	//have to swap inputs and ouputs
-	outb(0x0A,0x3D4);
-	outb((inb(0x3D5) & 0xC0) | cursor_start, 0x3D5);
- 
-	outb(0x0B, 0x3D4);
-	outb((inb(0x3D5) & 0xE0) | cursor_end, 0x3D5);
-}
-
-void disable_cursor(){
-//have to swap inputs and outputs
-	outb(0x0A, 0x3D4);
-	outb(0x20, 0x3D5);
-}
-
-void update_cursor(int x, int y){
-	//have to swap inputs and outputs
-	uint16_t pos = y * NUM_COLS+ x;
- 
-	outb(0x0F, 0x3D4);
-	outb( (uint8_t) (pos & 0xFF), 0x3D5);
-	outb( 0x0E, 0x3D4);
-	outb((uint8_t) ((pos >> 8) & 0xFF), 0x3D5);
-}
-
-uint16_t get_cursor_position(void){
-    //have to swap inputs and outputs
-    uint16_t pos = 0;
-    outb(0x0F, 0x3D4);
-    pos |= inb(0x3D5);
-    outb(0x0E, 0x3D4);
-    pos |= ((uint16_t)inb(0x3D5)) << 8;
-    return pos;
-}
 
 }
