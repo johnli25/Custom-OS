@@ -29,8 +29,12 @@ typedef struct bootBlock{
     dentry_t dentry_list[NUM_OF_FILES];
 } __attribute__((packed)) bootBlock_t;
 
+typedef struct dataBlock {
+    uint8_t data[KB_4];
+} __attribute__((packed)) dataBlock_t;
+
 bootBlock_t * bootBlock;
-uint8_t * data_block_initial_ptr;
+dataBlock_t * data_block_initial_ptr;
 inode_t * inode_initial_ptr;
 
 int fd_table[8]; //temp global fd array

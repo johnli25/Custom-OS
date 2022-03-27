@@ -333,7 +333,8 @@ int read_valid_file() {
 		return FAIL;
 	}
 
-	printf("read_data pass- %d \n", result);
+	printf("read_data pass: %d \n", result);
+	printf("size of %d \n", sizeof(buf));
 	printf(buf);
 	return PASS;
 }
@@ -404,7 +405,7 @@ int ls_dir_test(){
 	int i;
 	int result = 0;
 	printf("    \n");
-	for (i = 0; i < 20; i++){
+	for (i = 0; i < 20; i++){ //MAGIC #: 20 is arbitrary size for ls dir test
 		result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
 		//buf[result] = '\0';	
 
@@ -440,5 +441,5 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 }

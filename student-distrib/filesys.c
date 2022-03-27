@@ -17,7 +17,7 @@ int dir_close(int32_t fd){
 }
 
 int dir_read(int32_t fd, void * buf, int32_t nbytes, int idx){
-    int i, j, bytes_read;
+    int j, bytes_read;
     bytes_read = 0;
     // int length = (strlen(bootBlock->dentry_list[i].fileName) < nbytes) ? 
     //     strlen(bootBlock->dentry_list[i].fileName) : nbytes;
@@ -112,11 +112,14 @@ int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t lengt
     uint32_t data_block_idx = inode_ptr->data_block[offset/KB_4]; //calculate data block integer  
     uint32_t data_block_offset = offset % KB_4; //calculate offset WITHINT data block now
 
-    data_block_initial_ptr = (uint8_t *)(bootBlock + 1 + bootBlock->numberOfInodes); 
-    uint8_t * data_block_ptr = data_block_initial_ptr + data_block_idx; 
+    data_block_initial_ptr = (dataBlock_t *)(bootBlock + 1 + bootBlock->numberOfInodes); 
+    dataBlock_t * data_block_ptr = data_block_initial_ptr + data_block_idx; 
+
+    //uint8_t * dataBlockStartChar = data_block_ptr->data[data_block_offset];
 
     for (i = 0; i < length; i++){
-        ((uint8_t*)(buf))[i] = *(data_block_ptr + data_block_idx * KB_4 + data_block_offset + i); //how do I read by bytes once I have my data_block_ptr?
+        buf[i] = data_block_ptr->data[data_block_offset + i];
+        printf("%d ", buf[i]);
         count += 1;
     }
     return count; //return # of bytes read AKA # of bytes placed in buffer
