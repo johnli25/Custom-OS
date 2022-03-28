@@ -45,8 +45,8 @@ int terminal_read(int n, unsigned char * buf){
     }
 
 
-    if(n > 127){
-        n = 127;
+    if(n > (keyboardBufferSize-1)){
+        n = (keyboardBufferSize-1);
     }
 
 
