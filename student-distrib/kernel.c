@@ -172,7 +172,7 @@ void entry(unsigned long magic, unsigned long addr) {
     initialize_paging(); //paging initialization
 
     //printf("INITIALIZING RTC . . . \n");
-    //initialize_RTC(); //RTC initialization
+    initialize_RTC(); //RTC initialization
 
     clear();
     sti();

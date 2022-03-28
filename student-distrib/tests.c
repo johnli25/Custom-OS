@@ -443,6 +443,51 @@ int ls_dir_test(){
 	return PASS;
 }
 
+//RTC TESTS
+int rtc_test_open() {
+	putc('\n');
+	TEST_HEADER;
+	int test = open_RTC(NULL);
+	if (test) return FAIL;
+	return PASS;
+}
+int rtc_test_close() {
+	putc('\n');
+	TEST_HEADER;
+	int test = close_RTC(NULL);
+	if (test) return FAIL;
+	return PASS;
+}
+int rtc_test_read_write_invalid_freq() {
+	putc('\n');
+	TEST_HEADER;
+	uint32_t freq = 3;	// not a power of two, should fail
+	if (write_RTC(0, &freq, 4) == -1)  return FAIL; //4 is number of bytes in proper size argument 
+	return PASS;
+}
+int rtc_test_read_write_invalid_size() {
+	putc('\n');
+	TEST_HEADER;
+	uint32_t freq = 2;	// power of two, valid
+	if (write_RTC(0, &freq, 3) == -1)  return FAIL;//3 is number of bytes in improper size argument 
+	return PASS;
+}
+
+int rtc_test_read_write() {
+	TEST_HEADER;
+	uint32_t freq, j;
+	for (freq = 2; freq < 1025; freq *= 2) {//begin at 2Hz freq and go upto max (1024Hz)
+		clearText(); 
+		if (write_RTC(391, &freq, 4) == -1) return FAIL; //4 is number of bytes in proper size argument 
+		for (j = 1; j <= freq; j++) {
+			read_RTC(391, NULL, 391); //391 is for all the unused args 
+			printf("%u ", j); 
+		}
+	}
+	putc('\n'); 
+	return PASS;
+}
+
 
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
@@ -467,4 +512,18 @@ void launch_tests(){
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
 	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	
+	//RTC TESTS
+		//Run these tests together
+		/*
+		TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
+		TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
+		TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
+		TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
+		TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
+		TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
+		*/
+		//Run this test alone
+		TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
 }
