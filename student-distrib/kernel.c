@@ -26,7 +26,7 @@
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
-    uint32_t modStartAddr = 0;
+    uint32_t * modStartAddr;
     int flag = 0;
     /* Clear the screen. */
     clear();
@@ -59,7 +59,7 @@ void entry(unsigned long magic, unsigned long addr) {
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
-        modStartAddr = (uint32_t)mod->mod_start;
+        modStartAddr = (uint32_t *)(mod->mod_start);
         flag = 1;
         while (mod_count < mbi->mods_count) {
             printf("Module %d loaded at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_start);

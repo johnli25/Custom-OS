@@ -11,8 +11,8 @@
 
 typedef struct dentry_struct {
     int8_t fileName[FILE_NAME_LENGTH];
-    uint32_t inode; 
     uint32_t file_type;
+    uint32_t inode; 
     uint8_t reserved[24]; //MAGIC #: 24 represents # of Bytes reserved
 } __attribute__((packed)) dentry_t;
 
@@ -39,7 +39,7 @@ inode_t * inode_initial_ptr;
 
 int fd_table[8]; //temp global fd array
 
-void initialize_filesys(uint32_t addr);
+void initialize_filesys(uint32_t * addr);
 
 int dir_open();
 int dir_close();

@@ -321,21 +321,16 @@ int read_valid_file() {
 	TEST_HEADER;
 	dentry_t * test_dentry;
 	uint8_t buf[391];
-	const uint8_t * input = (const uint8_t *)("frame1.txt");
+	const uint8_t * input = (const uint8_t *)("frame0.txt");
 	int result = read_dentry_name(input, test_dentry);
+	printf(" \n");
 	if (result == -1){
-		printf("fail read_dentry_name");
 		return FAIL;
 	}
-	result = read_data(test_dentry->inode, 0, buf, 187);
+	result = read_data(test_dentry->inode, 0, buf, 10000);
 	if (187 != result){
-		printf("read_data fail- %d \n", result);
 		return FAIL;
 	}
-
-	printf("read_data pass: %d \n", result);
-	printf("size of %d \n", sizeof(buf));
-	printf(buf);
 	return PASS;
 }
 
@@ -345,10 +340,27 @@ int read_valid_file2(){
 	uint8_t buf[391];
 	const uint8_t * input = (const uint8_t *)("frame1.txt");
 	int	result = read_dentry_name(input, test_dentry);
+	printf(" \n");
 	if (result == -1)
 		return FAIL;
-	if (174 != read_data(test_dentry->inode, 0, buf, 391))
+	if (174 != read_data(test_dentry->inode, 0, buf, 10000))
 		return FAIL;
+
+	return PASS;
+}
+
+int read_exec_file(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	uint8_t buf[391];
+	const uint8_t * input = (const uint8_t *)("pingpong");
+	int	result = read_dentry_name(input, test_dentry);
+	printf(" \n");
+	if (result == -1)
+		return FAIL;
+	//if (174 != read_data(test_dentry->inode, 0, buf, 10000))
+	//	return FAIL;
+	result = read_data(test_dentry->inode, 0, buf, 10000);
 
 	return PASS;
 }
@@ -367,7 +379,7 @@ int read_nonexisting_file(){
 	return PASS;
 }
 
-int read_invalid_large_file(){
+int find_invalid_large_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.txt");
@@ -375,6 +387,19 @@ int read_invalid_large_file(){
 	if (result == 0)
 		return FAIL;
 	return PASS;
+}
+
+int read_large_file(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	uint8_t buf[10000];
+	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
+	if (read_dentry_name(input, test_dentry) == -1)
+		return FAIL;
+
+	int result = read_data(test_dentry->inode, 0, buf, 10000);
+
+	return PASS;	
 }
 
 int read_file_index(){
@@ -441,5 +466,5 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 }
