@@ -671,6 +671,25 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
     return dest;
 }
 
+/* int8_t* strcpy(int8_t* dest, const int8_t* src, uint32_t n)
+ * Inputs:      int8_t* dest = destination string of copy
+ *         const int8_t* src = source string of copy
+ *                uint32_t n = number of bytes to copy
+ * Return Value: pointer to dest
+ * Function: copy n bytes of the source string into the destination string */
+unsigned char* strncpyUnsignedChar(unsigned char * dest, const unsigned char * src, int n){
+    int32_t i = 0;
+    while (src[i] != '\0' && i < n) {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n) {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest;
+}
+
 /* void test_interrupts(void)
  * Inputs: void
  * Return Value: void

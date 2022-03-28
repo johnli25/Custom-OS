@@ -335,7 +335,8 @@ int basic_exception_test(int n){
 
 int terminal_read_write(){
 	TEST_HEADER;
-
+	terminal_init();
+	terminal_open();
 	int result = PASS;
 	
 	 while(1){
@@ -344,6 +345,8 @@ int terminal_read_write(){
 
 		terminal_write(127, buf);
     } //infinite while loop
+
+	terminal_close();
     return result;
 }
 
@@ -360,6 +363,9 @@ int terminal_read_write(){
 int terminal_read_write_128plus(){
 	TEST_HEADER;
 	int result = PASS;
+
+	terminal_init();
+	terminal_open();
 	
 	 while(1){
 		unsigned char buf[500];// a number greater than 500
@@ -367,6 +373,8 @@ int terminal_read_write_128plus(){
 
 		terminal_write(500, buf);
     } //infinite while loop
+	terminal_close();
+
     return result;
 }
 
@@ -382,7 +390,8 @@ int terminal_read_write_128plus(){
  */
 int terminalDifSizes(){
 	TEST_HEADER;
-
+	terminal_init();
+	terminal_open();
 	int result = PASS;
 	
 	 while(1){
@@ -391,8 +400,12 @@ int terminalDifSizes(){
 
 		terminal_write(50, buf);
     } //infinite while loop
+	terminal_close();
+
     return result;
 }
+
+
 
 
 /* Checkpoint 3 tests */
@@ -416,8 +429,8 @@ void launch_tests(){
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
-	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
-	TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 
 

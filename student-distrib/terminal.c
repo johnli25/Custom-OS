@@ -38,14 +38,14 @@ int terminal_close(void){
  * Function: reads from keyboardBuffer to passed in buf */
 int terminal_read(int n, unsigned char * buf){
 
-    TERMINALFLAG = 0;
+    TERMINALFLAG = 0; //shared varable from the keyboard
 
     while(TERMINALFLAG == 0){
 
     }
 
 
-    if(n > (keyboardBufferSize-1)){
+    if(n > (keyboardBufferSize-1)){ //sets n to 127 if its too big
         n = (keyboardBufferSize-1);
     }
 
@@ -53,10 +53,8 @@ int terminal_read(int n, unsigned char * buf){
     unsigned char * myKeyboardBuffer = getKeyboardBuffer();
 
     //check if the keyboard buffer size is greater thatn n or not 
-    //b terminal.c: 37
-    //b terminal.c:48
-    //b tests.c:343
-    buf = strncpy(buf, myKeyboardBuffer, n);
+
+    buf = strncpyUnsignedChar(buf, myKeyboardBuffer, n); //copies the keyboard buffer to the new one
 
     // int p = 0;
     // for(p = 0; p < n; p++){
@@ -65,7 +63,7 @@ int terminal_read(int n, unsigned char * buf){
     //     }
     // }
 
-    clearKeyboardBuffer();
+    clearKeyboardBuffer(); //clears buffer 
     TERMINALFLAG = 0;
     return n;
 }
@@ -80,7 +78,7 @@ int terminal_write(int n, unsigned char * buf){
     
     int charsPrinted = 0; 
 
-    if(n > (keyboardBufferSize-1)){
+    if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
         n = (keyboardBufferSize-1);
     }
 
@@ -89,18 +87,18 @@ int terminal_write(int n, unsigned char * buf){
         if(p == NUM_COLS){
             newLine();
         }
-        if(buf[p] != '\0'){
-            if(buf[p] == '\n'){
+        if(buf[p] != '\0'){ //checks if it is NULL
+            if(buf[p] == '\n'){ //checks if it is NewLine
                 newLine();
             }
-            else if (buf[p] == '\t'){
+            else if (buf[p] == '\t'){ //checks if it is Tab
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 charsPrinted = charsPrinted + 4;
             }
-            else if (buf[p] == '\b'){
+            else if (buf[p] == '\b'){ //checks if it is Backspace
                 putBackspace(buf[p]);
                 charsPrinted--;
             }
