@@ -13,7 +13,10 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
-
+/* void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+ * Inputs: cursor_start, cursor_end
+ * Return Value: none
+ * Function: enables the cursor */
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
 	//have to swap inputs and ouputs
 	outb(0x0A,0x3D4);
@@ -23,12 +26,20 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
 	outb((inb(0x3D5) & 0xE0) | cursor_end, 0x3D5);
 }
 
+/* void disable_cursor();
+ * Inputs: none
+ * Return Value: none
+ * Function: disables the cursor */
 void disable_cursor(){
 //have to swap inputs and outputs
 	outb(0x0A, 0x3D4);
 	outb(0x20, 0x3D5);
 }
 
+/* void update_cursor();
+ * Inputs: x, y
+ * Return Value: none
+ * Function: updates the location of the cursor corresponding to x and y vals */
 void update_cursor(int x, int y){
 	//have to swap inputs and outputs
 	uint16_t pos = y * NUM_COLS+ x;
@@ -39,6 +50,10 @@ void update_cursor(int x, int y){
 	outb((uint8_t) ((pos >> 8) & 0xFF), 0x3D5);
 }
 
+/* void get_cursor_position(void);
+ * Inputs: none
+ * Return Value: none
+ * Function: returns the cursors position */
 uint16_t get_cursor_position(void){
     //have to swap inputs and outputs
     uint16_t pos = 0;
