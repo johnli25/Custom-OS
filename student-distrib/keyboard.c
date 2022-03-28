@@ -6,7 +6,8 @@
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
 #define keyboardBufferSize 128  //size of the keyboardBuffer 
-
+#define NUM_COLS    80
+#define NUM_ROWS    25
 
 
 // SPECIAL CHARACTERS:
@@ -68,7 +69,7 @@ unsigned char* getKeyboardBuffer(){
 void clearKeyboardBuffer(){
     int i = 0;
     for(i = 0; i < keyboardBufferSize; i++){
-        keyboardBuffer[i] = '\0';
+        keyboardBuffer[i] = '\0'; //checks if NULL
     }
 }
 
@@ -158,7 +159,7 @@ void initialize_Keyboard(void){
 
     enable_irq(KEYBOARDIRQNUM);     // pic stuff with keyboard
 
-    enable_cursor(0, 25); //cursor goes from 0 to 25 - max rows 
+    enable_cursor(0, NUM_ROWS); //cursor goes from 0 to 25 - max rows 
 
     TERMINALFLAG = INTFALSE;
 
@@ -180,7 +181,7 @@ void interrupt_keyboard(void){
 
     cli();  //prevents interrupts 
 
-    if(counter == 127){
+    if(counter == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
         newLine();
         TERMINALFLAG = INTTRUE;
         counter = 0;
@@ -192,34 +193,34 @@ void interrupt_keyboard(void){
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
 
     if(myInput == BACKSPACEPRESS){
-        if (keyboardBuffer[counter - 1] == '\t'){
+        if (keyboardBuffer[counter - 1] == '\t'){ //to show a tab
             putBackspace(keyboardBuffer[counter-1]);
             putBackspace(keyboardBuffer[counter-1]);
             putBackspace(keyboardBuffer[counter-1]);
         }
         //put 4 back
         
-        putBackspace(keyboardBuffer[counter-1]);
+        putBackspace(keyboardBuffer[counter-1]); //video memory for backspace
        
         if(counter != 0){
             counter--;
-            keyboardBuffer[counter] = '\0';
+            keyboardBuffer[counter] = '\0'; //to show a NULL 
         }
     }
 
-    if(myInput == SPACEPRESS){
-        if(counter != 127){
-            if(counter == 80){
+    if(myInput == SPACEPRESS){ //checks if it is a space
+        if(counter != (keyboardBufferSize-1)){
+            if(counter == NUM_COLS){
                 newLine();
             }
             putc(' ');
-            keyboardBuffer[counter] = ' ';
+            keyboardBuffer[counter] = ' '; // to show a space 
             counter++;
         }
     }
     if (myInput == ENTERPRESS){
         //clearKeyboardBuffer();
-        keyboardBuffer[counter] = '\n';
+        keyboardBuffer[counter] = '\n'; //to show new line
         counter++; //added newline character when enter pressed
         TERMINALFLAG = INTTRUE;
         counter = 0; //resets counter - may or may not need to do!
@@ -227,20 +228,22 @@ void interrupt_keyboard(void){
     }
     if(myInput == TABPRESS){
         //flag 1
-        if(counter < 124){
-            if(counter < 80 && counter > 76){
+        //if counter < 124
+        if(counter < (keyboardBufferSize-4)){
+            //80 and 76
+            if(counter < NUM_COLS && counter > NUM_COLS-4){
                 newLine();
             }
             putc(' ');
             putc(' ');
             putc(' ');
             putc(' ');
-            keyboardBuffer[counter] = '\t';
+            keyboardBuffer[counter] = '\t'; // to show tab
             counter++;
         }
     }
 
-    if(myInput == CAPSLOCKPRESS){
+    if(myInput == CAPSLOCKPRESS){ //checks for caps lock
         if (capsLock == INTFALSE){
             capsLock = INTTRUE;
         }
@@ -249,32 +252,32 @@ void interrupt_keyboard(void){
         }
     }
 
-    if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
+    if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //checks for shift 
         shift = INTTRUE;
     }
 
-    if((myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE)){
+    if((myInput == LEFTSHIFTRELEASE) || (myInput == RIGHTSHIFTRELEASE)){ //checks for shift
         shift = INTFALSE;
     }
 
-    if((myInput == LEFTCONTROLPRESS) || (myInput == RIGHTCONTROLPRESS)){ //DOUBLE CHECK ABOUT SHIFT 
+    if((myInput == LEFTCONTROLPRESS) || (myInput == RIGHTCONTROLPRESS)){ //checks for control 
         control = INTTRUE;
     }
 
-    if((myInput == LEFTCONTROLRELEASE) || (myInput == RIGHTCONTROLRELEASE)){
+    if((myInput == LEFTCONTROLRELEASE) || (myInput == RIGHTCONTROLRELEASE)){ //checks for control
         control = INTFALSE;
     }
 
-    if(control == INTTRUE && myInput == LCHARACTER){
+    if(control == INTTRUE && myInput == LCHARACTER){ //control l clears screen
         clearText();
         counter = 0;
-        // based from the hints, clearing the screen should NOT clear the buffer
-        // clearKeyboardBuffer(); 
+        clearKeyboardBuffer(); //THIS IS FROM THE TA - OKAN - TO CLEAR BUFFER 
         send_eoi(KEYBOARDIRQNUM);
         sti();
         return;
     }
 
+    //ignore the arrow keys
     if(myInput == UPCHAR){
         send_eoi(KEYBOARDIRQNUM);
         sti();
@@ -299,6 +302,7 @@ void interrupt_keyboard(void){
         return;
     }
 
+    //if the keyboard isn't a pressed key, ignore
    if(myInput > RELEASEDCHAR){
         send_eoi(KEYBOARDIRQNUM);
         sti();
@@ -312,8 +316,8 @@ void interrupt_keyboard(void){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
             
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != 127){
-                    if(counter == 80){
+                if(counter != (keyboardBufferSize-1)){
+                    if(counter == NUM_COLS){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -327,8 +331,8 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != 127){
-                    if(counter == 80){
+                if(counter != (keyboardBufferSize-1)){
+                    if(counter == NUM_COLS){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -343,8 +347,8 @@ void interrupt_keyboard(void){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != 127){
-                if(counter == 80){
+            if(counter != (keyboardBufferSize-1)){
+                if(counter == NUM_COLS){
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
@@ -357,8 +361,8 @@ void interrupt_keyboard(void){
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != 127){
-                if(counter == 80){
+            if(counter != (keyboardBufferSize-1)){
+                if(counter == NUM_COLS){
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
