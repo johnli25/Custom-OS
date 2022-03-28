@@ -3,7 +3,9 @@
 #include "i8259.h"
 #include "rtc.h"
 
-volatile int state_data [2] = {0, 0}; //{interrupt (bool), freq (int)}
+
+
+volatile int state_data [3] = {0, 0, 0}; //{interrupt (bool), freq (int), open (bool)}
 
 /* initialize_RTC
  * Description: Initializes RTC
@@ -24,8 +26,7 @@ void initialize_RTC(void){
 
     outb(0x8A, RTC_CMD);    // select register A (0x8A), and disable NMI
     outb(0x0F, RTC_DATA);   // set the RTC freq = 2 Hz, therefore 16 - log_2(freq) = 16 - 1 = 0x0F 
-
-
+ 
     enable_irq(RTC_IRQ);
 }
 
@@ -39,9 +40,6 @@ void initialize_RTC(void){
 void interrupt_RTC(void){
 
     state_data[0] = 1; 
-
-    //printf("Calling test_interrupts() . . . ");
-    //test_interrupts();
 
     //from osdev, to enable multiple interrupts 
     outb(0x0C, RTC_CMD);	// select register C
@@ -57,6 +55,8 @@ void interrupt_RTC(void){
  * Side Effects: Set RTC freq to 2Hz  
 */ 
 int32_t open_RTC (const uint8_t* filename){
+    if (state_data[2]) return -1; 
+
     cli();
     //from osdev
     char rate = 0x0F;			// set the RTC freq = 2 Hz, therefore 16 - log_2(freq) = 16 - 1 = 0x0F 
@@ -64,7 +64,9 @@ int32_t open_RTC (const uint8_t* filename){
     char prev = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_CMD, 0x8A);		// reset index to A
     outb((prev & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-    state_data[1] = 2; 
+
+    state_data[1] = 2; //2 Hz is default freq 
+    state_data[2] = 1; 
     return 0; 
  }
 
@@ -77,7 +79,7 @@ int32_t open_RTC (const uint8_t* filename){
 */ 
 int32_t read_RTC (int32_t fd, void* buf, int32_t nbytes){
     while (!state_data[0]);
-    state_data[0] = 1; 
+    state_data[0] = 0; 
     return 0;
 }
 
@@ -103,6 +105,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     );
 
     char rate = 16 - log_freq;			// set the RTC freq to 16 - log_2(freq) 
+    printf("RATE: 0x0%x FREQ: %u \n", rate, freq);
     outb(0x8A, RTC_CMD);		// set index to register A, disable NMI
     char prev = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_CMD, 0x8A);		// reset index to A
@@ -112,6 +115,15 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     return 0; 
 }
 
+/* close_RTC
+ * Description: Close RTC
+ * Inputs: unused
+ * Outputs: None
+ * Return Value: 0 upon success
+ * Side Effects: None
+*/
 int32_t close_RTC (int32_t fd){
+    if (!state_data[2]) return -1;
+    state_data[2] = 0; 
     return 0; 
 }
