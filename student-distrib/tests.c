@@ -321,6 +321,15 @@ int basic_exception_test(int n){
 }
 
 /* Checkpoint 2 tests */
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_valid_file() {
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -344,6 +353,15 @@ int read_valid_file() {
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_valid_file2(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -358,6 +376,15 @@ int read_valid_file2(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_exec_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -372,6 +399,15 @@ int read_exec_file(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_nonexisting_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -386,6 +422,15 @@ int read_nonexisting_file(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int find_invalid_large_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -397,6 +442,15 @@ int find_invalid_large_file(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_large_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -462,6 +516,15 @@ int read_large_file(){
 // 	return PASS;
 // }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_file_index(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -474,6 +537,15 @@ int read_file_index(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int read_file_index_invalid(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
@@ -483,6 +555,15 @@ int read_file_index_invalid(){
 	return PASS;
 }
 
+/*FILE TEST
+ * 
+ * Description: tests file system-various cases 
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: reads from file memory 
+ * Coverage: file sys
+ * Files: filesys.c/filesys.h
+ */
 int ls_dir_test(){
 	TEST_HEADER;
 	//dentry_t * test_dentry;

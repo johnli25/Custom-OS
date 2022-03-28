@@ -3,22 +3,55 @@
 #include "lib.h"
 
 /*Checkpoint 3.2 directory functions*/
+/* 
+ *initialize_filesys
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: init bootblock
+ */
 void initialize_filesys(uint32_t * addr)
 {
     bootBlock = (bootBlock_t *)addr;
 }
+
+/* 
+ *dir_open
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0
+ *   SIDE EFFECTS: none
+ */
 int dir_open(const uint8_t *filename)
 {
 
     return 0;
 }
 
+/* 
+ *dir_close
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0
+ *   SIDE EFFECTS: none
+ */
 int dir_close(int32_t fd)
 {
 
     return 0;
 }
 
+/* 
+ *dir_read
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: bytes read
+ *   SIDE EFFECTS: reads from file memory
+ */
 int dir_read(int32_t fd, void *buf, int32_t nbytes, int idx)
 {
     int j, bytes_read;
@@ -35,12 +68,28 @@ int dir_read(int32_t fd, void *buf, int32_t nbytes, int idx)
     return bytes_read;
 }
 
+/* 
+ *dir_write
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: reads from file memory
+ */
 int dir_write(int32_t fd, const void *buf, int32_t nbytes)
 {
 
     return -1; // read-only file system, so return -1 automatically and uncondiionally
 }
 
+/* 
+ *file_open
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0
+ *   SIDE EFFECTS: reads from file memory
+ */
 /*Checkpoint 3.2 file functions*/
 int file_open(const uint8_t *filename, int fd)
 {
@@ -48,22 +97,55 @@ int file_open(const uint8_t *filename, int fd)
     return 0;
 }
 
+/* 
+ *file_close
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0
+ *   SIDE EFFECTS: reads from file memory
+ */
 int file_close(int32_t fd)
 {
     return 0;
 }
 
+/* 
+ *file_read
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0
+ *   SIDE EFFECTS: reads from file memory
+ */
 int file_read(int32_t fd, void *buf, int32_t nbytes)
 {
 
     return 0;
 }
 
+/* 
+ *file_write
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: reads from file memory
+ */
 int file_write(int32_t fd, const void *buf, int32_t nbytes)
 {
 
     return -1; // read-only file system, so return -1 automatically and uncondiionally
 }
+
+/* 
+ *read_dentry_name
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0 or -1
+ *   SIDE EFFECTS: reads from file memory: inodes, dentries, bootblock, etc.
+ */
 int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
 {
     int i;
@@ -93,6 +175,14 @@ int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
     return -1;
 }
 
+/* 
+ *read_dentry_index
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: 0 or -1
+ *   SIDE EFFECTS: reads from file memory: inodes, dentries, bootblock, etc.
+ */
 int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
 {
     if (dentry == NULL)
@@ -106,6 +196,14 @@ int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
     return 0;
 }
 
+/* 
+ *read_dentry_name
+ *   DESCRIPTION: Used to as a getter
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: bytes read
+ *   SIDE EFFECTS: reads from file memory: inodes, dentries, bootblock, etc.
+ */
 int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length)
 {
     int i, count, alt_i;
