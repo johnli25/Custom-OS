@@ -788,7 +788,7 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	
 	//RTC TESTS
 	//Run these tests together
