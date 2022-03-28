@@ -397,8 +397,8 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
-	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
-	TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
+	TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
+	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 
 
 }
