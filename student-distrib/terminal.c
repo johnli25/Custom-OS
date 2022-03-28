@@ -80,13 +80,13 @@ int terminal_write(int n, unsigned char * buf){
     
     int charsPrinted = 0; 
 
-    if(n > 127){
-        n = 127;
+    if(n > (keyboardBufferSize-1)){
+        n = (keyboardBufferSize-1);
     }
 
     int p = 0; 
     for(p = 0; p < n; p++){
-        if(p == 80){
+        if(p == NUM_COLS){
             newLine();
         }
         if(buf[p] != '\0'){
@@ -111,7 +111,7 @@ int terminal_write(int n, unsigned char * buf){
         }
         
     }
-    if(charsPrinted > 80){
+    if(charsPrinted > NUM_COLS){
         newLine();
     }
     return n;
