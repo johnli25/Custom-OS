@@ -8,6 +8,19 @@
 #define NUM_ROWS    25
 #define ATTRIB      0x7
 #define BACKSPACE   0x0E
+#define CURSORD4    0x3D4
+#define CURSORD5    0x3D5
+#define CURSOR0A    0x0A
+#define CURSOR0B    0x0B
+#define CURSORC0    0xC0
+#define CURSORE0    0xE0
+#define CURSOR20    0x20
+#define CURSOR0E    0x0E
+#define CURSOR0F    0x0F
+#define CURSORFF    0xFF
+
+
+
 
 static int screen_x;
 static int screen_y;
@@ -19,11 +32,11 @@ static char* video_mem = (char *)VIDEO;
  * Function: enables the cursor */
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
 	//have to swap inputs and ouputs
-	outb(0x0A,0x3D4);
-	outb((inb(0x3D5) & 0xC0) | cursor_start, 0x3D5);
+	outb(CURSOR0A,CURSORD4);
+	outb((inb(CURSORD5) & CURSORC0) | cursor_start, CURSORD5);
  
-	outb(0x0B, 0x3D4);
-	outb((inb(0x3D5) & 0xE0) | cursor_end, 0x3D5);
+	outb(CURSOR0B, CURSORD4);
+	outb((inb(CURSORD5) & CURSORE0) | cursor_end, CURSORD5);
 }
 
 /* void disable_cursor();
@@ -32,8 +45,8 @@ void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
  * Function: disables the cursor */
 void disable_cursor(){
 //have to swap inputs and outputs
-	outb(0x0A, 0x3D4);
-	outb(0x20, 0x3D5);
+	outb(CURSOR0A, CURSORD4);
+	outb(CURSOR20, CURSORD5);
 }
 
 /* void update_cursor();
@@ -44,10 +57,10 @@ void update_cursor(int x, int y){
 	//have to swap inputs and outputs
 	uint16_t pos = y * NUM_COLS+ x;
  
-	outb(0x0F, 0x3D4);
-	outb( (uint8_t) (pos & 0xFF), 0x3D5);
-	outb( 0x0E, 0x3D4);
-	outb((uint8_t) ((pos >> 8) & 0xFF), 0x3D5);
+	outb(CURSOR0F, CURSORD4);
+	outb( (uint8_t) (pos & CURSORFF), CURSORD5);
+	outb( CURSOR0E, CURSORD4);
+	outb((uint8_t) ((pos >> 8) & CURSORFF), CURSORD5);
 }
 
 /* void get_cursor_position(void);
@@ -57,10 +70,10 @@ void update_cursor(int x, int y){
 uint16_t get_cursor_position(void){
     //have to swap inputs and outputs
     uint16_t pos = 0;
-    outb(0x0F, 0x3D4);
-    pos |= inb(0x3D5);
-    outb(0x0E, 0x3D4);
-    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    outb(CURSOR0F, CURSORD4);
+    pos |= inb(CURSORD5);
+    outb(CURSOR0E, CURSORD4);
+    pos |= ((uint16_t)inb(CURSORD5)) << 8;
     return pos;
 }
 
