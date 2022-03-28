@@ -327,7 +327,7 @@ void putBackspace(uint8_t c){
 
             int x = 0;
             for(x = 79; x > 0; x--){
-                if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != '/0'){
+                if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != '\0'){
                     break;
                 }
                 if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != ' '){

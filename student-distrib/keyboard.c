@@ -27,6 +27,10 @@
 #define CAPSLOCKPRESS   0x3A
 #define RELEASEDCHAR 0x80
 #define LCHARACTER 0x26
+#define UPCHAR  0x48
+#define DOWNCHAR 0x50
+#define RIGHTCHAR 0x4D
+#define LEFTCHAR 0x4B
 
 #define INTTRUE 1
 #define INTFALSE 0
@@ -64,7 +68,7 @@ unsigned char* getKeyboardBuffer(){
 void clearKeyboardBuffer(){
     int i = 0;
     for(i = 0; i < keyboardBufferSize; i++){
-        keyboardBuffer[i] = '/0';
+        keyboardBuffer[i] = '\0';
     }
 }
 
@@ -175,8 +179,11 @@ void initialize_Keyboard(void){
 void interrupt_keyboard(void){      
 
     cli();  //prevents interrupts 
+
     if(counter == 127){
+        newLine();
         TERMINALFLAG = INTTRUE;
+        counter = 0;
     }
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
@@ -216,7 +223,7 @@ void interrupt_keyboard(void){
     if(myInput == TABPRESS){
         //flag 1
         if(counter < 124){
-            if(counter > 76){
+            if(counter < 80 && counter > 76){
                 newLine();
             }
             putc(' ');
@@ -262,6 +269,29 @@ void interrupt_keyboard(void){
         return;
     }
 
+    if(myInput == UPCHAR){
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
+
+    if(myInput == DOWNCHAR){
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
+
+    if(myInput == LEFTCHAR){
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
+
+    if(myInput == RIGHTCHAR){
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
 
    if(myInput > RELEASEDCHAR){
         send_eoi(KEYBOARDIRQNUM);

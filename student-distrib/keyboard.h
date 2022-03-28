@@ -7,5 +7,5 @@ extern void interrupt_keyboard(void);
 
 //Used to grab the keyboard buffer
 extern unsigned char* getKeyboardBuffer(void);
- int TERMINALFLAG; //used as a shared variable for the other 
+volatile int TERMINALFLAG; //used as a shared variable for the other 
 
