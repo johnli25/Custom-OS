@@ -3,6 +3,7 @@
 
 #include "i8259.h"
 #include "filesys.h"
+#include "rtc.h"
 
 // test launcher
 int read_valid_file();
