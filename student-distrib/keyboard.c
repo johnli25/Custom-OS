@@ -216,6 +216,8 @@ void interrupt_keyboard(void){
     }
     if (myInput == ENTERPRESS){
         //clearKeyboardBuffer();
+        keyboardBuffer[counter] = '\n';
+        counter++; //added newline character when enter pressed
         TERMINALFLAG = INTTRUE;
         counter = 0; //resets counter - may or may not need to do!
         newLine();
