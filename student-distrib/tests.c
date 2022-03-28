@@ -661,7 +661,7 @@ int rtc_test_read_write_invalid_size() {
 int rtc_test_read_write() {
 	TEST_HEADER;
 	uint32_t freq, j;
-	int count=0
+	int count=0;
 	for (freq = 2; freq < 1025; freq *= 2) {//begin at 2Hz freq and go upto max (1024Hz)
 		clearText(); 
 		if (write_RTC(391, &freq, 4) == -1) return FAIL; //4 is number of bytes in proper size argument 
