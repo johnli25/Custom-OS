@@ -580,12 +580,21 @@ int rtc_test_read_write_invalid_size() {
 int rtc_test_read_write() {
 	TEST_HEADER;
 	uint32_t freq, j;
+	int count=0
 	for (freq = 2; freq < 1025; freq *= 2) {//begin at 2Hz freq and go upto max (1024Hz)
 		clearText(); 
 		if (write_RTC(391, &freq, 4) == -1) return FAIL; //4 is number of bytes in proper size argument 
 		for (j = 1; j <= freq; j++) {
 			read_RTC(391, NULL, 391); //391 is for all the unused args 
-			printf("%u ", j); 
+			printf("%u", j); 
+			count+=2; 
+			if (j>=10) count++; 
+			if (j>=100) count++;
+			if (j>=1000) count++; 
+			if (count>=80){
+				newLine();
+				count = 0; 
+			}
 		}
 	}
 	putc('\n'); 
