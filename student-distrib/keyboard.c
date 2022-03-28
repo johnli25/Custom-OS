@@ -6,7 +6,8 @@
 #define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
 #define scancodesSize   85       //size of the scancodes1 array for now
 #define keyboardBufferSize 128  //size of the keyboardBuffer 
-
+#define NUM_COLS    80
+#define NUM_ROWS    25
 
 
 // SPECIAL CHARACTERS:
@@ -158,7 +159,7 @@ void initialize_Keyboard(void){
 
     enable_irq(KEYBOARDIRQNUM);     // pic stuff with keyboard
 
-    enable_cursor(0, 25); //cursor goes from 0 to 25 - max rows 
+    enable_cursor(0, NUM_ROWS); //cursor goes from 0 to 25 - max rows 
 
     TERMINALFLAG = INTFALSE;
 
@@ -180,7 +181,7 @@ void interrupt_keyboard(void){
 
     cli();  //prevents interrupts 
 
-    if(counter == 127){
+    if(counter == (keyboardBufferSize-1)){
         newLine();
         TERMINALFLAG = INTTRUE;
         counter = 0;
@@ -208,8 +209,8 @@ void interrupt_keyboard(void){
     }
 
     if(myInput == SPACEPRESS){
-        if(counter != 127){
-            if(counter == 80){
+        if(counter != (keyboardBufferSize-1)){
+            if(counter == NUM_COLS){
                 newLine();
             }
             putc(' ');
@@ -227,8 +228,10 @@ void interrupt_keyboard(void){
     }
     if(myInput == TABPRESS){
         //flag 1
-        if(counter < 124){
-            if(counter < 80 && counter > 76){
+        //if counter < 124
+        if(counter < (keyboardBufferSize-4)){
+            //80 and 76
+            if(counter < NUM_COLS && counter > NUM_COLS-4){
                 newLine();
             }
             putc(' ');
@@ -312,8 +315,8 @@ void interrupt_keyboard(void){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
             
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != 127){
-                    if(counter == 80){
+                if(counter != (keyboardBufferSize-1)){
+                    if(counter == NUM_COLS){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -327,8 +330,8 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != 127){
-                    if(counter == 80){
+                if(counter != (keyboardBufferSize-1)){
+                    if(counter == NUM_COLS){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -343,8 +346,8 @@ void interrupt_keyboard(void){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != 127){
-                if(counter == 80){
+            if(counter != (keyboardBufferSize-1)){
+                if(counter == NUM_COLS){
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
@@ -357,8 +360,8 @@ void interrupt_keyboard(void){
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != 127){
-                if(counter == 80){
+            if(counter != (keyboardBufferSize-1)){
+                if(counter == NUM_COLS){
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
