@@ -34,4 +34,29 @@
 -Calling the assembly linkage code correctly 
 - 3/21/2022
 
+7.
+-Issue:Terminal Write does not print the buff correctly to screen
+-Resolved by:
+-Fixing our copy from KeyboardBuffer to buf
+-Used strncpy
+- 3/27/2022
+
+8.
+-Issue:Terminal read write test flashes text
+-Resolved by:
+-Test case previously held terminal_write in while loop
+-Moved both terminal_read and terminal_write into the while loop
+-3/27/2022
+
+9.
+-Issue:Up, Down, Left, Right Keys mapped to garbage inputs
+-Resolved by: 
+-Finding hex values for those keys and mapping in keyboard.c to not add text and send_eoi
+-3/27/2022
+
+10.
+-Issue: Garbage character added upon release of keys
+-Resolved by:
+-Finding hex values for the key's release and mapping in keyboard.c to ignore and send_eoi
+-3/22/2022
 

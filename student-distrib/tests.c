@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "x86_desc.h"
 #include "lib.h"
+#include "terminal.h"
 
 #define PASS 1
 #define FAIL 0
@@ -503,6 +504,15 @@ int ls_dir_test(){
 }
 
 //RTC TESTS
+/*RTC TEST
+ * 
+ * Description: tests open functionality
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: NONE
+ * Coverage: RTC
+ * Files: rtc.c/rtc.h
+ */
 int rtc_test_open() {
 	putc('\n');
 	TEST_HEADER;
@@ -510,6 +520,15 @@ int rtc_test_open() {
 	if (test) return FAIL;
 	return PASS;
 }
+/*RTC TEST
+ * 
+ * Description: tests close functionality
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: NONE
+ * Coverage: RTC
+ * Files: rtc.c/rtc.h
+ */
 int rtc_test_close() {
 	putc('\n');
 	TEST_HEADER;
@@ -517,6 +536,15 @@ int rtc_test_close() {
 	if (test) return FAIL;
 	return PASS;
 }
+/*RTC TEST
+ * 
+ * Description: tests write functionality
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: NONE
+ * Coverage: RTC
+ * Files: rtc.c/rtc.h
+ */
 int rtc_test_read_write_invalid_freq() {
 	putc('\n');
 	TEST_HEADER;
@@ -524,6 +552,15 @@ int rtc_test_read_write_invalid_freq() {
 	if (write_RTC(0, &freq, 4) == -1)  return FAIL; //4 is number of bytes in proper size argument 
 	return PASS;
 }
+/*RTC TEST
+ * 
+ * Description: tests write functionality
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: NONE
+ * Coverage: RTC
+ * Files: rtc.c/rtc.h
+ */
 int rtc_test_read_write_invalid_size() {
 	putc('\n');
 	TEST_HEADER;
@@ -531,7 +568,15 @@ int rtc_test_read_write_invalid_size() {
 	if (write_RTC(0, &freq, 3) == -1)  return FAIL;//3 is number of bytes in improper size argument 
 	return PASS;
 }
-
+/*RTC TEST
+ * 
+ * Description: tests read/write functionality
+ * Inputs: None
+ * Outputs: PASS/FAIL
+ * Side Effects: NONE
+ * Coverage: RTC
+ * Files: rtc.c/rtc.h
+ */
 int rtc_test_read_write() {
 	TEST_HEADER;
 	uint32_t freq, j;
@@ -558,45 +603,77 @@ int rtc_test_read_write() {
  */
 int terminal_read_write(){
 	TEST_HEADER;
-
+	terminal_init();
+	terminal_open();
 	int result = PASS;
 	
 	 while(1){
-		unsigned char buf[127];
-		terminal_read(127, buf);
+		unsigned char buf[127];//testing 128 chars
+		terminal_read(127, buf);//128 chars test
 
 		terminal_write(127, buf);
     } //infinite while loop
+
+	terminal_close();
     return result;
 }
 
+/* Terminal Read Write 128plus Test
+ * 
+ * Asserts that terminal read write work as intended when passed in buff size is greater
+ than 128 and n is also greater than 128
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: terminal_read, terminal_write
+ * Files: terminal.c
+ */
 int terminal_read_write_128plus(){
 	TEST_HEADER;
-
 	int result = PASS;
+
+	terminal_init();
+	terminal_open();
 	
 	 while(1){
-		unsigned char buf[500];
-		terminal_read(500, buf);
+		unsigned char buf[500];// a number greater than 500
+		terminal_read(500, buf);//n is also 500 
 
 		terminal_write(500, buf);
     } //infinite while loop
+	terminal_close();
+
     return result;
 }
 
+/* Terminal Dif Sizes Test
+ * 
+ * Asserts that terminal read write work as intended when passed in buff size is greater
+ than 128 and n is a different value within the range
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: terminal_read, terminal_write
+ * Files: terminal.c
+ */
 int terminalDifSizes(){
 	TEST_HEADER;
-
+	terminal_init();
+	terminal_open();
 	int result = PASS;
 	
 	 while(1){
-		unsigned char buf[500];
-		terminal_read(50, buf);
+		unsigned char buf[500]; // a number greater than 500
+		terminal_read(50, buf);	//number less than 500
 
 		terminal_write(50, buf);
     } //infinite while loop
+	terminal_close();
+
     return result;
 }
+
+
 
 
 /* Checkpoint 3 tests */
