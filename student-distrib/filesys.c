@@ -23,27 +23,15 @@ int dir_read(int32_t fd, void *buf, int32_t nbytes, int idx)
 {
     int j, bytes_read;
     bytes_read = 0;
-    // int length = (strlen(bootBlock->dentry_list[i].fileName) < nbytes) ?
-    //     strlen(bootBlock->dentry_list[i].fileName) : nbytes;
-    // printf(" # of inodes lel: %d", bootBlock->numberOfInodes);
-    // for (i = 0; i < 7; i++){
+
     int length = strlen(bootBlock->dentry_list[idx].fileName) + 1;
     if (length > FILE_NAME_LENGTH)
         length = FILE_NAME_LENGTH;
     for (j = 0; j < length; j++)
     {
-        // if (idx == 0){
-        //     ((int8_t*)(buf))[bytes_read] = ' ';
-        //     ((int8_t*)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j+1];
-        // }
         ((int8_t *)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j];
         bytes_read += 1;
-        //            printf("%c", ((int8_t*)(buf))[bytes_read]);
-        //            printf("%c \n");
     }
-    //    printf("\n");
-    //}
-    // memcpy((uint8_t *)buf, bootBlock->dentry_list[i].fileName, length);
     return bytes_read;
 }
 

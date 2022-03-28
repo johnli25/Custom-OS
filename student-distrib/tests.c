@@ -331,15 +331,15 @@ int read_valid_file() {
 	if (result == -1){
 		return FAIL;
 	}
-	result = read_data(test_dentry->inode, 0, buf, 10000);
-	if (187 != result){
+	result = read_data(test_dentry->inode, 0, buf, 10000); //offset 0 + random length 10000
+	if (187 != result){ //187 is size of output buffer
 		return FAIL;
 	}
 
-	for (i = 0; i < 187; i++){
+	for (i = 0; i < 187; i++){ //187 is size of ouput buffer
         putc(buf[i]);
 	}
-	
+
 	return PASS;
 }
 
@@ -351,7 +351,7 @@ int read_valid_file2(){
 	int	result = read_dentry_name(input, test_dentry);
 	if (result == -1)
 		return FAIL;
-	if (174 != read_data(test_dentry->inode, 0, buf, 10000))
+	if (174 != read_data(test_dentry->inode, 0, buf, 10000)) //174 is size of output buffer
 		return FAIL;
 
 	return PASS;
@@ -360,15 +360,13 @@ int read_valid_file2(){
 int read_exec_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
-	uint8_t buf[391];
+	uint8_t buf[391]; //391 is random buffer size
 	const uint8_t * input = (const uint8_t *)("pingpong");
 	int	result = read_dentry_name(input, test_dentry);
 	printf(" \n");
 	if (result == -1)
 		return FAIL;
-	//if (174 != read_data(test_dentry->inode, 0, buf, 10000))
-	//	return FAIL;
-	result = read_data(test_dentry->inode, 0, buf, 10000);
+	result = read_data(test_dentry->inode, 0, buf, 10000); //
 
 	return PASS;
 }
@@ -401,7 +399,7 @@ int find_invalid_large_file(){
 int read_large_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
-	uint8_t buf[10000];
+	// uint8_t buf[10000];
 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
 
 	int test1 = read_dentry_name(input, test_dentry);
@@ -413,14 +411,14 @@ int read_large_file(){
 	uint8_t str1[] = "very large text file with a very long name\n";
 	if(read_data(test_dentry->inode, 0, buf1, 43) != 43)//read from beginning
 		return FAIL;	
-	if(0 != strncmp(buf1, str1, 43)){ //0 = successful, equivalent strings
+	if(0 != strncmp((int8_t *)buf1, (int8_t *)str1, 43)){ //0 = successful, equivalent strings
 		return FAIL; //if !0, then FAIL
 	}
 
 	uint8_t str2[] = "1234567890123456789012345678901234567890123";
 	if(read_data(test_dentry->inode, 43, buf1, 43) != 43)//read from offset
 		return FAIL;	
-	if(0 != strncmp(buf1, str2, 43)){ //0 = successful, equivalent strings
+	if(0 != strncmp((int8_t *)buf1, (int8_t *)str2, 43)){ //0 = successful, equivalent strings
 		return FAIL; //if !0, then FAIL
 	}
 
@@ -428,7 +426,7 @@ int read_large_file(){
 	uint8_t str3[] = "jklmnopqrstuvwxyz";
 	if(read_data(test_dentry->inode, 4090, buf3, 43) != 43)//read: trek across data blocks
 		return FAIL;	
-	if(0 != strncmp(buf3, str3, 17)){ //0 = successful, equivalent strings
+	if(0 != strncmp((int8_t *)buf3, (int8_t *)str3, 17)){ //0 = successful, equivalent strings
 		return FAIL; //if !0, then FAIL
 	}
 
@@ -438,7 +436,7 @@ int read_large_file(){
 	// 	buf4[i] = '\0';
 	if(read_data(test_dentry->inode, 5270, buf4, 43) != 7)//read to very end
 		return FAIL;	
-	if(0 != strncmp(buf4, str4, 7)){ //0 = successful, equivalent strings
+	if(0 != strncmp((int8_t *)buf4, (int8_t *)str4, 7)){ //0 = successful, equivalent strings
 		return FAIL; //if !0, then FAIL
 	}
 	//int result = read_data(test_dentry->inode, 0, buf, 1000000);
