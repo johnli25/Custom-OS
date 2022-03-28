@@ -121,8 +121,8 @@ void clearBottom(void) {
     int32_t x;
     for (x = 0; x < NUM_COLS; x++) {
         //*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-        *(uint8_t *)(video_mem + ((NUM_COLS * 24 + x) << 1)) = ' ';
-        *(uint8_t *)(video_mem + ((NUM_COLS * 24 + x) << 1) + 1) = ATTRIB;
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1)) = ' ';
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1) + 1) = ATTRIB;
     }
 }
 
@@ -131,7 +131,7 @@ void clearBottom(void) {
  * Return Value: none
  * Function: goes to next line */
 void newLine(void) {
-    if(screen_y == 24){
+    if(screen_y == (NUM_ROWS-1)){
         verticalScroll();
         screen_x = 0;
         update_cursor(screen_x, screen_y);
@@ -347,14 +347,14 @@ void putBackspace(uint8_t c){
         }
         else{
             screen_y--;
-            screen_x = 80; //can cause errors maybe 
+            screen_x = NUM_COLS; //can cause errors maybe 
             //get keyboard buf
             //parse thru find "\n"
             //-1 of that indice
             //
 
             int x = 0;
-            for(x = 79; x > 0; x--){
+            for(x = (NUM_COLS-1); x > 0; x--){
                 if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != '\0'){
                     break;
                 }
