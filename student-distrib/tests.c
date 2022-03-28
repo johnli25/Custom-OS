@@ -711,7 +711,7 @@ void launch_tests(){
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
 	*/
 	//Run this test alone
-	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
+	TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
 	
 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
