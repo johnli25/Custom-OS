@@ -30,7 +30,7 @@ typedef struct bootBlock{
 } __attribute__((packed)) bootBlock_t;
 
 typedef struct dataBlock {
-    uint8_t data[KB_4];
+    uint8_t data[KB_4]; //how many BYTES OF DATA is contained within each block!
 } __attribute__((packed)) dataBlock_t;
 
 bootBlock_t * bootBlock;

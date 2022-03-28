@@ -5,6 +5,8 @@
 #define PASS 1
 #define FAIL 0
 
+#define PRINT_LARGE 0
+
 /* format these macros as you see fit */
 #define TEST_HEADER 	\
 	printf("[TEST %s] Running %s at %s:%d\n", __FUNCTION__, __FUNCTION__, __FILE__, __LINE__)
@@ -18,6 +20,7 @@ static inline void assertion_failure(){
 }
 
 /* Checkpoint 1 tests */
+
 
 /* Enable IRQ Master Test
  * 
@@ -321,6 +324,7 @@ int read_valid_file() {
 	TEST_HEADER;
 	dentry_t * test_dentry;
 	uint8_t buf[391];
+	int i; 
 	const uint8_t * input = (const uint8_t *)("frame0.txt");
 	int result = read_dentry_name(input, test_dentry);
 	printf(" \n");
@@ -331,6 +335,11 @@ int read_valid_file() {
 	if (187 != result){
 		return FAIL;
 	}
+
+	for (i = 0; i < 187; i++){
+        putc(buf[i]);
+	}
+	
 	return PASS;
 }
 
@@ -340,7 +349,6 @@ int read_valid_file2(){
 	uint8_t buf[391];
 	const uint8_t * input = (const uint8_t *)("frame1.txt");
 	int	result = read_dentry_name(input, test_dentry);
-	printf(" \n");
 	if (result == -1)
 		return FAIL;
 	if (174 != read_data(test_dentry->inode, 0, buf, 10000))
@@ -384,6 +392,7 @@ int find_invalid_large_file(){
 	dentry_t * test_dentry;
 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.txt");
 	int result = read_dentry_name(input, test_dentry);
+	printf("\n");
 	if (result == 0)
 		return FAIL;
 	return PASS;
@@ -394,13 +403,65 @@ int read_large_file(){
 	dentry_t * test_dentry;
 	uint8_t buf[10000];
 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
-	if (read_dentry_name(input, test_dentry) == -1)
+
+	int test1 = read_dentry_name(input, test_dentry);
+	if (test1 == -1)
 		return FAIL;
+	
+	printf(" \n");
+	uint8_t buf1[43];
+	uint8_t str1[] = "very large text file with a very long name\n";
+	if(read_data(test_dentry->inode, 0, buf1, 43) != 43)//read from beginning
+		return FAIL;	
+	if(0 != strncmp(buf1, str1, 43)){ //0 = successful, equivalent strings
+		return FAIL; //if !0, then FAIL
+	}
 
-	int result = read_data(test_dentry->inode, 0, buf, 10000);
+	uint8_t str2[] = "1234567890123456789012345678901234567890123";
+	if(read_data(test_dentry->inode, 43, buf1, 43) != 43)//read from offset
+		return FAIL;	
+	if(0 != strncmp(buf1, str2, 43)){ //0 = successful, equivalent strings
+		return FAIL; //if !0, then FAIL
+	}
 
+	uint8_t buf3[43];
+	uint8_t str3[] = "jklmnopqrstuvwxyz";
+	if(read_data(test_dentry->inode, 4090, buf3, 43) != 43)//read: trek across data blocks
+		return FAIL;	
+	if(0 != strncmp(buf3, str3, 17)){ //0 = successful, equivalent strings
+		return FAIL; //if !0, then FAIL
+	}
+
+	uint8_t buf4[43];
+	uint8_t str4[] = ",./<>?\n";
+	// for (i = 7; i < 43; i++)
+	// 	buf4[i] = '\0';
+	if(read_data(test_dentry->inode, 5270, buf4, 43) != 7)//read to very end
+		return FAIL;	
+	if(0 != strncmp(buf4, str4, 7)){ //0 = successful, equivalent strings
+		return FAIL; //if !0, then FAIL
+	}
+	//int result = read_data(test_dentry->inode, 0, buf, 1000000);
+	//if (result < 0)
+	//	return FAIL;
 	return PASS;	
 }
+
+// int read_large_file2(){
+// 	TEST_HEADER;
+// 	dentry_t * test_dentry;
+// 	uint8_t buf[10000];
+// 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
+// 	printf(" \n");
+// 	if (read_dentry_name(input, test_dentry) == -1)
+// 		return FAIL;
+	
+// 	printf(" \n");
+// 	int result = read_data(test_dentry->inode, 0, buf, 1000000);
+// 	if (result < 0)
+// 		return FAIL;
+// 	return PASS;
+// }
 
 int read_file_index(){
 	TEST_HEADER;
@@ -487,6 +548,57 @@ int rtc_test_read_write() {
 	putc('\n'); 
 	return PASS;
 }
+	
+/* Terminal Read Write Test
+ * 
+ * Asserts that terminal read write work as intended
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: terminal_read, terminal_write
+ * Files: terminal.c
+ */
+int terminal_read_write(){
+	TEST_HEADER;
+
+	int result = PASS;
+	
+	 while(1){
+		unsigned char buf[127];
+		terminal_read(127, buf);
+
+		terminal_write(127, buf);
+    } //infinite while loop
+    return result;
+}
+
+int terminal_read_write_128plus(){
+	TEST_HEADER;
+
+	int result = PASS;
+	
+	 while(1){
+		unsigned char buf[500];
+		terminal_read(500, buf);
+
+		terminal_write(500, buf);
+    } //infinite while loop
+    return result;
+}
+
+int terminalDifSizes(){
+	TEST_HEADER;
+
+	int result = PASS;
+	
+	 while(1){
+		unsigned char buf[500];
+		terminal_read(50, buf);
+
+		terminal_write(50, buf);
+    } //infinite while loop
+    return result;
+}
 
 
 /* Checkpoint 3 tests */
@@ -511,19 +623,24 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
-	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	
 	//RTC TESTS
-		//Run these tests together
-		/*
-		TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
-		TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
-		TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
-		TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
-		TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
-		TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
-		*/
-		//Run this test alone
-		TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
+	//Run these tests together
+	/*
+	TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
+	TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
+	TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
+	TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
+	*/
+	//Run this test alone
+	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
+	
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
+	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
+
+
 }

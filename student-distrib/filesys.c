@@ -128,27 +128,29 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
     inode_initial_ptr = (inode_t *)bootBlock + 1;
     inode_t *inode_ptr = (inode_t *)(inode_initial_ptr + inode); // declare + initialize inode_ptr
 
+    uint32_t inode_db_idx = offset / KB_4;
     uint32_t data_block_idx = inode_ptr->data_block[offset / KB_4]; // calculate data block integer
     uint32_t data_block_offset = offset % KB_4;                     // calculate offset WITHINT data block now
-
+    
     data_block_initial_ptr = (dataBlock_t *)(bootBlock + 1 + bootBlock->numberOfInodes);
-    dataBlock_t *data_block_ptr = data_block_initial_ptr + data_block_idx;
-    // uint8_t * dataBlockStartChar = data_block_ptr->data[data_block_offset];
+    dataBlock_t * data_block_ptr = data_block_initial_ptr + data_block_idx;
     for (i = 0; i < length; i++)
     {
         if (inode_ptr->length == offset + i)
             break;
-        if (data_block_offset + i >= KB_4)
+        if (data_block_offset + alt_i >= KB_4)
         {
             data_block_offset = 0;
             alt_i = 0;
-            data_block_ptr++;
+            inode_db_idx++; //calculate new inode_db_idx in order to get...
+            data_block_idx = inode_ptr->data_block[inode_db_idx]; //new data block idx
+            data_block_ptr = data_block_initial_ptr + data_block_idx;
+
         }
         buf[i] = data_block_ptr->data[data_block_offset + alt_i];
-        putc(buf[i]);
+        //putc(buf[i]);
         count += 1;
         alt_i++; 
     }
-    printf("\n");
     return count; // return # of bytes read AKA # of bytes placed in buffer
 }
