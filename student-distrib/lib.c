@@ -120,6 +120,8 @@ void clearText(void) {
 void clearBottom(void) {
     int32_t x;
     for (x = 0; x < NUM_COLS; x++) {
+        // *(uint8_t *)(video_mem + ((NUM_COLS * 25 + x) << 1)) = ' ';
+        // *(uint8_t *)(video_mem + ((NUM_COLS * 25 + x) << 1) + 1) = ATTRIB;
         //*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
         *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1)) = ' ';
         *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1) + 1) = ATTRIB;
@@ -162,6 +164,16 @@ void newLine(void) {
     //clearTop();
 
     int32_t x,y;
+    // for(x = 0; x < NUM_COLS; x++){
+    //     for(y = 0; y < NUM_ROWS; y++){
+    //         *(uint8_t *)(video_mem + ((NUM_COLS * y + x) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (y+1) + x) << 1));
+    //         //ASK ABOUT ATTRIB STUFF 
+    //         //*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+    //     }
+    // }
+    // clearBottom();
+    // screen_y = 25;
+    // screen_x = 0;
     for(x = 0; x < NUM_COLS; x++){
         for(y = 0; y < NUM_ROWS - 1; y++){
             *(uint8_t *)(video_mem + ((NUM_COLS * y + x) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (y+1) + x) << 1));
@@ -351,8 +363,6 @@ void putBackspace(uint8_t c){
             //get keyboard buf
             //parse thru find "\n"
             //-1 of that indice
-            //
-
             int x = 0;
             for(x = (NUM_COLS-1); x > 0; x--){
                 if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != '\0'){
