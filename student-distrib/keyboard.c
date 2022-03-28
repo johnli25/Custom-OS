@@ -263,7 +263,8 @@ void interrupt_keyboard(void){
     if(control == INTTRUE && myInput == LCHARACTER){
         clearText();
         counter = 0;
-        clearKeyboardBuffer();
+        // based from the hints, clearing the screen should NOT clear the buffer
+        // clearKeyboardBuffer(); 
         send_eoi(KEYBOARDIRQNUM);
         sti();
         return;
