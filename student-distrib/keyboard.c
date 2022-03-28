@@ -184,6 +184,9 @@ void interrupt_keyboard(void){
         newLine();
         TERMINALFLAG = INTTRUE;
         counter = 0;
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
     }
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
