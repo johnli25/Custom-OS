@@ -422,14 +422,14 @@ int ls_dir_test(){
 int rtc_test_open() {
 	putc('\n');
 	TEST_HEADER;
-	int test = open_RTC();
+	int test = open_RTC(NULL);
 	if (test) return FAIL;
 	return PASS;
 }
 int rtc_test_close() {
 	putc('\n');
 	TEST_HEADER;
-	int test = close_RTC();
+	int test = close_RTC(NULL);
 	if (test) return FAIL;
 	return PASS;
 }
