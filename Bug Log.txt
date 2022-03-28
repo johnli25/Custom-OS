@@ -60,3 +60,7 @@
 -Finding hex values for the key's release and mapping in keyboard.c to ignore and send_eoi
 -3/22/2022
 
+11.
+-Issue: Empty data (displayed as 0) in inodes + data_blocks.
+-Resolved by: switching inode and filetype in inode structure
+-3/27/2022
