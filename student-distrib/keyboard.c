@@ -184,6 +184,7 @@ void interrupt_keyboard(void){
         newLine();
         TERMINALFLAG = INTTRUE;
         counter = 0;
+        clearKeyboardBuffer();
         // send_eoi(KEYBOARDIRQNUM);
         // sti();
         // return;
