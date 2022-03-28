@@ -19,6 +19,7 @@ static inline void assertion_failure(){
 
 /* Checkpoint 1 tests */
 
+
 /* Enable IRQ Master Test
  * 
  * Asserts that enable IRQ can enable port on master
@@ -319,6 +320,28 @@ int basic_exception_test(int n){
 // add more tests here
 
 /* Checkpoint 2 tests */
+
+/* Terminal Read Write Test
+ * 
+ * Asserts that terminal read write work as intended
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: terminal_read, terminal_write
+ * Files: terminal.c
+ */
+
+int terminal_read_write(){
+	TEST_HEADER;
+
+	int result = PASS;
+	unsigned char buf[50];
+	terminal_read(50, buf);
+	 while(1){
+		terminal_write(50, buf);
+    } //infinite while loop
+    return result;
+}
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
@@ -338,6 +361,8 @@ void launch_tests(){
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-	TEST_OUTPUT("VALID PAGING", paging_test()); 
+	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+
 }

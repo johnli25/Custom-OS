@@ -31,6 +31,7 @@
 #define INTTRUE 1
 #define INTFALSE 0
 
+
 int capsLock = INTFALSE;
 int shift = INTFALSE;
 int control = INTFALSE;
@@ -155,6 +156,8 @@ void initialize_Keyboard(void){
 
     enable_cursor(0, 25); //cursor goes from 0 to 25 - max rows 
 
+    TERMINALFLAG = INTFALSE;
+
     return;
 
 }
@@ -172,6 +175,9 @@ void initialize_Keyboard(void){
 void interrupt_keyboard(void){      
 
     cli();  //prevents interrupts 
+    if(counter == 127){
+        TERMINALFLAG = INTTRUE;
+    }
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
 
@@ -202,7 +208,9 @@ void interrupt_keyboard(void){
         }
     }
     if (myInput == ENTERPRESS){
-        clearKeyboardBuffer();
+        //clearKeyboardBuffer();
+        TERMINALFLAG = INTTRUE;
+        counter = 0; //resets counter - may or may not need to do!
         newLine();
     }
     if(myInput == TABPRESS){
@@ -248,6 +256,7 @@ void interrupt_keyboard(void){
     if(control == INTTRUE && myInput == LCHARACTER){
         clearText();
         counter = 0;
+        clearKeyboardBuffer();
         send_eoi(KEYBOARDIRQNUM);
         sti();
         return;

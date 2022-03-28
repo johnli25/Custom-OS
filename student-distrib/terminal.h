@@ -1,3 +1,5 @@
+extern int terminal_init(void);
+
 extern int terminal_open(void);
 
 extern int terminal_close(void);
