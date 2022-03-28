@@ -7,10 +7,77 @@
 #define NUM_COLS    80
 #define NUM_ROWS    25
 #define ATTRIB      0x7
+#define BACKSPACE   0x0E
+#define CURSORD4    0x3D4
+#define CURSORD5    0x3D5
+#define CURSOR0A    0x0A
+#define CURSOR0B    0x0B
+#define CURSORC0    0xC0
+#define CURSORE0    0xE0
+#define CURSOR20    0x20
+#define CURSOR0E    0x0E
+#define CURSOR0F    0x0F
+#define CURSORFF    0xFF
+
+
+
 
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+
+/* void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
+ * Inputs: cursor_start, cursor_end
+ * Return Value: none
+ * Function: enables the cursor */
+void enable_cursor(uint8_t cursor_start, uint8_t cursor_end){
+	//have to swap inputs and ouputs
+	outb(CURSOR0A,CURSORD4);
+	outb((inb(CURSORD5) & CURSORC0) | cursor_start, CURSORD5);
+ 
+	outb(CURSOR0B, CURSORD4);
+	outb((inb(CURSORD5) & CURSORE0) | cursor_end, CURSORD5);
+}
+
+/* void disable_cursor();
+ * Inputs: none
+ * Return Value: none
+ * Function: disables the cursor */
+void disable_cursor(){
+//have to swap inputs and outputs
+	outb(CURSOR0A, CURSORD4);
+	outb(CURSOR20, CURSORD5);
+}
+
+/* void update_cursor();
+ * Inputs: x, y
+ * Return Value: none
+ * Function: updates the location of the cursor corresponding to x and y vals */
+void update_cursor(int x, int y){
+	//have to swap inputs and outputs
+	uint16_t pos = y * NUM_COLS+ x;
+ 
+	outb(CURSOR0F, CURSORD4);
+	outb( (uint8_t) (pos & CURSORFF), CURSORD5);
+	outb( CURSOR0E, CURSORD4);
+	outb((uint8_t) ((pos >> 8) & CURSORFF), CURSORD5);
+}
+
+/* void get_cursor_position(void);
+ * Inputs: none
+ * Return Value: none
+ * Function: returns the cursors position */
+uint16_t get_cursor_position(void){
+    //have to swap inputs and outputs
+    uint16_t pos = 0;
+    outb(CURSOR0F, CURSORD4);
+    pos |= inb(CURSORD5);
+    outb(CURSOR0E, CURSORD4);
+    pos |= ((uint16_t)inb(CURSORD5)) << 8;
+    return pos;
+}
+
+
 
 /* void clear(void);
  * Inputs: void
@@ -23,6 +90,92 @@ void clear(void) {
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
 }
+
+/* void clearText(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Clears text and video memory */
+void clearText(void) {
+    screen_x = 0;
+    screen_y = 0;
+    update_cursor(screen_x, screen_y);
+    clear();
+}
+
+// /* void clearTop(void);
+//  * Inputs: void
+//  * Return Value: none
+//  * Function: Clears top line */
+// void clearTop(void) {
+//     int32_t i;
+//     for (i = 0; i < NUM_COLS; i++) {
+//         *(uint8_t *)(video_mem + (i << 1)) = ' ';
+//         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
+//     }
+// }
+/* void clearBottom(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Clears top line */
+void clearBottom(void) {
+    int32_t x;
+    for (x = 0; x < NUM_COLS; x++) {
+        //*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1)) = ' ';
+        *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1) + 1) = ATTRIB;
+    }
+}
+
+/* void newLine(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: goes to next line */
+void newLine(void) {
+    if(screen_y == (NUM_ROWS-1)){
+        verticalScroll();
+        screen_x = 0;
+        update_cursor(screen_x, screen_y);
+        return;
+    }
+    screen_x = 0;
+    screen_y++;
+
+    update_cursor(screen_x, screen_y);
+
+    return;
+}
+
+
+
+/* void verticalScroll(void);
+ * Inputs: void
+ * Return Value: none
+ * Function: Alters video memory as a means to "scroll" */
+ void verticalScroll(void){
+     //delete the top line
+     //shift other lines all up
+     //clear the bottom line
+    //whenever screen y == 25 adn a newline is hit (enter or screen x > 80)
+    //delte top
+    //shift up
+    //clear bottom
+    //clearTop();
+
+    int32_t x,y;
+    for(x = 0; x < NUM_COLS; x++){
+        for(y = 0; y < NUM_ROWS - 1; y++){
+            *(uint8_t *)(video_mem + ((NUM_COLS * y + x) << 1)) = *(uint8_t *)(video_mem + ((NUM_COLS * (y+1) + x) << 1));
+            //ASK ABOUT ATTRIB STUFF 
+            *(uint8_t *)(video_mem + ((NUM_COLS * (y+1) + x) << 1) + 1) = ATTRIB;
+        }
+    }
+    clearBottom();
+    //screen_y = 24;
+    //screen_x = 0;
+    
+    return;
+
+ }
 
 /* Standard printf().
  * Only supports the following format strings:
@@ -178,6 +331,60 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
+    update_cursor(screen_x, screen_y);
+    
+}
+/* void putBackspace(uint8_t c);
+ * Inputs: uint_8* c = character to print
+ * Return Value: void
+ *  Function: Output a backspace to the console */
+void putBackspace(uint8_t c){
+    //adding if statement for backspace
+
+    if(screen_y != 0 || screen_x != 0){
+        if (screen_x != 0){
+            screen_x--;
+        }
+        else{
+            screen_y--;
+            screen_x = NUM_COLS; //can cause errors maybe 
+            //get keyboard buf
+            //parse thru find "\n"
+            //-1 of that indice
+            //
+
+            int x = 0;
+            for(x = (NUM_COLS-1); x > 0; x--){
+                if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != '\0'){
+                    break;
+                }
+                if((*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + x) << 1))) != ' '){
+                    break;
+                }
+
+            }
+            screen_x = x;
+
+            // while(*(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) == ' '){
+            //     screen_x--;
+            //     if(screen_x == 0){
+            //         break;
+            //     }
+            // }
+            // screen_x++;
+        } 
+    }
+    
+    // y edgecase 
+    // vidmem 
+    
+    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = '\0'; //make sure NULL is correct here, can lead to errors
+    *(uint8_t *)(video_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+
+    update_cursor(screen_x, screen_y);
+
+    return;
+
 }
 
 /* int8_t* itoa(uint32_t value, int8_t* buf, int32_t radix);
@@ -464,6 +671,25 @@ int8_t* strncpy(int8_t* dest, const int8_t* src, uint32_t n) {
     return dest;
 }
 
+/* int8_t* strcpy(int8_t* dest, const int8_t* src, uint32_t n)
+ * Inputs:      int8_t* dest = destination string of copy
+ *         const int8_t* src = source string of copy
+ *                uint32_t n = number of bytes to copy
+ * Return Value: pointer to dest
+ * Function: copy n bytes of the source string into the destination string */
+unsigned char* strncpyUnsignedChar(unsigned char * dest, const unsigned char * src, int n){
+    int32_t i = 0;
+    while (src[i] != '\0' && i < n) {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n) {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest;
+}
+
 /* void test_interrupts(void)
  * Inputs: void
  * Return Value: void
@@ -473,4 +699,5 @@ void test_interrupts(void) {
     for (i = 0; i < NUM_ROWS * NUM_COLS; i++) {
         video_mem[i << 1]++;
     }
+
 }
