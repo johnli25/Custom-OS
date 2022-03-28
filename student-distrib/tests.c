@@ -359,7 +359,6 @@ int terminal_read_write(){
  */
 int terminal_read_write_128plus(){
 	TEST_HEADER;
-	putc('\n');
 	int result = PASS;
 	
 	 while(1){
