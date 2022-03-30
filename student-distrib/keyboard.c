@@ -182,12 +182,12 @@ void interrupt_keyboard(void){
     cli();  //prevents interrupts 
 
     if(counter == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
-        newLine();
-        TERMINALFLAG = INTTRUE;
-        counter = 0;
-        // send_eoi(KEYBOARDIRQNUM);
-        // sti();
-        // return;
+        //newLine();
+        //TERMINALFLAG = INTTRUE;
+        //counter = 0;
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
     }
 
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
