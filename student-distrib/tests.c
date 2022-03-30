@@ -791,7 +791,7 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", read_large_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_large_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
@@ -813,7 +813,7 @@ void launch_tests(){
 	*/
 	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 }
