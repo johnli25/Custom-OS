@@ -1,8 +1,25 @@
 #include "systemCalls.h"
 #include "filesys.h"
 
+int programNumber[6] = {0,0,0,0,0,0}; 
+
+
 int32_t execute (const uint8_t* command){
+
+    int myProgramNumber = 0;
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){
+        if(programNumber[myProgramNumber] == 0){
+            programNumber[myProgramNumber] = 1;
+            break;
+        }
+        if(myProgramNumber == 5){
+            return -1; //all of the others are filled
+        }
+    }
+
     //command is a string, have to parge (ex: shell)
+
+    //            ls        
 
     //parse through the string - past 391OS> get after white space 
     int index = 0;
@@ -40,7 +57,15 @@ int32_t execute (const uint8_t* command){
         return -1; //FAILED TEST
     }
 
-    
+    //  Physical memory starts at
+    // 8MB + (process number * 4MB)
 
+
+    int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
+
+    // PCB = 8MB - (8KB * (ProcessNumber + 1));
+    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (ProcessNumber + 1));
+    // pcb-> pid = myprocessnumber;
+    
    
 }

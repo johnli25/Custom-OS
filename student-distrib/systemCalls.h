@@ -1,5 +1,9 @@
 int32_t execute (const uint8_t* command);
 
+#define EIGHTMB 8388608
+#define FOURMB 4194304
+#define EIGHTKB 8192
+
 typedef struct pcb_t{
     
     unsigned int pid;
