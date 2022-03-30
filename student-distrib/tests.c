@@ -366,12 +366,19 @@ int read_valid_file2(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
 	uint8_t buf[391];
+	int i; 
 	const uint8_t * input = (const uint8_t *)("frame1.txt");
+	printf(" \n");
 	int	result = read_dentry_name(input, test_dentry);
 	if (result == -1)
 		return FAIL;
 	if (174 != read_data(test_dentry->inode, 0, buf, 10000)) //174 is size of output buffer
 		return FAIL;
+
+	for (i = 0; i < 187; i++){ //187 is size of ouput buffer
+        putc(buf[i]);
+	}
+	printf(" \n");
 
 	return PASS;
 }
@@ -500,21 +507,21 @@ int read_large_file(){
 	return PASS;	
 }
 
-// int read_large_file2(){
-// 	TEST_HEADER;
-// 	dentry_t * test_dentry;
-// 	uint8_t buf[10000];
-// 	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
-// 	printf(" \n");
-// 	if (read_dentry_name(input, test_dentry) == -1)
-// 		return FAIL;
+int read_large_file2(){
+	TEST_HEADER;
+	dentry_t * test_dentry;
+	// uint8_t buf[10000];
+	const uint8_t * input = (const uint8_t *)("verylargetextwithverylongname.tx");
+
+	int test1 = read_dentry_name(input, test_dentry);
+	if (test1 == -1)
+		return FAIL;
 	
-// 	printf(" \n");
-// 	int result = read_data(test_dentry->inode, 0, buf, 1000000);
-// 	if (result < 0)
-// 		return FAIL;
-// 	return PASS;
-// }
+	printf(" \n");
+	uint8_t buf[10000];
+	read_data(test_dentry->inode, 0, buf, 10000);	
+	return PASS;
+}
 
 /*FILE TEST
  * 
@@ -763,13 +770,9 @@ int terminalDifSizes(){
     return result;
 }
 
-
-
-
 /* Checkpoint 3 tests */
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
-
 
 /* Test suite entry point 
  * 
@@ -788,8 +791,16 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
+	TEST_OUTPUT("filesys CP 3.2 tests", read_large_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
-	
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
+	//TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+
 	//RTC TESTS
 	//Run these tests together
 	/*
@@ -800,12 +811,9 @@ void launch_tests(){
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
 	*/
-	//Run this test alone
-	TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write());
+	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
-
-
 }
