@@ -1,11 +1,36 @@
 #include "systemCalls.h"
 #include "filesys.h"
+#include "paging.c"
 
 int programNumber[6] = {0,0,0,0,0,0}; 
 
+void paging_helper(){
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2; 
+
+    asm volatile (
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered (?)" regs 
+    );
+
+}
 
 int32_t execute (const uint8_t* command){
-
     int myProgramNumber = 0;
     for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){
         if(programNumber[myProgramNumber] == 0){
@@ -56,6 +81,9 @@ int32_t execute (const uint8_t* command){
     if(equalCheck != 0){ //checks if it is an ELF
         return -1; //FAILED TEST
     }
+    if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
+        ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
+        return -1;
 
     //  Physical memory starts at
     // 8MB + (process number * 4MB)
@@ -64,8 +92,7 @@ int32_t execute (const uint8_t* command){
     int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
 
     // PCB = 8MB - (8KB * (ProcessNumber + 1));
-    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (ProcessNumber + 1));
+    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
     // pcb-> pid = myprocessnumber;
-    
    
 }
