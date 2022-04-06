@@ -74,7 +74,6 @@ void setup_paging_structures(void){
     
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem >> DATA_ALIGN_SHIFT;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
-//    printf("paging lolz. \n");
     return;
 }
 

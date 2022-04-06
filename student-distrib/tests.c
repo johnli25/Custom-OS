@@ -395,13 +395,13 @@ int read_valid_file2(){
 int read_exec_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
-	uint8_t buf[391]; //391 is random buffer size
+	uint8_t buf[10000]; //391 is random buffer size
 	const uint8_t * input = (const uint8_t *)("pingpong");
 	int	result = read_dentry_name(input, test_dentry);
 	printf(" \n");
 	if (result == -1)
 		return FAIL;
-	result = read_data(test_dentry->inode, 0, buf, 10000); //
+	read_data(test_dentry->inode, 0, buf, 10000); //
 
 	return PASS;
 }
@@ -791,7 +791,7 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	//TEST_OUTPUT("filesys CP 3.2 tests", read_large_file2());
+	TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
