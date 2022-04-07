@@ -41,7 +41,7 @@ typedef struct fops{
 } fops_t;
 
 typedef struct fd_info{
-    fops_t fops_table; // FOPS jump table
+    fops_t  *fops_table; // FOPS jump table
     uint32_t inode;
     uint32_t file_type;
     uint32_t flags;

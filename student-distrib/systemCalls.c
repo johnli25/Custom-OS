@@ -18,14 +18,14 @@ void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
 
     asm volatile (
         "movl %%cr3, %%eax;"
         "movl %%eax, %%cr3;"  
         : 
         : 
-        :"%eax" //saved "clobbered (?)" regs 
+        :"%eax" //saved "clobbered" regs 
     );
 
 }
@@ -87,12 +87,15 @@ int32_t execute (const uint8_t* command){
 
     //  Physical memory starts at
     // 8MB + (process number * 4MB)
-
-
     int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
 
     // PCB = 8MB - (8KB * (ProcessNumber + 1));
-    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
+    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1)); //what's the hardcoded numerical addr?
+    mypcb->pid = myProgramNumber;
+    mypcb->saved_ebp = //save these important regs before you context switch
+    mypcb->saved_esp =
+    mypcb->active = 1;
+    
     // pcb-> pid = myprocessnumber;
    
 }
