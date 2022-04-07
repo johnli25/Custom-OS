@@ -91,8 +91,20 @@ int32_t execute (const uint8_t* command){
 
     int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
 
-    // PCB = 8MB - (8KB * (ProcessNumber + 1));
+    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
     pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
     // pcb-> pid = myprocessnumber;
+
+    mypcb -> pid = myProgramNumber;
+
+    //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
+    mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
+
+    mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
+    mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
+    mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+
+
+
    
 }
