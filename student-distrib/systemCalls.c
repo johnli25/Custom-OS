@@ -75,12 +75,6 @@ int32_t execute (const uint8_t* command){
     uint8_t ELFBUFFER[10];
     read_data(myDentry.inode, 0, ELFBUFFER,  4); //why 4 and not 3?
 
-    // uint8_t * ELFSTRING = " ELF"; //added a space
-    // int32_t equalCheck = strncmp(ELFBUFFER, ELFSTRING, 4);
-
-    // if(equalCheck != 0){ //checks if it is an ELF
-    //     return -1; //FAILED TEST
-    // }
     if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
         ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
         return -1;
@@ -95,7 +89,28 @@ int32_t execute (const uint8_t* command){
     mypcb->saved_ebp = //save these important regs before you context switch
     mypcb->saved_esp =
     mypcb->active = 1;
-    
+
+    asm volatile (
+        movl $0
+        movl $1
+        movl $2
+
+
+
+
+
+    );
+
+    asm volatile (
+        "pushl $USER_DS;"
+        "pushfl;"
+        "push "
+        "iret;"
+        "popal;"
+        :
+        :
+        :
+    );
+
     // pcb-> pid = myprocessnumber;
-   
 }
