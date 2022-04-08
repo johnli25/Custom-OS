@@ -2,7 +2,17 @@
 #include "filesys.h"
 #include "paging.c"
 
+
+
+
+uint32_t stdin[4] = {NULL, (uint32_t) terminal_read, (uint32_t) terminal_open, (uint32_t) terminal_close};
+uint32_t stdout[4] = {(uint32_t) terminal_write, NULL,(uint32_t) terminal_open, (uint32_t) terminal_close};
+
+
+
+
 int programNumber[6] = {0,0,0,0,0,0}; 
+int currentProgramNumber = 0;
 
 void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
@@ -87,24 +97,63 @@ int32_t execute (const uint8_t* command){
 
     //  Physical memory starts at
     // 8MB + (process number * 4MB)
+    
+
+    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB)); //from the slides 
+
+    //map to virtual mem
+    //zerpadded by 22
+    paging_helper(myProgramNumber);
+    read_data(myDentry.inode, 0, physicalMemNum, FOURMB );
+    uint32_t address = 0;
+    int p = 0;
+    while (p < 4){
+        address |= physicalMemNum[27 - p];
+        address = address << 8; //may be wrong
+        p++;
+    }
 
 
-    int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
+
 
     // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
-    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
+    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1)); //what is this used for 
     // pcb-> pid = myprocessnumber;
 
     mypcb -> pid = myProgramNumber;
-
+    mypcb -> pcb_parent =  EIGHTMB - (EIGHTKB * (currentProgramNumber + 1));
+    mypcb -> saved_esp = asm("esp");
+    mypcb -> saved_ebp = asm("ebp");
+    mypcb -> parent_id = currentProgramNumber;
+    mypcb -> myINFO[0].fops_table = stdin;
+    mypcb -> myINFO[1].fops_table = stdout; 
+    mypcb -> myINFO[0].flags = 1; //setting flag to 1
+    mypcb -> myINFO[1].flags = 1; //setting flag to 1
+    int i = 2;
+    for (i = 2; i<8; i++){
+         mypcb -> myINFO[i].flags = 0;
+         mypcb -> myINFO[i].fops_table = NULL;
+        
+    }
+    tss.ss0 = KERNEL_DS;
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber + 1))) - 4;;
     //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
-    mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
+    // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
 
-    mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
-    mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
-    mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+    // mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
+    // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
+    // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+
+    //physical mem num 24-27 concatentate -> 4B this is starting address into eip
+
+
+    currentProgramNumber = myProgramNumber; //update parent number
+    asm volatile(
+        "cli";
+        
 
 
 
-   
+
+    );
 }
