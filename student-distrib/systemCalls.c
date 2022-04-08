@@ -154,11 +154,15 @@ int32_t execute (const uint8_t* command){
     // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
     // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
     currentProgramNumber = myProgramNumber; //update parent number
-    
+    //enable interrupt on flags
+    //or flags x200 in assembly w register
     asm volatile( 
         "pushl %0;"
         "pushl %1;" //push esp
         "pushfl;" //push eflags
+        "popl %eax" //popping eflags into eax
+        "orl $0x200, %eax" // trying to Or eax with 200
+        "pushl %eax" // pushing eax which contains flags
         "pushl %2" //push USER_CS
         "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
