@@ -12,7 +12,7 @@ int32_t execute (const uint8_t* command);
 #define MAGIC2 0x4C
 #define MAGIC3 0x46
 
-int32_t halt(unint8_t status);
+int32_t halt(uint8_t status);
 int32_t execute(const uint8_t* command);
 
 typedef struct pcb{
