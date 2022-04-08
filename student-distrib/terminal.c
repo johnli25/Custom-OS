@@ -9,7 +9,7 @@
  * Inputs: none
  * Return Value: int
  * Function: initializes terminal (returning 0 for now) */
-int terminal_init(void){
+int32_t terminal_init(void){
     return 0;
 }
 
