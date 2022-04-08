@@ -17,7 +17,7 @@ int terminal_init(void){
  * Inputs: none
  * Return Value: int
  * Function: opens the terminal (returning 0 for now) */
-int terminal_open(void){
+int terminal_open(const uint8_t* filename){
     return 0;
 }
 
@@ -25,7 +25,7 @@ int terminal_open(void){
  * Inputs: none
  * Return Value: int
  * Function: closes the terminal (returning 0 for now) */
-int terminal_close(void){
+int terminal_close(int32_t fd){
     return 0;
 }
 
@@ -36,7 +36,7 @@ int terminal_close(void){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: reads from keyboardBuffer to passed in buf */
-int terminal_read(int n, unsigned char * buf){
+int terminal_read(int32_t fd,int n, unsigned char * buf){
 
     TERMINALFLAG = 0; //shared varable from the keyboard
 
@@ -72,7 +72,7 @@ int terminal_read(int n, unsigned char * buf){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: writes from buf to screen */
-int terminal_write(int n, unsigned char * buf){
+int terminal_write(int32_t fd,int n, unsigned char * buf){
     //check if the keyboard buffer size is greater thatn n or not 
 
     
