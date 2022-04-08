@@ -73,7 +73,7 @@ int32_t execute (const uint8_t* command){
     }
 
     uint8_t ELFBUFFER[10];
-    read_data(myDentry.inode, 0, ELFBUFFER,  4); //why 4 and not 3?
+    read_data(myDentry.inode, 0, ELFBUFFER, 4); //why 4 and not 3?
 
     if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
         ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
@@ -83,34 +83,47 @@ int32_t execute (const uint8_t* command){
     // 8MB + (process number * 4MB)
     int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
 
+
+
     // PCB = 8MB - (8KB * (ProcessNumber + 1));
     pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1)); //what's the hardcoded numerical addr?
     mypcb->pid = myProgramNumber;
-    mypcb->saved_ebp = //save these important regs before you context switch
-    mypcb->saved_esp =
-    mypcb->active = 1;
 
-    asm volatile (
-        movl $0
-        movl $1
-        movl $2
+    // asm volatile (
+    //     "movl $0
+    //     "movl $1
+    //     "movl $2
 
 
 
+    // );
 
-
-    );
-
-    asm volatile (
-        "pushl $USER_DS;"
-        "pushfl;"
-        "push "
-        "iret;"
-        "popal;"
-        :
-        :
-        :
-    );
+    // asm volatile (
+    //     "pushl $USER_DS;"
+    //     "pushfl;"
+    //     "push "
+    //     "iret;"
+    //     "popal;"
+    //     :
+    //     :
+    //     :
+    // );
 
     // pcb-> pid = myprocessnumber;
+    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
+    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
+    // pcb-> pid = myprocessnumber;
+
+    mypcb -> pid = myProgramNumber;
+
+    //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
+    mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
+
+    mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
+    mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
+    mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+
+
+
+   
 }
