@@ -1,8 +1,16 @@
 #include "systemCalls.h"
 #include "filesys.h"
+#include "keyboard.h"
 #include "paging.c"
+#include "x86_desc.h"
+#include "lib.c"
+#include "terminal.h"
+
+fops_t stdin = {(int32_t)terminal_open, (int32_t) terminal_close, (int32_t) terminal_read, (uint32_t) terminal_write};
+fops_t stdout = {(int32_t)terminal_open, (int32_t) terminal_close, (int32_t) terminal_read, (uint32_t) terminal_write};
 
 int programNumber[6] = {0,0,0,0,0,0}; 
+int currentProgramNumber = 0;
 
 void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
@@ -19,6 +27,23 @@ void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
+    
+    /*enable paging: below from wiki.osdev.org*/
+    asm volatile(
+        "movl $page_dir, %%eax;"
+        "movl %%eax, %%cr3            ;"
+        /*set the paging (PG) and protection (PE) bits of CR0.*/
+        "movl %%cr4, %%eax        ;" 
+        "orl $0x10, %%eax        ;" //0x10 is necessary to enable PSE (4 MiB pages), which sets very specific bits in register cr4.
+        "movl %%eax, %%cr4        ;"
+        /*enable PSE (4 MiB pages)*/
+        "movl %%cr0, %%eax        ;"
+        "orl $0x80000001, %%eax  ;" //0x80000001 sets paging (PG) and protection (PE) bits of CR0 (wiki.osdev)
+        "movl %%eax, %%cr0        ;"
+        : //savedd outputs
+        : //saved inputs
+        :"%eax" //"saved" clobbered regs
+    );
 
     asm volatile (
         "movl %%cr3, %%eax;"
@@ -41,11 +66,8 @@ int32_t execute (const uint8_t* command){
             return -1; //all of the others are filled
         }
     }
-
     //command is a string, have to parge (ex: shell)
-
     //            ls        
-
     //parse through the string - past 391OS> get after white space 
     int index = 0;
     while(command[index] == ' '){
@@ -59,7 +81,6 @@ int32_t execute (const uint8_t* command){
         index++;
         bufIndex++;
     }
-
     //buffer is the command without all white space ^
 
     dentry_t myDentry;
@@ -81,49 +102,67 @@ int32_t execute (const uint8_t* command){
 
     //  Physical memory starts at
     // 8MB + (process number * 4MB)
-    int physicalMemNum = EIGHTMB + (myProgramNumber * FOURMB); //from the slides 
+    read_data(myDentry.inode, POINT_OF_ENTRY, ELFBUFFER, 4);
+    uint32_t pt_of_entry = *((uint32_t*)ELFBUFFER);
+    
+    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB)); //from the slides 
 
+    //map to virtual mem
+    //zerpadded by 22
+    paging_helper(myProgramNumber);
+    read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
+    
+    uint32_t address = 0;
+    int p = 0;
+    while (p < 4){
+        address |= physicalMemNum[27 - p];
+        address = address << 8; //may be wrong
+        p++;
+    }
 
-
-    // PCB = 8MB - (8KB * (ProcessNumber + 1));
+    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
     pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1)); //what's the hardcoded numerical addr?
     mypcb->pid = myProgramNumber;
 
-    // asm volatile (
-    //     "movl $0
-    //     "movl $1
-    //     "movl $2
+    //save user program bookkeeping info
+    mypcb-> pid = myProgramNumber;
+    mypcb-> pcb_parent =  EIGHTMB - (EIGHTKB * (currentProgramNumber + 1));
+    mypcb-> saved_esp = asm volatile("%%esp"); //how to save these regs?
+    mypcb-> saved_ebp = asm volatile("%%ebp");
+    mypcb-> parent_id = currentProgramNumber;
+    mypcb-> myINFO[0].fops_table = stdin;
+    mypcb-> myINFO[1].fops_table = stdout; 
+    mypcb-> myINFO[0].flags = 1; //setting flag to 1
+    mypcb-> myINFO[1].flags = 1; //setting flag to 1
+    int i = 2;
+    for (i = 2; i<8; i++){
+        mypcb -> myINFO[i].flags = 0;
+        //mypcb -> myINFO[i].fops_table = NULL;
+        
+    }
 
-
-
-    // );
-
-    // asm volatile (
-    //     "pushl $USER_DS;"
-    //     "pushfl;"
-    //     "push "
-    //     "iret;"
-    //     "popal;"
-    //     :
-    //     :
-    //     :
-    // );
-
-    // pcb-> pid = myprocessnumber;
-    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
-    pcb_t * mypcb = EIGHTMB - (EIGHTKB * (myProgramNumber + 1));
-    // pcb-> pid = myprocessnumber;
-
-    mypcb -> pid = myProgramNumber;
-
+    //save kernel stack bookkeeping info
+    tss.ss0 = KERNEL_DS;
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber + 1))) - 4;
+    programNumber[myProgramNumber] = 1;
     //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
-    mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
+    // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
 
-    mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
-    mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
-    mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
-
-
-
-   
+    // mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
+    // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
+    // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+    currentProgramNumber = myProgramNumber; //update parent number
+    asm volatile(
+    
+        "pushl %0;" //push USER_DS
+        "movl %%edx, "
+        "pushfl;" //push eflags
+        "pushl %1" //push USER_CS
+        "pushl %2;" //push point of entry = 24 onto stack
+        "iret;"
+        :
+        : "r"(USER_DS), "r"(MB_132) "r"(USER_CS), "r"(pt_of_entry)
+        : 
+    );
+    return 0;
 }
