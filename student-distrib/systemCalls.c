@@ -127,8 +127,8 @@ int32_t execute (const uint8_t* command){
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
     mypcb-> pcb_parent =  EIGHTMB - (EIGHTKB * (currentProgramNumber + 1));
-    mypcb-> saved_esp = asm volatile("%%esp"); //how to save these regs?
-    mypcb-> saved_ebp = asm volatile("%%ebp");
+    mypcb-> saved_esp = asm ("esp"); //how to save these regs?
+    mypcb-> saved_ebp = asm ("ebp");
     mypcb-> parent_id = currentProgramNumber;
     mypcb-> myINFO[0].fops_table = stdin;
     mypcb-> myINFO[1].fops_table = stdout; 
@@ -143,7 +143,7 @@ int32_t execute (const uint8_t* command){
 
     //save kernel stack bookkeeping info
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber + 1))) - 4;
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
     programNumber[myProgramNumber] = 1;
     //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
     // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
@@ -152,16 +152,18 @@ int32_t execute (const uint8_t* command){
     // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
     // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
     currentProgramNumber = myProgramNumber; //update parent number
-    asm volatile(
     
-        "pushl %0;" //push USER_DS
-        "movl %%edx, "
+    asm volatile( 
+        //"pushl %0;" //push USER_DS
+        "movl %0, %ds;" //?
+        "pushl %ds;"
+        "pushl %1;" //push esp
         "pushfl;" //push eflags
-        "pushl %1" //push USER_CS
-        "pushl %2;" //push point of entry = 24 onto stack
+        "pushl %2" //push USER_CS
+        "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
         :
-        : "r"(USER_DS), "r"(MB_132) "r"(USER_CS), "r"(pt_of_entry)
+        : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
         : 
     );
     return 0;

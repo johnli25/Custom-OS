@@ -26,7 +26,7 @@ DEVICE_WRAPPER(KEYBOARD_WRAPPER, interrupt_keyboard);
 .globl syscall_wrapper
 
 syscall_wrapper:
-    //sti?
+    # sti?
     pushfl
     pushal
 
@@ -35,9 +35,9 @@ syscall_wrapper:
     cmpl $11, %eax
     jge syscall_invalid 
 
-    pushl %edx #third arg
-    pushl %ecx #second arg
-    pushl %ebx #first arg
+    pushl %edx # third arg
+    pushl %ecx # second arg
+    pushl %ebx # first arg
 
     call *syscall_table(, %eax, 4)
     jmp syscall_done

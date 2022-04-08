@@ -21,8 +21,8 @@ typedef struct pcb{
     pcb_t* pcb_parent;
     unsigned int parent_id;
     fd_info_t myINFO[8];
-    unsigned int saved_esp;
-    unsigned int saved_ebp;
+    register uint32_t saved_esp;
+    register uint32_t saved_ebp;
     unsigned int active;
 } __attribute__((packed)) pcb_t;
 
