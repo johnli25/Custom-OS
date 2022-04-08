@@ -1,3 +1,5 @@
+#include "filesys.h"
+
 #define EIGHTMB 0x0800000
 #define FOURMB 0x400000
 #define EIGHTKB 8192
@@ -18,13 +20,17 @@ int32_t execute(const uint8_t* command);
 
 typedef struct pcb{
     unsigned int pid;
-    pcb_t* pcb_parent;
+    //pcb_t* pcb_parent;
     unsigned int parent_id;
     fd_info_t myINFO[8];
-    register uint32_t saved_esp;
-    register uint32_t saved_ebp;
+    uint32_t saved_esp;
+    uint32_t saved_ebp;
     unsigned int active;
 } __attribute__((packed)) pcb_t;
+
+extern void paging_helper(int processNum);
+
+extern int32_t execute(const uint8_t * command);
 
 
 

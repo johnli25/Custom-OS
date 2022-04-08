@@ -1,5 +1,4 @@
 #include "systemCalls.h"
-#include "filesys.h"
 #include "keyboard.h"
 #include "paging.c"
 #include "x86_desc.h"
@@ -40,7 +39,7 @@ void paging_helper(int processNum){
         "movl %%cr0, %%eax        ;"
         "orl $0x80000001, %%eax  ;" //0x80000001 sets paging (PG) and protection (PE) bits of CR0 (wiki.osdev)
         "movl %%eax, %%cr0        ;"
-        : //savedd outputs
+        : //saved outputs
         : //saved inputs
         :"%eax" //"saved" clobbered regs
     );
@@ -126,9 +125,12 @@ int32_t execute (const uint8_t* command){
 
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
-    mypcb-> pcb_parent =  EIGHTMB - (EIGHTKB * (currentProgramNumber + 1));
-    mypcb-> saved_esp = asm ("esp"); //how to save these regs?
-    mypcb-> saved_ebp = asm ("ebp");
+    asm volatile(
+        "movl %%esp, %0;"
+        "movl %%ebp, %1;"
+        : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
+    );
+
     mypcb-> parent_id = currentProgramNumber;
     mypcb-> myINFO[0].fops_table = stdin;
     mypcb-> myINFO[1].fops_table = stdout; 
@@ -154,9 +156,7 @@ int32_t execute (const uint8_t* command){
     currentProgramNumber = myProgramNumber; //update parent number
     
     asm volatile( 
-        //"pushl %0;" //push USER_DS
-        "movl %0, %ds;" //?
-        "pushl %ds;"
+        "pushl %0;"
         "pushl %1;" //push esp
         "pushfl;" //push eflags
         "pushl %2" //push USER_CS
@@ -164,7 +164,10 @@ int32_t execute (const uint8_t* command){
         "iret;"
         :
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
-        : 
     );
     return 0;
 }
+
+
+
+
