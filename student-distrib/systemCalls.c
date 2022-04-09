@@ -4,6 +4,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "terminal.h"
+#include "rtc.h"
 
 fd_info_t fd_array[8]; 
 
@@ -194,7 +195,20 @@ int32_t general_write(int32_t fd, const  void * buf, int32_t n){
 }
 
 int32_t general_open(const uint8_t * filename){
-    return 0;
+    dentry_t d;
+    read_dentry_name(filename, &d)
+
+    if (d.file_type==0){
+         open_RTC (filename); 
+    }
+    else if (d.file_type==1){
+        dir_open(filename);
+    }
+    else if (d.file_type==2){
+        file_open(filename); 
+    }
+    else return -1; 
+
 }
 
 int32_t general_close(int32_t fd){
