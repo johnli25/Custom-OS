@@ -36,7 +36,7 @@ int terminal_close(int32_t fd){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: reads from keyboardBuffer to passed in buf */
-int terminal_read(int32_t fd, unsigned char * buf, int n){
+int32_t terminal_read(int32_t fd, unsigned char * buf, int32_t n){
 
     TERMINALFLAG = 0; //shared varable from the keyboard
 
@@ -72,7 +72,7 @@ int terminal_read(int32_t fd, unsigned char * buf, int n){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: writes from buf to screen */
-int terminal_write(int32_t fd, unsigned char * buf, int n){
+int32_t terminal_write(int32_t fd, unsigned char * buf, int32_t n){
     //check if the keyboard buffer size is greater thatn n or not 
 
     
