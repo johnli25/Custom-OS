@@ -28,7 +28,10 @@ DEVICE_WRAPPER(KEYBOARD_WRAPPER, interrupt_keyboard);
 syscall_wrapper:
     # sti?
     pushfl
-    pushal
+    # pushal
+    pushl %esi
+    pushl %edi
+    pushl %ebx
 
     cmpl $0, %eax
     jle syscall_invalid
@@ -55,7 +58,10 @@ syscall_done:
     popl %ebx
     popl %ecx
     popl %edx 
-    popal 
+    # popal 
+    popl %ebx
+    popl %edi
+    popl %esi
     popfl
     iret
 

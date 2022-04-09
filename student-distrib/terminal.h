@@ -6,10 +6,10 @@
 extern int32_t terminal_init(void);
 
 //used to open terminal
-extern int terminal_open(const uint8_t* filename);
+extern int32_t terminal_open(const uint8_t* filename);
 
 //used to close terminal
-extern int terminal_close(int32_t fd);
+extern int32_t terminal_close(int32_t fd);
 
 //used to read from terminal
 extern int32_t terminal_read(int32_t fd, unsigned char * buf, int32_t n); //will add fd chkpt3

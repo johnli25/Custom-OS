@@ -5,8 +5,20 @@
 #include "lib.h"
 #include "terminal.h"
 
-fops_t stdin = {(int32_t)terminal_open, (int32_t) terminal_close, (int32_t) terminal_read, (uint32_t) terminal_write};
-fops_t stdout = {(int32_t)terminal_open, (int32_t) terminal_close, (int32_t) terminal_read, (uint32_t) terminal_write};
+int32_t do_nothing_r(int32_t theres, void * nothing, int lol){
+    return 0;
+}
+
+int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
+    return 0;
+}
+
+//fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+
+fops_t stdin;
+stdin.open = (int32_t)terminal_open;
+std.
 
 int programNumber[6] = {0,0,0,0,0,0}; 
 int currentProgramNumber = 0;
@@ -95,13 +107,13 @@ int32_t execute (const uint8_t* command){
     paging_helper(myProgramNumber);
     read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
     
-    uint32_t address = 0;
-    int p = 0;
-    while (p < 4){
-        address |= physicalMemNum[27 - p];
-        address = address << 8; //may be wrong
-        p++;
-    }
+    //uint32_t address = 0;
+    // int p = 0;
+    // while (p < 4){
+    //     address |= physicalMemNum[27 - p];
+    //     address = address << 8; //may be wrong
+    //     p++;
+    // }
 
     // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
@@ -124,11 +136,9 @@ int32_t execute (const uint8_t* command){
     for (i = 2; i<8; i++){
         mypcb -> myINFO[i].flags = 0;
         //mypcb -> myINFO[i].fops_table = NULL;
-        
     }
 
     //save kernel stack bookkeeping info
-
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
     programNumber[myProgramNumber] = 1;
@@ -139,15 +149,16 @@ int32_t execute (const uint8_t* command){
     // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
     // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
     currentProgramNumber = myProgramNumber; //update parent number
-    //enable interrupt on flags
-    //or flags x200 in assembly w register
+    
+    /*context switch*/
+    //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
         "pushl %0;"
         "pushl %1;" //push esp
         "pushfl;" //push eflags
-        "popl %%eax;" //popping eflags into eax
-        "orl $0x200, %%eax;" // trying to Or eax with 200
-        "pushl %%eax;" // pushing eax which contains flags
+        //"popl %%eax;" //popping eflags into eax
+        //"orl $0x200, %%eax;" // trying to Or eax with 200
+        //"pushl %%eax;" // pushing eax which contains flags
         "pushl %2;" //push USER_CS
         "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
@@ -166,6 +177,9 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
 }
 
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
+    if(fd < 0 || fd > 7)
+        return -1;
+    
     return 0;
 }
 

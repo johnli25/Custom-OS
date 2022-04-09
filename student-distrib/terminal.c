@@ -87,23 +87,23 @@ int32_t terminal_write(int32_t fd, unsigned char * buf, int32_t n){
         if(p == NUM_COLS){
             newLine();
         }
-        if(buf[p] != '\0'){ //checks if it is NULL
-            if(buf[p] == '\n'){ //checks if it is NewLine
+        if(((unsigned char *)(buf))[p] != '\0'){ //checks if it is NULL
+            if(((unsigned char *)(buf))[p] == '\n'){ //checks if it is NewLine
                 newLine();
             }
-            else if (buf[p] == '\t'){ //checks if it is Tab
+            else if (((unsigned char *)(buf))[p] == '\t'){ //checks if it is Tab
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 charsPrinted = charsPrinted + 4;
             }
-            else if (buf[p] == '\b'){ //checks if it is Backspace
-                putBackspace(buf[p]);
+            else if (((unsigned char *)(buf))[p] == '\b'){ //checks if it is Backspace
+                putBackspace(((unsigned char *)(buf))[p]);
                 charsPrinted--;
             }
             else{
-                putc(buf[p]);
+                putc(((unsigned char *)(buf))[p]);
                 charsPrinted++;
             }
         }

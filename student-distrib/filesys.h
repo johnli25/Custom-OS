@@ -36,8 +36,8 @@ typedef struct dataBlock {
 typedef struct fops{
     int32_t (*open)(const uint8_t *);
     int32_t (*close)(int32_t);
-    int32_t (*read)(int32_t, void *, int32_t);
-    int32_t (*write)(int32_t, const void *, int32_t);
+    int32_t (*read)(int32_t, void *, int);
+    int32_t (*write)(int32_t, const void *, int);
 } fops_t;
 
 typedef struct fd_info{
