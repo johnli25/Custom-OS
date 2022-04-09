@@ -8,7 +8,7 @@ extern void RTC_WRAPPER(void);
 //used to call the assembly linkage for Keyboard
 extern void KEYBOARD_WRAPPER(void);
 
-
+extern void syscall_wrapper(void);
 
 #endif
 

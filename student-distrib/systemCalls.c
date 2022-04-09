@@ -13,8 +13,12 @@ int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
     return 0;
 }
 
-fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+//fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+
+fops_t stdin;
+stdin.open = (int32_t)terminal_open;
+std.
 
 int programNumber[6] = {0,0,0,0,0,0}; 
 int currentProgramNumber = 0;
@@ -152,9 +156,9 @@ int32_t execute (const uint8_t* command){
         "pushl %0;"
         "pushl %1;" //push esp
         "pushfl;" //push eflags
-        "popl %%eax;" //popping eflags into eax
-        "orl $0x200, %%eax;" // trying to Or eax with 200
-        "pushl %%eax;" // pushing eax which contains flags
+        //"popl %%eax;" //popping eflags into eax
+        //"orl $0x200, %%eax;" // trying to Or eax with 200
+        //"pushl %%eax;" // pushing eax which contains flags
         "pushl %2;" //push USER_CS
         "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
@@ -173,6 +177,9 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
 }
 
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
+    if(fd < 0 || fd > 7)
+        return -1;
+    
     return 0;
 }
 
