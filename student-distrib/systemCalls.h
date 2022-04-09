@@ -12,7 +12,7 @@
 #define POGRAM_MEM_START 128/4
 #define PO3_OF_ENTRY 24
 #define VIRTUAL_ADDR 0x8048000
-#define MB_132 0x8000000
+#define MB_132 0x8400000
 
 #define MAGIC0 0x7F
 #define MAGIC1 0x45
