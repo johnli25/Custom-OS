@@ -15,10 +15,13 @@ int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
 
 //fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+//readin
+//readout
+
 
 fops_t stdin;
 stdin.open = (int32_t)terminal_open;
-std.
+// std.
 
 int programNumber[6] = {0,0,0,0,0,0}; 
 int currentProgramNumber = 0;
@@ -132,6 +135,12 @@ int32_t execute (const uint8_t* command){
     mypcb-> myINFO[1].fops_table = stdout; 
     mypcb-> myINFO[0].flags = 1; //setting flag to 1
     mypcb-> myINFO[1].flags = 1; //setting flag to 1
+
+
+    //DO WE HAVE TO ADD IN MORE THINGS LIKE THE STDIN AND STD OUT???????
+
+
+
     int i = 2;
     for (i = 2; i<8; i++){
         mypcb -> myINFO[i].flags = 0;
@@ -169,7 +178,32 @@ int32_t execute (const uint8_t* command){
 }
 
 int32_t halt(uint8_t status){
-    return 0;
+    // Restore Parent Data
+        //  What data needs to be restored?
+        //  Where to find them?
+    //  Restore Parent Paging
+        //  Similar to execute, but this time, parent paging info
+    //  Clear FD
+        //  What happens if it’s not cleared?
+    //  Write Parent process’ info back to TSS(esp0)
+    //  Jump to execute return.
+        //  What does this step mean?
+
+    pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
+
+    pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
+
+    // parent paging 
+    // how to undo paging_helper???
+    (parentPcb -> pid)
+
+
+    // tss stuff in execute
+    // tss.ss0 = KERNEL_DS;
+    // tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
+
+
+
 }
 
 int32_t general_read(int32_t fd, void * buf, int32_t n){
