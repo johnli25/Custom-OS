@@ -26,7 +26,7 @@ int terminal_open(const uint8_t* filename){
  * Return Value: int
  * Function: closes the terminal (returning 0 for now) */
 int terminal_close(int32_t fd){
-    return 0;
+    return -1;
 }
 
 
@@ -36,8 +36,12 @@ int terminal_close(int32_t fd){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: reads from keyboardBuffer to passed in buf */
+<<<<<<< HEAD
 int terminal_read(int32_t fd, unsigned char * buf, int n){
 
+=======
+int terminal_read(int32_t fd,int n, unsigned char * buf){
+>>>>>>> origin/execute
     TERMINALFLAG = 0; //shared varable from the keyboard
 
     while(TERMINALFLAG == 0){
