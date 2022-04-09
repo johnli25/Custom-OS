@@ -3,6 +3,7 @@
 
 #include "filesys.h"
 #include "types.h"
+#include "rtc.h"
 
 #define EIGHTMB 0x0800000
 #define FOURMB 0x400000

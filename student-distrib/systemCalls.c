@@ -192,7 +192,41 @@ int32_t general_write(int32_t fd, const  void * buf, int32_t n){
 }
 
 int32_t general_open(const uint8_t * filename){
-    return 0;
+    dentry_t dentry;
+    int i = 2;
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+    
+    fops_t dir_fops = {(int32_t)dir_open, (int32_t)dir_close, (int32_t)dir_read, (int32_t)dir_close};
+    fops_t file_fops = {(int32_t)file_open, (int32_t)file_close, (int32_t)file_read, (int32_t)file_close};
+    fops_t rtc_fops = {(int32_t)open_RTC, (int32_t)close_RTC, (int32_t)read_RTC, (int32_t)write_RTC};
+    
+    if (strncmp((uint8_t *)filename, (uint8_t *)".", 1) == 0){ //detected directory
+        dir_open(0);
+        while (i < 8){
+            if (mypcb->myINFO[i].flags == 0) {
+                mypcb->myINFO[i].flags = 1;
+                mypcb->myINFO[i].file_position = 0;
+                mypcb->myINFO[i].inode = 0;
+                mypcb->myINFO[i].fops_table = dir_fops;
+                return i;
+            }
+            i++;
+        }
+    }
+    if (strncmp((uint8_t *)filename, (uint8_t *)".", 1) == 0){ //detected directory
+        file_open(0);
+        while (i < 8){
+            if (mypcb->myINFO[i].flags == 0) {
+                mypcb->myINFO[i].flags = 1;
+                mypcb->myINFO[i].file_position = 0;
+                mypcb->myINFO[i].inode = 0;
+                mypcb->myINFO[i].fops_table = file_fops;
+                return i;
+            }
+            i++;
+        }
+    }
+    return -1;
 }
 
 int32_t general_close(int32_t fd){
