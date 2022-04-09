@@ -5,6 +5,14 @@
 #include "lib.h"
 #include "terminal.h"
 
+int32_t do_nothing_r(int32_t theres, void * nothing, int lol){
+    return 0;
+}
+
+int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
+    return 0;
+}
+
 fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 
@@ -95,7 +103,7 @@ int32_t execute (const uint8_t* command){
     paging_helper(myProgramNumber);
     read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
     
-    uint32_t address = 0;
+    //uint32_t address = 0;
     // int p = 0;
     // while (p < 4){
     //     address |= physicalMemNum[27 - p];
