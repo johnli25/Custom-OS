@@ -124,34 +124,34 @@ int32_t execute (const uint8_t* command){
     //     mypcb -> myINFO[i].flags = 0;
     //     //mypcb -> myINFO[i].fops_table = NULL;
         
-    }
+    // }
 
-    //save kernel stack bookkeeping info
-    tss.ss0 = KERNEL_DS;
-    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
-    programNumber[myProgramNumber] = 1;
-    //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
-    // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
+    // //save kernel stack bookkeeping info
+    // tss.ss0 = KERNEL_DS;
+    // tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
+    // programNumber[myProgramNumber] = 1;
+    // //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
+    // // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
 
-    // mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
-    // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
-    // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
-    currentProgramNumber = myProgramNumber; //update parent number
-    //enable interrupt on flags
-    //or flags x200 in assembly w register
-    asm volatile( 
-        "pushl %0;"
-        "pushl %1;" //push esp
-        "pushfl;" //push eflags
-        "popl %eax" //popping eflags into eax
-        "orl $0x200, %eax" // trying to Or eax with 200
-        "pushl %eax" // pushing eax which contains flags
-        "pushl %2" //push USER_CS
-        "pushl %3;" //push eip = point of entry = 24 onto stack
-        "iret;"
-        :
-        : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
-    );
+    // // mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
+    // // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
+    // // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
+    // currentProgramNumber = myProgramNumber; //update parent number
+    // //enable interrupt on flags
+    // //or flags x200 in assembly w register
+    // asm volatile( 
+    //     "pushl %0;"
+    //     "pushl %1;" //push esp
+    //     "pushfl;" //push eflags
+    //     "popl %eax" //popping eflags into eax
+    //     "orl $0x200, %eax" // trying to Or eax with 200
+    //     "pushl %eax" // pushing eax which contains flags
+    //     "pushl %2" //push USER_CS
+    //     "pushl %3;" //push eip = point of entry = 24 onto stack
+    //     "iret;"
+    //     :
+    //     : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
+    // );
     return 0;
 }
 
