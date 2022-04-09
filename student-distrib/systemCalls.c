@@ -4,6 +4,7 @@
 #include "x86_desc.h"
 #include "lib.h"
 #include "terminal.h"
+#include "rtc.h"
 
 fd_info_t fd_array[8]; 
 
@@ -154,15 +155,15 @@ int32_t execute (const uint8_t* command){
     /*context switch*/
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
-        "pushl %0;"
-        "pushl %1;" //push esp
-        "pushfl;" //push eflags
-        //"popl %%eax;" //popping eflags into eax
-        //"orl $0x200, %%eax;" // trying to Or eax with 200
-        //"pushl %%eax;" // pushing eax which contains flags
-        "pushl %2;" //push USER_CS
-        "pushl %3;" //push eip = point of entry = 24 onto stack
-        "iret;"
+        "pushl %0 \n"
+        "pushl %1 \n" //push esp
+        "pushfl \n" //push eflags
+        "popl %%eax \n" //popping eflags into eax
+        "orl $0x200, %%eax \n" // trying to Or eax with 200
+        "pushl %%eax \n" // pushing eax which contains flags
+        "pushl %2 \n" //push USER_CS
+        "pushl %3 \n" //push eip = point of entry = 24 onto stack
+        "iret \n;"
         :
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
     );
@@ -185,36 +186,52 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
     if ( fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (mypcb->myINFO[fd].flags)
+        if (mypcb->myINFO[fd].flags) //== 1
             return mypcb->myINFO[fd].fops_table.close(fd); 
     }
     return -1; 
 }
 
 int32_t general_open(const uint8_t * filename){
-    dentry_t dentry;
+    dentry_t d;
     int i = 2;
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-    
+
     fops_t dir_fops = {(int32_t)dir_open, (int32_t)dir_close, (int32_t)dir_read, (int32_t)dir_close};
     fops_t file_fops = {(int32_t)file_open, (int32_t)file_close, (int32_t)file_read, (int32_t)file_close};
     fops_t rtc_fops = {(int32_t)open_RTC, (int32_t)close_RTC, (int32_t)read_RTC, (int32_t)write_RTC};
-    
-    if (strncmp((uint8_t *)filename, (uint8_t *)".", 1) == 0){ //detected directory
-        dir_open(0);
+
+    read_dentry_name(filename, &d);
+    if (d.file_type==0){ //rtc
+        open_RTC (filename); 
+        while (i < 8){
+            if (mypcb->myINFO[i].flags == 0) {
+                mypcb->myINFO[i].flags = 1;
+                mypcb->myINFO[i].file_position = 0;
+                mypcb->myINFO[i].inode = 0;
+                mypcb->myINFO[i].fops_table = rtc_fops;
+                return i;
+            }
+            i++;
+        }
+    }
+    if (d.file_type==1){ //dir
+        dir_open(filename);
+        i = 2;
         while (i < 8){
             if (mypcb->myINFO[i].flags == 0) {
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
                 mypcb->myINFO[i].inode = 0;
                 mypcb->myINFO[i].fops_table = dir_fops;
-                return i;
+                return i; 
             }
             i++;
         }
     }
-    if (strncmp((uint8_t *)filename, (uint8_t *)".", 1) == 0){ //detected directory
-        file_open(0);
+    if (d.file_type==2){ //file
+        file_open(filename); 
+        i = 2;
         while (i < 8){
             if (mypcb->myINFO[i].flags == 0) {
                 mypcb->myINFO[i].flags = 1;
@@ -226,7 +243,7 @@ int32_t general_open(const uint8_t * filename){
             i++;
         }
     }
-    return -1;
+    return -1; //can't do
 }
 
 int32_t general_close(int32_t fd){
