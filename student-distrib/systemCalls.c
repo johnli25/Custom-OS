@@ -5,6 +5,8 @@
 #include "lib.h"
 #include "terminal.h"
 
+fd_info_t fd_array[8]; 
+
 int32_t do_nothing_r(int32_t theres, void * nothing, int lol){
     return 0;
 }
@@ -13,7 +15,7 @@ int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
     return 0;
 }
 
-//fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
 
 // fops_t stdin;
@@ -172,33 +174,34 @@ int32_t halt(uint8_t status){
 }
 
 int32_t general_read(int32_t fd, void * buf, int32_t n){
-    if (fd < 0 || fd > 7)
-        return -1;
-    
-
-
-
-
-    return 0;
+    if (fd>=0 && fd < 8){
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+        if (mypcb->myINFO[fd].flags)
+            return mypcb->myINFO[fd].fops_table.close(fd); 
+    }
+    return -1; 
 }
 
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
-    if(fd < 0 || fd > 7)
-        return -1;
-    
-    return 0;
+    if ( fd>=0 && fd < 8){
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+        if (mypcb->myINFO[fd].flags)
+            return mypcb->myINFO[fd].fops_table.close(fd); 
+    }
+    return -1; 
 }
 
 int32_t general_open(const uint8_t * filename){
-    if (fd < 0 || fd > 7)
-        return -1;
     return 0;
 }
 
 int32_t general_close(int32_t fd){
-    if (fd < 0 || fd > 7)
-        return -1;
-    return 0;
+    if ( fd>=0 && fd < 8){
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+        if (mypcb->myINFO[fd].flags)
+            return mypcb->myINFO[fd].fops_table.close(fd); 
+    }
+    return -1; 
 }
 
 int32_t getargs(uint8_t * buf, int32_t n){
