@@ -676,13 +676,13 @@ int rtc_test_read_write() {
 			read_RTC(391, NULL, 391); //391 is for all the unused args 
 			printf("%u ", j); 
 			count+=2; 
-			if (j>=10) count++; 
-			if (j>=100) count++;
-			if (j>=1000) count++; 
-			if (count>=80){
-				newLine();
-				count = 0; 
-			}
+			//if (j>=10) count++; 
+			//if (j>=100) count++;
+			//if (j>=1000) count++; 
+			//if (count>=80){
+				//newLine();
+				//count = 0; 
+			//}
 		}
 	}
 	putc('\n'); 
@@ -811,9 +811,9 @@ void launch_tests(){
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
 	*/
-	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
+	TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 }

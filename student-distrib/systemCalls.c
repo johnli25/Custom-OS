@@ -1,8 +1,8 @@
 #include "systemCalls.h"
 #include "keyboard.h"
-#include "paging.c"
+#include "paging.h"
 #include "x86_desc.h"
-#include "lib.c"
+#include "lib.h"
 #include "terminal.h"
 
 fops_t stdin = {(int32_t)terminal_open, (int32_t) terminal_close, (int32_t) terminal_read, (uint32_t) terminal_write};
@@ -38,95 +38,97 @@ void paging_helper(int processNum){
 }
 
 int32_t execute (const uint8_t* command){
-    // int myProgramNumber = 0;
-    // for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){
-    //     if(programNumber[myProgramNumber] == 0){
-    //         programNumber[myProgramNumber] = 1;
-    //         break;
-    //     }
-    //     if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
-    //         return -1; //all of the others are filled
-    //     }
-    // }
-    // //command is a string, have to parge (ex: shell)
-    // //            ls        
-    // //parse through the string - past 391OS> get after white space 
-    // int index = 0;
-    // while(command[index] == ' '){
-    //     index++;
-    // }
+    int myProgramNumber = 0;
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){
+        if(programNumber[myProgramNumber] == 0){
+            programNumber[myProgramNumber] = 1;
+            break;
+        }
+        if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
+            return -1; //all of the others are filled
+        }
+    }
+    //command is a string, have to parge (ex: shell)
+    //            ls        
+    //parse through the string - past 391OS> get after white space 
+    int index = 0;
+    while(command[index] == ' '){
+        index++;
+    }
 
-    // uint8_t buffer[128];
-    // int bufIndex = 0;
-    // while(command[index] != ' ' && command[index] != '\n'){
-    //     buffer[bufIndex] = command[index];
-    //     index++;
-    //     bufIndex++;
-    // }
-    // //buffer is the command without all white space ^
+    uint8_t buffer[128];
+    int bufIndex = 0;
+    while(command[index] != ' ' && command[index] != '\n'){
+        buffer[bufIndex] = command[index];
+        index++;
+        bufIndex++;
+    }
+    //buffer is the command without all white space ^
 
-    // dentry_t myDentry;
-    // int check = read_dentry_name(buffer, &myDentry);
-    // if(check == -1){
-    //     return -1; //FAILED TEST
-    // }
+    dentry_t myDentry;
+    int check = read_dentry_name(buffer, &myDentry);
+    if(check == -1){
+        return -1; //FAILED TEST
+    }
 
-    // if (myDentry.file_type != 2){ //checks if valid type (executable)
-    //     return -1; //FAILED TEST 
-    // }
+    if (myDentry.file_type != 2){ //checks if valid type (executable)
+        return -1; //FAILED TEST 
+    }
 
-    // uint8_t ELFBUFFER[10];
-    // read_data(myDentry.inode, 0, ELFBUFFER, 4); //why 4 and not 3?
+    uint8_t ELFBUFFER[10];
+    read_data(myDentry.inode, 0, ELFBUFFER, 4); //why 4 and not 3?
 
-    // if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
-    //     ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
-    //     return -1;
+    if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
+        ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
+        return -1;
 
-    // //  Physical memory starts at
-    // // 8MB + (process number * 4MB)
-    // read_data(myDentry.inode, POINT_OF_ENTRY, ELFBUFFER, 4);
-    // uint32_t pt_of_entry = *((uint32_t*)ELFBUFFER);
+    //  Physical memory starts at
+    // 8MB + (process number * 4MB)
+    read_data(myDentry.inode, PO3_OF_ENTRY, ELFBUFFER, 4);
+    //read_data(myDentry.inode, POINT_OF_ENTRY, ELFBUFFER, 4);
+    uint32_t pt_of_entry = *((uint32_t*)ELFBUFFER);
     
-    // uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB)); //from the slides 
+    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB)); //from the slides 
 
-    // //map to virtual mem
-    // //zerpadded by 22
-    // paging_helper(myProgramNumber);
-    // read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
+    //map to virtual mem
+    //zerpadded by 22
+    paging_helper(myProgramNumber);
+    read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
     
-    // uint32_t address = 0;
-    // int p = 0;
-    // while (p < 4){
-    //     address |= physicalMemNum[27 - p];
-    //     address = address << 8; //may be wrong
-    //     p++;
-    // }
+    uint32_t address = 0;
+    int p = 0;
+    while (p < 4){
+        address |= physicalMemNum[27 - p];
+        address = address << 8; //may be wrong
+        p++;
+    }
 
-    // // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
-    // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    // mypcb->pid = myProgramNumber;
+    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    mypcb->pid = myProgramNumber;
 
-    // //save user program bookkeeping info
-    // mypcb-> pid = myProgramNumber;
-    // asm volatile(
-    //     "movl %%esp, %0;"
-    //     "movl %%ebp, %1;"
-    //     : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
-    // );
+    //save user program bookkeeping info
+    mypcb-> pid = myProgramNumber;
+    asm volatile(
+        "movl %%esp, %0;"
+        "movl %%ebp, %1;"
+        : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
+    );
 
-    // mypcb-> parent_id = currentProgramNumber;
-    // mypcb-> myINFO[0].fops_table = stdin;
-    // mypcb-> myINFO[1].fops_table = stdout; 
-    // mypcb-> myINFO[0].flags = 1; //setting flag to 1
-    // mypcb-> myINFO[1].flags = 1; //setting flag to 1
-    // int i = 2;
-    // for (i = 2; i<8; i++){
-    //     mypcb -> myINFO[i].flags = 0;
-    //     //mypcb -> myINFO[i].fops_table = NULL;
+    mypcb-> parent_id = currentProgramNumber;
+    mypcb-> myINFO[0].fops_table = stdin;
+    mypcb-> myINFO[1].fops_table = stdout; 
+    mypcb-> myINFO[0].flags = 1; //setting flag to 1
+    mypcb-> myINFO[1].flags = 1; //setting flag to 1
+    int i = 2;
+    for (i = 2; i<8; i++){
+        mypcb -> myINFO[i].flags = 0;
+        //mypcb -> myINFO[i].fops_table = NULL;
         
     }
 
     //save kernel stack bookkeeping info
+
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
     programNumber[myProgramNumber] = 1;
@@ -143,10 +145,10 @@ int32_t execute (const uint8_t* command){
         "pushl %0;"
         "pushl %1;" //push esp
         "pushfl;" //push eflags
-        "popl %eax" //popping eflags into eax
-        "orl $0x200, %eax" // trying to Or eax with 200
-        "pushl %eax" // pushing eax which contains flags
-        "pushl %2" //push USER_CS
+        "popl %%eax;" //popping eflags into eax
+        "orl $0x200, %%eax;" // trying to Or eax with 200
+        "pushl %%eax;" // pushing eax which contains flags
+        "pushl %2;" //push USER_CS
         "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
         :
