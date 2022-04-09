@@ -51,7 +51,7 @@ bootBlock_t * bootBlock;
 dataBlock_t * data_block_initial_ptr;
 inode_t * inode_initial_ptr;
 
-fd_info_t fd_array[8]; //temp global fd array
+//fd_info_t fd_array[8]; 
 
 void initialize_filesys(uint32_t * addr);
 
