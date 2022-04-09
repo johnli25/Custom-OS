@@ -189,6 +189,15 @@ int32_t halt(uint8_t status){
     //  Jump to execute return.
         //  What does this step mean?
 
+
+    //checks if status matches the max 8 bit status value - status can only be  8 bits (max 11111)
+    //if greater than that (else) default to halt(0)
+
+    //call 32 bit helper function - expand to 32 and call the 32 bit helper function
+    //wrapper 
+
+
+
     pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
 
     pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
@@ -198,6 +207,12 @@ int32_t halt(uint8_t status){
     (parentPcb -> pid)
 
 
+
+    //wrapper for halt - needs to act on a 32 bit - passeed in is an 8 bit - if greater than 8 bits then warning
+
+    //helper: halt32()
+
+
     // tss stuff in execute
     // tss.ss0 = KERNEL_DS;
     // tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
@@ -205,6 +220,26 @@ int32_t halt(uint8_t status){
 
 
 }
+
+
+halt32{
+    //first, grab esp and ebp pointers from the pcb 
+    //set in the pcb array set the current term index to -1 - haltng the process so it goes away - later 5
+    //process index - parent stuff (above)
+    //// tss.ss0 = KERNEL_DS;
+    //// tss.esp0 = parents - > tss.esp0
+    //clean pcb memory - closing file descriptoy - sep function - going in and clearing them all to zero file descriptors and clearing
+    // reload a new shell if a at the root (index i sless than 0) reexecute a shell
+    // parent process done - now paging 
+    // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
+    // TA - set parent as active ? 
+    // assemblu linkeage asm - for 
+    // halt needs to jump to th eend of execute asm volitile :"-.globl LABEL" - able to return to this label in dif asm volatiles 
+    // halt return valu
+
+}
+
+
 
 int32_t general_read(int32_t fd, void * buf, int32_t n){
     return 0;
