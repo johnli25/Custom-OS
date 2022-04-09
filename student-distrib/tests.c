@@ -701,17 +701,17 @@ int rtc_test_read_write() {
 int terminal_read_write(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open();
+	terminal_open("hello");
 	int result = PASS;
 	
 	 while(1){
 		unsigned char buf[127];//testing 128 chars
-		terminal_read(127, buf);//128 chars test
+		terminal_read(127, buf, 0);//128 chars test
 
-		terminal_write(127, buf);
+		terminal_write(127, buf, 0);
     } //infinite while loop
 
-	terminal_close();
+	terminal_close(0);
     return result;
 }
 
@@ -730,15 +730,15 @@ int terminal_read_write_128plus(){
 	int result = PASS;
 
 	terminal_init();
-	terminal_open();
+	terminal_open("hello");
 	
 	 while(1){
 		unsigned char buf[500];// a number greater than 500
-		terminal_read(500, buf);//n is also 500 
+		terminal_read(500, buf, 0);//n is also 500 
 
-		terminal_write(500, buf);
+		terminal_write(500, buf, 0);
     } //infinite while loop
-	terminal_close();
+	terminal_close(0);
 
     return result;
 }
@@ -756,16 +756,16 @@ int terminal_read_write_128plus(){
 int terminalDifSizes(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open();
+	terminal_open("hello");
 	int result = PASS;
 	
 	 while(1){
 		unsigned char buf[500]; // a number greater than 500
-		terminal_read(50, buf);	//number less than 500
+		terminal_read(50, buf, 0);	//number less than 500
 
-		terminal_write(50, buf);
+		terminal_write(50, buf, 0);
     } //infinite while loop
-	terminal_close();
+	terminal_close(0);
 
     return result;
 }

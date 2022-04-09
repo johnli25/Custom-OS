@@ -60,7 +60,7 @@ syscall_done:
     iret
 
 syscall_table:
-    .long 0x0, halt, execute, read, write, open, close, getargs, vidmap, set_handler, sigreturn 
+    .long 0x0, halt, execute, general_read, general_write, general_open, general_close, getargs, vidmap, set_handler, sigreturn 
 
 
     

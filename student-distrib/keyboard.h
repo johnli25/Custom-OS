@@ -1,4 +1,5 @@
-
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
 //Used to initalize the Keyboard
 extern void initialize_Keyboard(void);
 
@@ -10,3 +11,4 @@ extern unsigned char* getKeyboardBuffer(void);
 void clearKeyboardBuffer();
 volatile int TERMINALFLAG; //used as a shared variable for the other 
 
+#endif
