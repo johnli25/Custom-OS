@@ -701,7 +701,8 @@ int rtc_test_read_write() {
 int terminal_read_write(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open("hello");
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	int result = PASS;
 	
 	 while(1){
@@ -730,7 +731,8 @@ int terminal_read_write_128plus(){
 	int result = PASS;
 
 	terminal_init();
-	terminal_open("hello");
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	
 	 while(1){
 		unsigned char buf[500];// a number greater than 500
@@ -756,7 +758,8 @@ int terminal_read_write_128plus(){
 int terminalDifSizes(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open("hello");
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	int result = PASS;
 	
 	 while(1){

@@ -234,7 +234,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
 
         }
         buf[i] = data_block_ptr->data[data_block_offset + alt_i];
-        putc(buf[i]);
+        //putc(buf[i]);
         count++;
         alt_i++; 
     }

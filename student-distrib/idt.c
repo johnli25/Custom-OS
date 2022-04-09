@@ -69,7 +69,7 @@ void initialize_idt(void){
     SET_IDT_ENTRY(idt[0x14], EXCEPTION_VIRTUALIZATION);
     SET_IDT_ENTRY(idt[0x15], EXCEPTION_CONTROL_PROTECTION);
 
-    SET_IDT_ENTRY(idt[0x80], SYS_CALL);
+    SET_IDT_ENTRY(idt[0x80], syscall_wrapper);
 
     SET_IDT_ENTRY(idt[0x21], KEYBOARD_WRAPPER); 
 
@@ -251,12 +251,12 @@ void EXCEPTION_CONTROL_PROTECTION(void){ //0x15
     } //infinite while loop
     return;
 }
-void SYS_CALL(void){ //0x80
-    printf("System Call! \n");
-    while(1) {
+// void SYS_CALL(void){ //0x80
+//     printf("System Call! \n");
+//     while(1) {
 
-    } //infinite while loop
-    return;
-}
+//     } //infinite while loop
+//     return;
+// }
 
 
