@@ -26,6 +26,7 @@ stdin.open = (int32_t)terminal_open;
 int programNumber[6] = {0,0,0,0,0,0}; 
 int currentProgramNumber = 0;
 
+
 void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
@@ -50,6 +51,33 @@ void paging_helper(int processNum){
         :"%eax" //saved "clobbered" regs 
     );
 
+}
+
+void paging_unhelper(int processNum){
+
+    if(page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p){
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
+        // page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
+        page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
+    }
+    asm volatile (
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+    
 }
 
 int32_t execute (const uint8_t* command){
@@ -136,6 +164,7 @@ int32_t execute (const uint8_t* command){
     mypcb-> myINFO[0].flags = 1; //setting flag to 1
     mypcb-> myINFO[1].flags = 1; //setting flag to 1
 
+    mypcb -> active = 1;
 
     //DO WE HAVE TO ADD IN MORE THINGS LIKE THE STDIN AND STD OUT???????
 
@@ -171,6 +200,7 @@ int32_t execute (const uint8_t* command){
         "pushl %2;" //push USER_CS
         "pushl %3;" //push eip = point of entry = 24 onto stack
         "iret;"
+        "-.globl executeEnd"
         :
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
     );
@@ -190,82 +220,105 @@ int32_t halt(uint8_t status){
         //  What does this step mean?
 
 
-    //checks if status matches the max 8 bit status value - status can only be  8 bits (max 11111)
-    //if greater than that (else) default to halt(0)
+    // //checks if status matches the max 8 bit status value - status can only be  8 bits (max 11111)
+    // //if greater than that (else) default to halt(0)
 
-    //call 32 bit helper function - expand to 32 and call the 32 bit helper function
-    //wrapper 
-
-
-
-    pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
-
-    pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
-
-    // parent paging 
-    // how to undo paging_helper???
-    (parentPcb -> pid)
+    // //call 32 bit helper function - expand to 32 and call the 32 bit helper function
+    // //wrapper 
 
 
 
-    //wrapper for halt - needs to act on a 32 bit - passeed in is an 8 bit - if greater than 8 bits then warning
+    // pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
 
-    //helper: halt32()
+    // pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
 
-
-    // tss stuff in execute
-    // tss.ss0 = KERNEL_DS;
-    // tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
-
+    // // parent paging 
+    // // how to undo paging_helper???
+    // (parentPcb -> pid)
 
 
-}
+
+    // //wrapper for halt - needs to act on a 32 bit - passeed in is an 8 bit - if greater than 8 bits then warning
+
+    // //helper: halt32()
 
 
-halt32{
+    // // tss stuff in execute
+    // // tss.ss0 = KERNEL_DS;
+    // // tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
+
+
     //first, grab esp and ebp pointers from the pcb 
-    //pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //may need this again
-    pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
-    saved_ebp = mypcb -> saved_ebp; //what do we do w them?
-    saved_esp = mypcb -> saved_esp; //what do we do w them?
-    int32_t haltReturn; //our return value, what do we return? this added as asm return
+    pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
+    pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
+    //pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
+    //saved_ebp = childPcb -> saved_ebp; //what do we do w them?
+    //saved_esp = childPcb -> saved_esp; //what do we do w them?
+    int32_t haltReturn = (int32_t)(status); //our return value, what do we return? this added as asm return
     
     //set in the pcb array set the current term index to -1 - haltng the process so it goes away - later 5
     
     //process index - parent stuff (above)
-    pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
+    //pcb_t * parentPcb = childPcb -> pcb_parent; //Grabbing the parent PCB
     tss.ss0 = KERNEL_DS;
     //// tss.esp0 = parents - > tss.esp0
-    tss.esp0 = parentPcb - > tss.esp0;
+
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4;
+    //tss.esp0 = parentPcb -> tss.esp0; //if this gives an error - then just do manually with correct pid of parent
 
     
     //clean pcb memory - closing file descriptoy - sep function - going in and clearing them all to zero file descriptors and clearing
     //do not know how to do this.^^
 
+
+    cHiLdPcB -> myINFO[0].flags = 0;
+    cHiLdPcB -> myINFO[1].flags = 0;
+    cHiLdPcB -> myINFO[2].flags = 0;
+    cHiLdPcB -> myINFO[3].flags = 0;
+    cHiLdPcB -> myINFO[4].flags = 0;
+    cHiLdPcB -> myINFO[5].flags = 0;
+    cHiLdPcB -> myINFO[6].flags = 0;
+    cHiLdPcB -> myINFO[7].flags = 0;
+
+
     // reload a new shell if a at the root (index i sless than 0) reexecute a shell
-    if (mypcb->pid < SOME NUMBER??????){
+    if (cHiLdPcB->pid == 0){
         execute((uint8_t*)"shell");
     }
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
     // TA - set parent as active ? 
 
+    cHiLdPcB -> active = 0; 
+    parentPcb -> active = 1;
+
+    paging_unhelper(parentPcb -> pid); // - flushes TLB as well 
+
     //maybe john can look at this paging part? no idea what to do^^^
     //flush tlb
+    // asm volatile (
+    //     "movl %%cr3, %%eax;"
+    //     "movl %%eax, %%cr3;"  
+    //     : 
+    //     : 
+    //     :"%eax" //saved "clobbered" regs 
+    // );
 
-    // assemblu linkeage asm - for 
+
+    // assembluuuuu linkeage asm - for 
     // halt needs to jump to th eend of execute asm volitile :"-.globl LABEL" - able to return to this label in dif asm volatiles 
     // halt return valu
      asm volatile( 
         "mov %0, %%esp;" //esp contains saved_esp
         "mov %1, %%ebp;" //ebp contains saved_ebp
         "mov %2, %%eax;" //eax contains return value
+        "jmp executeEnd;"
         :
-        : "r"(saved_esp), "r"(saved_ebp), "r"(haltReturn)
+        : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn)
         :"%eax" //saved "clobbered" regs 
     );
     //^^where do we jump in asm?
-    // return haltReturn
+    return haltReturn;
     // return status
     //^^ not sure what to return exactly.
 
