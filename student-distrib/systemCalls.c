@@ -9,16 +9,27 @@
 fd_info_t fd_array[8]; 
 
 int32_t do_nothing_r(int32_t theres, void * nothing, int lol){
-    return 0;
+    return -1;
 }
 
 int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
-    return 0;
+    return -1;
 }
 
-fops_t stdin = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
-fops_t stdout = {(int32_t)terminal_open, (int32_t)terminal_close, (int32_t)terminal_read, (int32_t)terminal_write};
+int32_t do_nothing_open(const uint8_t * none){
+    return -1;
+}
 
+int32_t do_nothing_close(int32_t none){
+    return -1;
+}
+
+fops_t stdin = {terminal_open, terminal_close, terminal_read, do_nothing_w};
+fops_t stdout = {terminal_open, terminal_close, do_nothing_r, terminal_write};
+fops_t dir_fops = {dir_open, dir_close, dir_read, dir_write};
+fops_t file_fops = {file_open, file_close, file_read, file_write};
+fops_t rtc_fops = {open_RTC, close_RTC, read_RTC, write_RTC};
+fops_t fops_none = {do_nothing_open, do_nothing_close, do_nothing_r, do_nothing_w};
 // fops_t stdin;
 // stdin.open = (int32_t)terminal_open;
 
@@ -53,7 +64,7 @@ void paging_helper(int processNum){
 
 int32_t execute (const uint8_t* command){
     int myProgramNumber = 0;
-    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //6 is the max # of processes/files
         if(programNumber[myProgramNumber] == 0){
             programNumber[myProgramNumber] = 1;
             break;
@@ -119,7 +130,6 @@ int32_t execute (const uint8_t* command){
 
     // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    mypcb->pid = myProgramNumber;
 
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
@@ -129,15 +139,24 @@ int32_t execute (const uint8_t* command){
         : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
     );
 
-    mypcb-> parent_id = currentProgramNumber;
-    mypcb-> myINFO[0].fops_table = stdin;
-    mypcb-> myINFO[1].fops_table = stdout; 
+    //initialize pcb's/fd aray
+    mypcb-> myINFO[0].fops_table = &stdin;
+    mypcb-> myINFO[1].fops_table = &stdout; 
     mypcb-> myINFO[0].flags = 1; //setting flag to 1
     mypcb-> myINFO[1].flags = 1; //setting flag to 1
+
+    mypcb->myINFO[0].inode = 0; //inodes to 0
+    mypcb->myINFO[1].inode = 0;
+    mypcb->myINFO[0].file_position = 0; //file position to 0
+    mypcb->myINFO[1].file_position = 0;
+
     int i = 2;
-    for (i = 2; i<8; i++){
+    for (i = 2; i<8; i++){ //magic #: fill in fd_array indices 2-8
         mypcb -> myINFO[i].flags = 0;
-        //mypcb -> myINFO[i].fops_table = NULL;
+        mypcb -> myINFO[i].inode = 0; //inodes to 0
+        mypcb -> myINFO[i].file_position = 0; //file position to 0
+        mypcb -> myINFO[i].fops_table = &fops_none; //file position to 0
+
     }
 
     //save kernel stack bookkeeping info
@@ -178,7 +197,7 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
     if (fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags)
-            return mypcb->myINFO[fd].fops_table.close(fd); 
+            return mypcb->myINFO[fd].fops_table->close(fd); 
     }
     return -1; 
 }
@@ -187,7 +206,7 @@ int32_t general_write(int32_t fd, const  void * buf, int32_t n){
     if ( fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags) //== 1
-            return mypcb->myINFO[fd].fops_table.close(fd); 
+            return mypcb->myINFO[fd].fops_table->close(fd); 
     }
     return -1; 
 }
@@ -197,10 +216,6 @@ int32_t general_open(const uint8_t * filename){
     int i = 2;
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
 
-    fops_t dir_fops = {(int32_t)dir_open, (int32_t)dir_close, (int32_t)dir_read, (int32_t)dir_close};
-    fops_t file_fops = {(int32_t)file_open, (int32_t)file_close, (int32_t)file_read, (int32_t)file_close};
-    fops_t rtc_fops = {(int32_t)open_RTC, (int32_t)close_RTC, (int32_t)read_RTC, (int32_t)write_RTC};
-
     read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
@@ -209,7 +224,7 @@ int32_t general_open(const uint8_t * filename){
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
                 mypcb->myINFO[i].inode = 0;
-                mypcb->myINFO[i].fops_table = rtc_fops;
+                mypcb->myINFO[i].fops_table = &rtc_fops;
                 return i;
             }
             i++;
@@ -223,7 +238,7 @@ int32_t general_open(const uint8_t * filename){
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
                 mypcb->myINFO[i].inode = 0;
-                mypcb->myINFO[i].fops_table = dir_fops;
+                mypcb->myINFO[i].fops_table = &dir_fops;
                 return i; 
             }
             i++;
@@ -237,7 +252,7 @@ int32_t general_open(const uint8_t * filename){
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
                 mypcb->myINFO[i].inode = 0;
-                mypcb->myINFO[i].fops_table = file_fops;
+                mypcb->myINFO[i].fops_table = &file_fops;
                 return i;
             }
             i++;
@@ -250,7 +265,7 @@ int32_t general_close(int32_t fd){
     if ( fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags)
-            return mypcb->myINFO[fd].fops_table.close(fd); 
+            return mypcb->myINFO[fd].fops_table->close(fd); 
     }
     return -1; 
 }

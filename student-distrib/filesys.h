@@ -41,7 +41,7 @@ typedef struct fops{
 } fops_t;
 
 typedef struct fd_info{
-    fops_t fops_table; // FOPS jump table
+    fops_t * fops_table; // FOPS jump table
     uint32_t inode;
     uint32_t file_position;
     uint32_t flags;
@@ -55,19 +55,19 @@ inode_t * inode_initial_ptr;
 
 void initialize_filesys(uint32_t * addr);
 
-int32_t dir_open();
-int32_t dir_close();
-int32_t dir_read(int32_t fd, void * buf, int32_t nbytes, int idx);
-int32_t dir_write();
+extern int32_t dir_open(const uint8_t *filename);
+extern int32_t dir_close(int32_t fd);
+extern int32_t dir_read(int32_t fd, void *buf, int idx);
+extern int32_t dir_write(int32_t fd, const void *buf, int nbytes);
 
-int32_t file_open();
-int32_t file_close();
-int32_t file_read();
-int32_t file_write();
+extern int32_t file_open(const uint8_t *filename);
+extern int32_t file_close(int32_t fd);
+extern int32_t file_read(int32_t fd, void *buf, int nbytes);
+extern int32_t file_write(int32_t fd, const void *buf, int nbytes);
 
-int32_t read_dentry_name (const uint8_t* file_name, dentry_t * dentry);
-int32_t read_dentry_index (uint32_t index, dentry_t* dentry);
-int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
+extern int32_t read_dentry_name (const uint8_t* file_name, dentry_t * dentry);
+extern int32_t read_dentry_index (uint32_t index, dentry_t* dentry);
+extern int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
 
 #endif
 

@@ -579,7 +579,7 @@ int ls_dir_test(){
 	int result = 0;
 	printf("    \n");
 	for (i = 0; i < 20; i++){ //MAGIC #: 20 is arbitrary size for ls dir test
-		result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
+		result = dir_read(2, buf, i); //2 is a filler value FOR NOW
 		//buf[result] = '\0';	
 
 		printf(buf);
