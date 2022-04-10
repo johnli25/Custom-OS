@@ -64,3 +64,8 @@
 -Issue: Empty data (displayed as 0) in inodes + data_blocks.
 -Resolved by: switching inode and filetype in inode structure
 -3/27/2022
+
+12.
+-Issue: Page Fault exception
+-Resolved by: Issue was in the general open/read/write/close functions. We were calling the wrong funtions inside each function.
+-4/10/2022
