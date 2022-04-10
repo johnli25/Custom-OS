@@ -17,7 +17,7 @@ int32_t terminal_init(void){
  * Inputs: none
  * Return Value: int
  * Function: opens the terminal (returning 0 for now) */
-int terminal_open(const uint8_t* filename){
+int32_t terminal_open(const uint8_t* filename){
     return 0;
 }
 
@@ -25,7 +25,7 @@ int terminal_open(const uint8_t* filename){
  * Inputs: none
  * Return Value: int
  * Function: closes the terminal (returning 0 for now) */
-int terminal_close(int32_t fd){
+int32_t terminal_close(int32_t fd){
     return -1;
 }
 

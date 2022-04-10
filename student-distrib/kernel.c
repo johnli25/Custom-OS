@@ -176,7 +176,9 @@ void entry(unsigned long magic, unsigned long addr) {
     initialize_RTC(); //RTC initialization
 
     clear();
-    sti();
+    sti(); //idt we need this anymore?
+    // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+
 
 #ifdef RUN_TESTS
     /* Run tests */

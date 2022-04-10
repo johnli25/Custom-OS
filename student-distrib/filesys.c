@@ -52,7 +52,7 @@ int32_t dir_close(int32_t fd)
  *   RETURN VALUE: bytes read
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t dir_read(int32_t fd, void *buf, int32_t nbytes, int idx)
+int32_t dir_read(int32_t fd, void *buf, int idx)
 {
     int j, bytes_read;
     bytes_read = 0;
@@ -76,7 +76,7 @@ int32_t dir_read(int32_t fd, void *buf, int32_t nbytes, int idx)
  *   RETURN VALUE: -1
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t dir_write(int32_t fd, const void *buf, int32_t nbytes)
+int32_t dir_write(int32_t fd, const void *buf, int nbytes)
 {
 
     return -1; // read-only file system, so return -1 automatically and uncondiionally
@@ -91,7 +91,7 @@ int32_t dir_write(int32_t fd, const void *buf, int32_t nbytes)
  *   SIDE EFFECTS: reads from file memory
  */
 /*Checkpoint 3.2 file functions*/
-int32_t file_open(const uint8_t *filename, int fd)
+int32_t file_open(const uint8_t *filename)
 {
 
     return 0;
@@ -118,7 +118,7 @@ int32_t file_close(int32_t fd)
  *   RETURN VALUE: 0
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t file_read(int32_t fd, void *buf, int32_t nbytes)
+int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
 
     return 0;
@@ -132,7 +132,7 @@ int32_t file_read(int32_t fd, void *buf, int32_t nbytes)
  *   RETURN VALUE: -1
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t file_write(int32_t fd, const void *buf, int32_t nbytes)
+int32_t file_write(int32_t fd, const void *buf, int nbytes)
 {
 
     return -1; // read-only file system, so return -1 automatically and uncondiionally
