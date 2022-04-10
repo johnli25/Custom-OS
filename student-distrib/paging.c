@@ -59,11 +59,11 @@ void setup_paging_structures(void){
             page_dir[i]._PDE_kernel_4MB.r_w = 1;
             page_dir[i]._PDE_kernel_4MB.u_s = 0;
             page_dir[i]._PDE_kernel_4MB.pwt = 0;
-            page_dir[i]._PDE_kernel_4MB.pcd = 0;
+            page_dir[i]._PDE_kernel_4MB.pcd = 1;
             page_dir[i]._PDE_kernel_4MB.a = 0;
             page_dir[i]._PDE_kernel_4MB.d = 0;
             page_dir[i]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
-            page_dir[i]._PDE_kernel_4MB.g = 0;
+            page_dir[i]._PDE_kernel_4MB.g = 1; //global kernel page 3.3
             page_dir[i]._PDE_kernel_4MB.avl_3bits = 0;
             page_dir[i]._PDE_kernel_4MB.pat = 0;
             page_dir[i]._PDE_kernel_4MB.base_addr2 = 0;

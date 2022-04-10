@@ -41,11 +41,11 @@ void paging_helper(int processNum){
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 1;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0; //must enable global pages
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
@@ -63,6 +63,8 @@ void paging_helper(int processNum){
 }
 
 int32_t execute (const uint8_t* command){
+    if (!command)
+        return -1; 
     int myProgramNumber = 0;
     for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //6 is the max # of processes/files
         if(programNumber[myProgramNumber] == 0){
@@ -107,37 +109,35 @@ int32_t execute (const uint8_t* command){
         ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
         return -1;
 
-    //  Physical memory starts at
-    // 8MB + (process number * 4MB)
-    read_data(myDentry.inode, PO3_OF_ENTRY, ELFBUFFER, 4);
-    //read_data(myDentry.inode, POINT_OF_ENTRY, ELFBUFFER, 4);
-    uint32_t pt_of_entry = *((uint32_t*)ELFBUFFER);
-    
-    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB)); //from the slides 
+    uint8_t POE_buf[4];
+    read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
+    uint8_t POT_var0 = POE_buf[0];
+    uint8_t POT_var1 = POE_buf[1];
+    uint8_t POT_var2 = POE_buf[2];
+    uint8_t POT_var3 = POE_buf[3];
 
-    //map to virtual mem
-    //zerpadded by 22
-    paging_helper(myProgramNumber);
-    read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR, 1000000); //load file into memory
-    
-    //uint32_t address = 0;
+    // POE_buf[0] = POT_var3;
+    // POE_buf[1] = POT_var2;
+    // POE_buf[2] = POT_var1;
+    // POE_buf[3] = POT_var0;
     // int p = 0;
     // while (p < 4){
     //     address |= physicalMemNum[27 - p];
     //     address = address << 8; //may be wrong
     //     p++;
     // }
+    uint32_t pt_of_entry = *((uint32_t*)POE_buf);
+    
+    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
-    // PCB = 8MB - (8KB * (ProcessNumber + 1)) - IS THIS IS USED FOR PAGING - VIRTUAL ADDRESS???????????
+    //map to virtual mem
+    //zerpadded by 22
+    paging_helper(myProgramNumber);
+    read_data(myDentry.inode, 0, (unsigned char *)VIRTUAL_ADDR,  FOURMB); //load file into memory
+    
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-
-    //save user program bookkeeping info
-    mypcb-> pid = myProgramNumber;
-    asm volatile(
-        "movl %%esp, %0;"
-        "movl %%ebp, %1;"
-        : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
-    );
+    programNumber[myProgramNumber] = 1;
+    currentProgramNumber = myProgramNumber; //update parent number
 
     //initialize pcb's/fd aray
     mypcb-> myINFO[0].fops_table = &stdin;
@@ -159,22 +159,22 @@ int32_t execute (const uint8_t* command){
 
     }
 
+    //save user program bookkeeping info
+    mypcb-> pid = myProgramNumber;
+    asm volatile(
+        "movl %%esp, %0;"
+        "movl %%ebp, %1;"
+        : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
+    );
+
     //save kernel stack bookkeeping info
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
-    programNumber[myProgramNumber] = 1;
-    //HAVE TO DO MORE WITH fileDescriptor[0]: PUT IN THE ACTUAL JUMP TABLE STUFF
-    // mypcb -> fileDescriptor[0] = myDentry.file_type; //corresponds to the file operations file pointer
-
-    // mypcb -> fileDescriptor[1] = myDentry.inode; //corresponds to the iNode /number?
-    // mypcb -> fileDescriptor[2] = 0; //corresponds to the file position
-    // mypcb -> fileDescriptor[3] = 0; //corresponds to the flags
-    currentProgramNumber = myProgramNumber; //update parent number
     
     /*context switch*/
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
-        "pushl %0 \n"
+        "pushl %0 \n" //push USER_DS
         "pushl %1 \n" //push esp
         "pushfl \n" //push eflags
         "popl %%eax \n" //popping eflags into eax
@@ -185,6 +185,7 @@ int32_t execute (const uint8_t* command){
         "iret \n;"
         :
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
+        : "eax" //clobbered regs
     );
     return 0;
 }
@@ -197,7 +198,7 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
     if (fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags)
-            return mypcb->myINFO[fd].fops_table->close(fd); 
+            return mypcb->myINFO[fd].fops_table->read(fd, buf, n); 
     }
     return -1; 
 }
@@ -206,7 +207,7 @@ int32_t general_write(int32_t fd, const  void * buf, int32_t n){
     if ( fd>=0 && fd < 8){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags) //== 1
-            return mypcb->myINFO[fd].fops_table->close(fd); 
+            return mypcb->myINFO[fd].fops_table->write(fd, buf, n); 
     }
     return -1; 
 }
@@ -216,10 +217,16 @@ int32_t general_open(const uint8_t * filename){
     int i = 2;
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
 
+    if (read_dentry_name(filename, &d) != 0)
+        return -1;
+
+    if (!filename)
+        return -1;
+
     read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
-        while (i < 8){
+        while (i < 8){ //8 is max size idx of fd array
             if (mypcb->myINFO[i].flags == 0) {
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
@@ -233,7 +240,7 @@ int32_t general_open(const uint8_t * filename){
     if (d.file_type==1){ //dir
         dir_open(filename);
         i = 2;
-        while (i < 8){
+        while (i < 8){ //8 is max size idx of fd array
             if (mypcb->myINFO[i].flags == 0) {
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
@@ -251,14 +258,14 @@ int32_t general_open(const uint8_t * filename){
             if (mypcb->myINFO[i].flags == 0) {
                 mypcb->myINFO[i].flags = 1;
                 mypcb->myINFO[i].file_position = 0;
-                mypcb->myINFO[i].inode = 0;
+                mypcb->myINFO[i].inode = d.inode;
                 mypcb->myINFO[i].fops_table = &file_fops;
                 return i;
             }
             i++;
         }
     }
-    return -1; //can't do
+    return -1; //can't find
 }
 
 int32_t general_close(int32_t fd){
