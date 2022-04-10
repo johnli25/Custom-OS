@@ -224,12 +224,27 @@ int32_t halt(uint8_t status){
 
 halt32{
     //first, grab esp and ebp pointers from the pcb 
+    //pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //may need this again
+    pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
+    mypcb -> saved_ebp //what do we do w them?
+    mypcb -> saved_esp //what do we do w them?
+
+    
     //set in the pcb array set the current term index to -1 - haltng the process so it goes away - later 5
+    //
     //process index - parent stuff (above)
-    //// tss.ss0 = KERNEL_DS;
+    pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
+    tss.ss0 = KERNEL_DS;
     //// tss.esp0 = parents - > tss.esp0
+    tss.esp0 = parentPcb - > tss.esp0;
+
+    
     //clean pcb memory - closing file descriptoy - sep function - going in and clearing them all to zero file descriptors and clearing
+
     // reload a new shell if a at the root (index i sless than 0) reexecute a shell
+    if (mypcb->pid < SOME NUMBER??????){
+        execute((uint8_t*)"shell");
+    }
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
     // TA - set parent as active ? 
