@@ -226,12 +226,12 @@ halt32{
     //first, grab esp and ebp pointers from the pcb 
     //pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //may need this again
     pcb_t * mypcb; //FIGURE OUT HOW TO INSTANTIATE!!!
-    mypcb -> saved_ebp //what do we do w them?
-    mypcb -> saved_esp //what do we do w them?
-
+    saved_ebp = mypcb -> saved_ebp; //what do we do w them?
+    saved_esp = mypcb -> saved_esp; //what do we do w them?
+    int32_t haltReturn; //our return value, what do we return? this added as asm return
     
     //set in the pcb array set the current term index to -1 - haltng the process so it goes away - later 5
-    //
+    
     //process index - parent stuff (above)
     pcb_t * parentPcb = mypcb -> pcb_parent; //Grabbing the parent PCB
     tss.ss0 = KERNEL_DS;
@@ -240,6 +240,7 @@ halt32{
 
     
     //clean pcb memory - closing file descriptoy - sep function - going in and clearing them all to zero file descriptors and clearing
+    //do not know how to do this.^^
 
     // reload a new shell if a at the root (index i sless than 0) reexecute a shell
     if (mypcb->pid < SOME NUMBER??????){
@@ -248,9 +249,25 @@ halt32{
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
     // TA - set parent as active ? 
+
+    //maybe john can look at this paging part? no idea what to do^^^
+    //flush tlb
+
     // assemblu linkeage asm - for 
     // halt needs to jump to th eend of execute asm volitile :"-.globl LABEL" - able to return to this label in dif asm volatiles 
     // halt return valu
+     asm volatile( 
+        "mov %0, %%esp;" //esp contains saved_esp
+        "mov %1, %%ebp;" //ebp contains saved_ebp
+        "mov %2, %%eax;" //eax contains return value
+        :
+        : "r"(saved_esp), "r"(saved_ebp), "r"(haltReturn)
+        :"%eax" //saved "clobbered" regs 
+    );
+    //^^where do we jump in asm?
+    // return haltReturn
+    // return status
+    //^^ not sure what to return exactly.
 
 }
 
