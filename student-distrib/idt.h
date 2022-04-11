@@ -1,3 +1,5 @@
+#ifndef IDT_H
+#define IDT_H
 
 extern void DEFAULT_EXCEPTION(void); 
 extern void EXCEPTION_DIVIDE_BY_ZERO(void); //0x00
@@ -23,10 +25,11 @@ extern void EXCEPTION_SIMD_FLOATING_POINT(void);   //0x13
 extern void EXCEPTION_VIRTUALIZATION(void);   //0x14
 extern void EXCEPTION_CONTROL_PROTECTION(void);   //0x15
 
+
 extern void SYS_CALL(void);
 
 extern void initialize_idt(void);
 
 
 
-
+#endif

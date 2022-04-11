@@ -2,41 +2,6 @@
 #include "i8259.h"
 #include "keyboard.h"
 
-#define KEYBOARDIRQNUM  1       //corresponds to the keyboard IRQ Number
-#define KEYBOARDPORT    0x60    //corresponds to the keyboard port 
-#define scancodesSize   85       //size of the scancodes1 array for now
-#define keyboardBufferSize 128  //size of the keyboardBuffer 
-#define NUM_COLS    80
-#define NUM_ROWS    25
-
-
-// SPECIAL CHARACTERS:
-#define BACKSPACEPRESS   0X0E
-#define TABPRESS     0X0F
-#define ENTERPRESS  0X1C
-#define LEFTCONTROLPRESS     0x1D
-#define LEFTCONTROLRELEASE   0x9D
-// #define RIGHTCONTROLPRESS1  0xE0
-// #define RIGHTCONTROLRELEASE1    0xE0
-#define RIGHTCONTROLPRESS  0x1D
-#define RIGHTCONTROLRELEASE 0x9D
-#define LEFTSHIFTPRESS   0x2A 
-#define LEFTSHIFTRELEASE 0xAA
-#define RIGHTSHIFTPRESS     0x36
-#define RIGHTSHIFTRELEASE   0xB6
-#define SPACEPRESS  0x39
-#define CAPSLOCKPRESS   0x3A
-#define RELEASEDCHAR 0x80
-#define LCHARACTER 0x26
-#define UPCHAR  0x48
-#define DOWNCHAR 0x50
-#define RIGHTCHAR 0x4D
-#define LEFTCHAR 0x4B
-
-#define INTTRUE 1
-#define INTFALSE 0
-
-
 int capsLock = INTFALSE;
 int shift = INTFALSE;
 int control = INTFALSE;
@@ -194,13 +159,13 @@ void interrupt_keyboard(void){
 
     if(myInput == BACKSPACEPRESS){
         if (keyboardBuffer[counter - 1] == '\t'){ //to show a tab
-            putBackspace(keyboardBuffer[counter-1]);
-            putBackspace(keyboardBuffer[counter-1]);
-            putBackspace(keyboardBuffer[counter-1]);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
         }
         //put 4 back
         
-        putBackspace(keyboardBuffer[counter-1]); //video memory for backspace
+        putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer); //video memory for backspace
        
         if(counter != 0){
             counter--;

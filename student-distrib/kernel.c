@@ -14,6 +14,7 @@
 
 #include "paging.h"
 #include "filesys.h"
+#include "systemCalls.h"
 
 #define RUN_TESTS
 
@@ -175,14 +176,18 @@ void entry(unsigned long magic, unsigned long addr) {
     initialize_RTC(); //RTC initialization
 
     clear();
-    sti();
+    sti(); //idt we need this anymore?
+    // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+
 
 #ifdef RUN_TESTS
     /* Run tests */
-    launch_tests();
+    //launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
+    //execute((uint8_t*)"shell");
 
+    execute((uint8_t*)"shell");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

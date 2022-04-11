@@ -33,27 +33,41 @@ typedef struct dataBlock {
     uint8_t data[KB_4]; //how many BYTES OF DATA is contained within each block!
 } __attribute__((packed)) dataBlock_t;
 
+typedef struct fops{
+    int32_t (*open)(const uint8_t *);
+    int32_t (*close)(int32_t);
+    int32_t (*read)(int32_t, void *, int);
+    int32_t (*write)(int32_t, const void *, int);
+} fops_t;
+
+typedef struct fd_info{
+    fops_t * fops_table; // FOPS jump table
+    uint32_t inode;
+    uint32_t file_position;
+    uint32_t flags;
+} __attribute__((packed)) fd_info_t;
+
 bootBlock_t * bootBlock;
 dataBlock_t * data_block_initial_ptr;
 inode_t * inode_initial_ptr;
 
-int fd_table[8]; //temp global fd array
+//fd_info_t fd_array[8]; 
 
 void initialize_filesys(uint32_t * addr);
 
-int dir_open();
-int dir_close();
-int dir_read(int32_t fd, void * buf, int32_t nbytes, int idx);
-int dir_write();
+extern int32_t dir_open(const uint8_t *filename);
+extern int32_t dir_close(int32_t fd);
+extern int32_t dir_read(int32_t fd, void *buf, int idx);
+extern int32_t dir_write(int32_t fd, const void *buf, int nbytes);
 
-int file_open();
-int file_close();
-int file_read();
-int file_write();
+extern int32_t file_open(const uint8_t *filename);
+extern int32_t file_close(int32_t fd);
+extern int32_t file_read(int32_t fd, void *buf, int nbytes);
+extern int32_t file_write(int32_t fd, const void *buf, int nbytes);
 
-int32_t read_dentry_name (const uint8_t* file_name, dentry_t * dentry);
-int32_t read_dentry_index (uint32_t index, dentry_t* dentry);
-int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
+extern int32_t read_dentry_name (const uint8_t* file_name, dentry_t * dentry);
+extern int32_t read_dentry_index (uint32_t index, dentry_t* dentry);
+extern int32_t read_data (uint32_t inode, uint32_t offset, uint8_t* buf, uint32_t length);
 
 #endif
 

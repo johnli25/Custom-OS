@@ -395,13 +395,13 @@ int read_valid_file2(){
 int read_exec_file(){
 	TEST_HEADER;
 	dentry_t * test_dentry;
-	uint8_t buf[391]; //391 is random buffer size
+	uint8_t buf[10000]; //391 is random buffer size
 	const uint8_t * input = (const uint8_t *)("pingpong");
 	int	result = read_dentry_name(input, test_dentry);
 	printf(" \n");
 	if (result == -1)
 		return FAIL;
-	result = read_data(test_dentry->inode, 0, buf, 10000); //
+	read_data(test_dentry->inode, 0, buf, 10000); //
 
 	return PASS;
 }
@@ -579,7 +579,7 @@ int ls_dir_test(){
 	int result = 0;
 	printf("    \n");
 	for (i = 0; i < 20; i++){ //MAGIC #: 20 is arbitrary size for ls dir test
-		result = dir_read(2, buf, 2, i); //2 is a filler value FOR NOW
+		result = dir_read(2, buf, i); //2 is a filler value FOR NOW
 		//buf[result] = '\0';	
 
 		printf(buf);
@@ -676,13 +676,13 @@ int rtc_test_read_write() {
 			read_RTC(391, NULL, 391); //391 is for all the unused args 
 			printf("%u ", j); 
 			count+=2; 
-			if (j>=10) count++; 
-			if (j>=100) count++;
-			if (j>=1000) count++; 
-			if (count>=80){
-				newLine();
-				count = 0; 
-			}
+			//if (j>=10) count++; 
+			//if (j>=100) count++;
+			//if (j>=1000) count++; 
+			//if (count>=80){
+				//newLine();
+				//count = 0; 
+			//}
 		}
 	}
 	putc('\n'); 
@@ -701,17 +701,20 @@ int rtc_test_read_write() {
 int terminal_read_write(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open();
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	int result = PASS;
 	
-	 while(1){
+	printf("cringelol \n");
+	while(1){
 		unsigned char buf[127];//testing 128 chars
-		terminal_read(127, buf);//128 chars test
+		terminal_read(127, buf, 0);//128 chars test
 
-		terminal_write(127, buf);
+		terminal_write(127, buf, 0);
+		putc('M');
     } //infinite while loop
 
-	terminal_close();
+	terminal_close(0);
     return result;
 }
 
@@ -730,15 +733,16 @@ int terminal_read_write_128plus(){
 	int result = PASS;
 
 	terminal_init();
-	terminal_open();
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	
 	 while(1){
 		unsigned char buf[500];// a number greater than 500
-		terminal_read(500, buf);//n is also 500 
+		terminal_read(500, buf, 0);//n is also 500 
 
-		terminal_write(500, buf);
+		terminal_write(500, buf, 0);
     } //infinite while loop
-	terminal_close();
+	terminal_close(0);
 
     return result;
 }
@@ -756,16 +760,17 @@ int terminal_read_write_128plus(){
 int terminalDifSizes(){
 	TEST_HEADER;
 	terminal_init();
-	terminal_open();
+	const uint8_t * input = (const uint8_t *)"hello";
+	terminal_open(input);
 	int result = PASS;
 	
-	 while(1){
+	while(1){
 		unsigned char buf[500]; // a number greater than 500
-		terminal_read(50, buf);	//number less than 500
+		terminal_read(50, buf, 0);	//number less than 500
 
-		terminal_write(50, buf);
+		terminal_write(50, buf, 0);
     } //infinite while loop
-	terminal_close();
+	terminal_close(0);
 
     return result;
 }
@@ -791,7 +796,7 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	//TEST_OUTPUT("filesys CP 3.2 tests", read_large_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
