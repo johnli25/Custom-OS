@@ -185,7 +185,9 @@ void entry(unsigned long magic, unsigned long addr) {
     //launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    execute((uint8_t*)"shell");
+    //execute((uint8_t*)"shell");
+
+    execute((uint8_t*)"testprint");
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

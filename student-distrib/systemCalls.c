@@ -91,6 +91,7 @@ void paging_unhelper(int processNum){
 }
 
 int32_t execute (const uint8_t* command){
+    int32_t ret;
     if (!command)
         return -1; 
     int myProgramNumber = 0;
@@ -107,11 +108,15 @@ int32_t execute (const uint8_t* command){
     //            ls        
     //parse through the string - past 391OS> get after white space 
     int index = 0;
+    int j; 
     while(command[index] == ' '){
         index++;
     }
 
     uint8_t buffer[128];
+    for (j = 0; j<128; j++ ){
+        buffer[j] = '\0';
+    }
     int bufIndex = 0;
     while(command[index] != ' ' && command[index] != '\n'){
         buffer[bufIndex] = command[index];
@@ -165,6 +170,7 @@ int32_t execute (const uint8_t* command){
     
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     programNumber[myProgramNumber] = 1;
+    mypcb -> parent_id = currentProgramNumber;
     currentProgramNumber = myProgramNumber; //update parent number
 
     //initialize pcb's/fd aray
@@ -198,9 +204,12 @@ int32_t execute (const uint8_t* command){
     //save kernel stack bookkeeping info
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
+
+    mypcb -> active = 1;
     
     /*context switch*/
     //enable interrupt on flags: or flags x200 in assembly w register
+     //".globl executeEnd;" 
     asm volatile( 
         "pushl %0 \n" //push USER_DS
         "pushl %1 \n" //push esp
@@ -211,11 +220,14 @@ int32_t execute (const uint8_t* command){
         "pushl %2 \n" //push USER_CS
         "pushl %3 \n" //push eip = point of entry = 24 onto stack
         "iret \n;"
+        "executeEnd: \n"
+        "movl %%eax, %4;"
+        //move return value from register into 
         :
-        : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry)
+        : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry), "r"(ret)
         : "eax" //clobbered regs
     );
-    return 0;
+    return ret;
 }
 
 int32_t halt(uint8_t status){
@@ -322,14 +334,21 @@ int32_t halt(uint8_t status){
      asm volatile( 
         "mov %0, %%esp;" //esp contains saved_esp
         "mov %1, %%ebp;" //ebp contains saved_ebp
-        "mov %2, %%eax;" //eax contains return value
+        //"mov %2, %%eax;" eax contains return value
+        //check status
+        "cmp $1, %2;"
+        "jne myValid;"
+        "movl $1, %%eax;"
+        "jmp executeEnd;"
+        "myValid:"
+        "andl $0, %%eax;"
         "jmp executeEnd;"
         :
-        : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn)
+        : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(status)
         :"%eax" //saved "clobbered" regs 
     );
     //^^where do we jump in asm?
-    return haltReturn;
+    return -1;
     // return status
     //^^ not sure what to return exactly.
 
