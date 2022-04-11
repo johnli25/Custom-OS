@@ -240,7 +240,7 @@ int32_t halt(uint8_t status){
 
     program_arr[cHiLdPcB->pid] = 0;
     // reload a new shell if childpcb's pid = childpcb's parent id
-    if (cHiLdPcB->pid == cHiLdPcB->parent_id) 
+    if (currentProgramNumber == cHiLdPcB->parent_id) 
         execute((uint8_t*)"shell");
     
     // parent process done - now paging 
