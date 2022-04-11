@@ -99,7 +99,7 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
             else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
                 if (strncmp((int8_t *)buf, "391OS> ", 7) == 0){
                     printf("bwuh \n"); 
-                    putBackspace(((unsigned char *)(buf))[p]);
+                    putBackspace(((unsigned char *)(buf))[p], (unsigned char *)buf);
                     charsPrinted--;
                 }
             }

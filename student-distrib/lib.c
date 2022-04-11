@@ -377,9 +377,10 @@ void putc(uint8_t c) {
  * Inputs: uint_8* c = character to print
  * Return Value: void
  *  Function: Output a backspace to the console */
-void putBackspace(uint8_t c){
+void putBackspace(uint8_t c, unsigned char * buf){
     //adding if statement for backspace
-
+    if (buf[0] == '\0')
+        return;
     if(screen_y != 0 || screen_x != 0){
         counterScreen--;
         if (screen_x != 0){

@@ -159,13 +159,13 @@ void interrupt_keyboard(void){
 
     if(myInput == BACKSPACEPRESS){
         if (keyboardBuffer[counter - 1] == '\t'){ //to show a tab
-            putBackspace(keyboardBuffer[counter-1]);
-            putBackspace(keyboardBuffer[counter-1]);
-            putBackspace(keyboardBuffer[counter-1]);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
+            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
         }
         //put 4 back
         
-        putBackspace(keyboardBuffer[counter-1]); //video memory for backspace
+        putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer); //video memory for backspace
        
         if(counter != 0){
             counter--;
