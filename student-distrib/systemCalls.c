@@ -191,7 +191,7 @@ int32_t execute (const uint8_t* command){
 }
 
 int32_t halt(uint8_t status){
-    return 0;
+    return -1;
 }
 
 int32_t general_read(int32_t fd, void * buf, int32_t n){

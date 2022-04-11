@@ -92,15 +92,18 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 newLine();
             }
             else if (((unsigned char *)(buf))[p] == '\t'){ //checks if it is Tab
-                putc(' ');
+                putc('h');
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 charsPrinted = charsPrinted + 4;
             }
-            else if (((unsigned char *)(buf))[p] == '\b'){ //checks if it is Backspace
-                putBackspace(((unsigned char *)(buf))[p]);
-                charsPrinted--;
+            else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
+                if (strncmp((int8_t *)buf, "391OS> ", 7) == 0){
+                    printf("bwuh \n"); 
+                    putBackspace(((unsigned char *)(buf))[p]);
+                    charsPrinted--;
+                }
             }
             else{
                 putc(((unsigned char *)(buf))[p]);

@@ -705,11 +705,13 @@ int terminal_read_write(){
 	terminal_open(input);
 	int result = PASS;
 	
-	 while(1){
+	printf("cringelol \n");
+	while(1){
 		unsigned char buf[127];//testing 128 chars
 		terminal_read(127, buf, 0);//128 chars test
 
 		terminal_write(127, buf, 0);
+		putc('M');
     } //infinite while loop
 
 	terminal_close(0);
@@ -762,7 +764,7 @@ int terminalDifSizes(){
 	terminal_open(input);
 	int result = PASS;
 	
-	 while(1){
+	while(1){
 		unsigned char buf[500]; // a number greater than 500
 		terminal_read(50, buf, 0);	//number less than 500
 
@@ -794,7 +796,7 @@ void launch_tests(){
 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-	TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
@@ -814,9 +816,9 @@ void launch_tests(){
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
 	*/
-	TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
+	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 }
