@@ -1,58 +1,59 @@
-// #include "tests.h"
-// #include "x86_desc.h"
-// #include "lib.h"
-// #include "terminal.h"
-
-// #define PASS 1
-// #define FAIL 0
-
-// #define PRINT_LARGE 0
-
-// /* format these macros as you see fit */
-// #define TEST_HEADER 	
-// 	printf("[TEST %s] Running %s at %s:%d\n", __FUNCTION__, __FUNCTION__, __FILE__, __LINE__)
-// #define TEST_OUTPUT(name, result)	
-// 	printf("[TEST %s] Result = %s\n", name, (result) ? "PASS" : "FAIL");
-
-// static inline void assertion_failure(){
-// 	/* Use exception #15 for assertions, otherwise
-// 	   reserved by Intel */
-// 	asm volatile("int $15");
-// }
-
-// /* Checkpoint 1 tests */
+#include "tests.h"
+#include "x86_desc.h"
+#include "lib.h"
+#include "terminal.h"
 
 
-// /* Enable IRQ Master Test
-//  * 
-//  * Asserts that enable IRQ can enable port on master
-//  * Inputs: None
-//  * Outputs: PASS
-//  * Side Effects: None
-//  * Coverage: enable_irq
-//  * Files: i8259.c
-//  */
+#define PASS 1
+#define FAIL 0
 
-// int enable_irq_test_master(){
-// 	TEST_HEADER;
+#define PRINT_LARGE 0
 
-// 	int result = PASS;
-// 	enable_irq(5); //a master PIC port to test enable_irq
-// 	return result;
+/* format these macros as you see fit */
+#define TEST_HEADER 	\
+	printf("[TEST %s] Running %s at %s:%d\n", __FUNCTION__, __FUNCTION__, __FILE__, __LINE__)
+#define TEST_OUTPUT(name, result)	\
+	printf("[TEST %s] Result = %s\n", name, (result) ? "PASS" : "FAIL");
 
-// }
+static inline void assertion_failure(){
+	/* Use exception #15 for assertions, otherwise
+	   reserved by Intel */
+	asm volatile("int $15");
+}
 
-// /* Enable IRQ Slave Test
-//  * 
-//  * Asserts that enable IRQ can enable port on slave
-//  * Inputs: None
-//  * Outputs: PASS
-//  * Side Effects: None
-//  * Coverage: enable_irq
-//  * Files: i8259.c
-//  */
-// int enable_irq_test_slave(){
-// 	TEST_HEADER;
+/* Checkpoint 1 tests */
+
+
+/* Enable IRQ Master Test
+ * 
+ * Asserts that enable IRQ can enable port on master
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: enable_irq
+ * Files: i8259.c
+ */
+
+int enable_irq_test_master(){
+	TEST_HEADER;
+
+	int result = PASS;
+	enable_irq(5); //a master PIC port to test enable_irq
+	return result;
+
+}
+
+/* Enable IRQ Slave Test
+ * 
+ * Asserts that enable IRQ can enable port on slave
+ * Inputs: None
+ * Outputs: PASS
+ * Side Effects: None
+ * Coverage: enable_irq
+ * Files: i8259.c
+ */
+int enable_irq_test_slave(){
+	TEST_HEADER;
 	
 // 	int result = PASS;
 // 	enable_irq(10); //a slave PIC port to test enable_irq
@@ -764,61 +765,70 @@
 // 	terminal_open(input);
 // 	int result = PASS;
 	
-// 	while(1){
-// 		unsigned char buf[500]; // a number greater than 500
-// 		terminal_read(50, buf, 0);	//number less than 500
+	while(1){
+		unsigned char buf[500]; // a number greater than 500
+		terminal_read(50, buf, 0);	//number less than 500
 
-// 		terminal_write(50, buf, 0);
-//     } //infinite while loop
-// 	terminal_close(0);
+		terminal_write(50, buf, 0);
+    } //infinite while loop
+	terminal_close(0);
 
-//     return result;
-// }
+    return result;
+}
 
-// /* Checkpoint 3 tests */
-// /* Checkpoint 4 tests */
-// /* Checkpoint 5 tests */
+/* Checkpoint 3 tests */
+int syscall_test(){
+	TEST_HEADER;
+	int result = PASS;
+	if (-1 != general_close(5))
+		return FAIL;
 
-// /* Test suite entry point 
-//  * 
-//  * Description: test suite
-//  * Inputs: depends
-//  * Outputs: PASS/FAIL or none
-//  * Side Effects: produces exceptions, prints things to terminal, etc.
-//  * Coverage: Load IDT, IDT definition, gdt, paging, rtc, PIC, keyboard
-//  * Files: pretty much all of them in /student-distrib
-//  */
-// void launch_tests(){
-// 	//TEST_OUTPUT("idt_test", idt_test());
-// 	// launch your tests here
-// 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
-// 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-// 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
-// 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
+	return result;
+}
+/* Checkpoint 4 tests */
+/* Checkpoint 5 tests */
 
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+/* Test suite entry point 
+ * 
+ * Description: test suite
+ * Inputs: depends
+ * Outputs: PASS/FAIL or none
+ * Side Effects: produces exceptions, prints things to terminal, etc.
+ * Coverage: Load IDT, IDT definition, gdt, paging, rtc, PIC, keyboard
+ * Files: pretty much all of them in /student-distrib
+ */
+void launch_tests(){
+	//TEST_OUTPUT("idt_test", idt_test());
+	// launch your tests here
+	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
+	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
+	//TEST_OUTPUT("VALID PAGING", paging_test()); 
+	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-// 	//RTC TESTS
-// 	//Run these tests together
-// 	/*
-// 	TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
-// 	TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
-// 	TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
-// 	TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
-// 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
-// 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
-// 	*/
-// 	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
+	//TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+
+	//RTC TESTS
+	//Run these tests together
+	/*
+	TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
+	TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
+	TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
+	TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
+	*/
+	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-// 	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
-// 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
-// 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
-// }
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
+	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
+	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
+}
