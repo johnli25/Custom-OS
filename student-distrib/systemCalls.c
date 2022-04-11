@@ -31,7 +31,7 @@ fops_t fops_none = {do_nothing_open, do_nothing_close, do_nothing_r, do_nothing_
 // fops_t stdin;
 // stdin.open = (int32_t)terminal_open;
 
-int program_arr[6] = {0,0,0,0,0,0}; 
+int program_arr[6] = {0,0,0,0,0,0};  
 int currentProgramNumber = 0;
 
 void paging_helper(int processNum){
@@ -234,9 +234,9 @@ int32_t halt(uint8_t status){
         }
     }
 
-    printf("current prog #: %d \n", currentProgramNumber);
-    printf("child pcb pid #: %d \n", cHiLdPcB->pid);
-    printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
+    // printf("current prog #: %d \n", currentProgramNumber);
+    // printf("child pcb pid #: %d \n", cHiLdPcB->pid);
+    // printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
 
     program_arr[cHiLdPcB->pid] = 0;
     // reload a new shell if childpcb's pid = childpcb's parent id
@@ -272,7 +272,7 @@ int32_t halt(uint8_t status){
         : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn_stat)
         :"%eax" //saved "clobbered" regs 
     );
-    //^^where do we jump in asm?
+    
     return haltReturn_stat;
 }
 
