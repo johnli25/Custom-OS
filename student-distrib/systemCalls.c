@@ -6,20 +6,48 @@
 #include "terminal.h"
 #include "rtc.h"
 
+/* do_nothing_r(int32_t theres, void * nothing, int lol)
+ *   DESCRIPTION: function to do nothing read for fops_none
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: placeholder
+ */
 int32_t do_nothing_r(int32_t theres, void * nothing, int lol){
-    return -1;
+    return ERRORRETURN;
 }
 
+/* do_nothing_w(int32_t theres, void * nothing, int lol)
+ *   DESCRIPTION: function to do nothing write for fops_none
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: placeholder
+ */
 int32_t do_nothing_w(int32_t theres, const void * nothing, int lol){
-    return -1;
+    return ERRORRETURN;
 }
 
+/* do_nothing_open(int32_t theres, void * nothing, int lol)
+ *   DESCRIPTION: function to do nothing open for fops_none
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: placeholder
+ */
 int32_t do_nothing_open(const uint8_t * none){
-    return -1;
+    return ERRORRETURN;
 }
 
+/* do_nothing_close(int32_t theres, void * nothing, int lol)
+ *   DESCRIPTION: function to do nothing close for fops_none
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: -1
+ *   SIDE EFFECTS: placeholder
+ */
 int32_t do_nothing_close(int32_t none){
-    return -1;
+    return ERRORRETURN;
 }
 
 fops_t stdin = {terminal_open, terminal_close, terminal_read, do_nothing_w};
@@ -34,21 +62,28 @@ fops_t fops_none = {do_nothing_open, do_nothing_close, do_nothing_r, do_nothing_
 int program_arr[6] = {0,0,0,0,0,0};  
 int currentProgramNumber = 0;
 
+/* paging_helper(int processNum)
+ *   DESCRIPTION: sets up paging for execute
+ *   INPUTS: processNum
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: alters paging at the program mem start
+ */
 void paging_helper(int processNum){
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 1; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0; // Magic Num: sets as unpresent
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0; //must enable global pages
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0; // Magic Num: sets as unpresent
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? MagicNum: ((processNum * FOUR_MB) + EIGHT_MB)
 
     asm volatile (
         "movl %%cr3, %%eax;"
@@ -60,20 +95,27 @@ void paging_helper(int processNum){
 
 }
 
+/* paging_unhelper(int processNum)
+ *   DESCRIPTION: restores paging for halt function
+ *   INPUTS: processNum
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: alters paging at the program mem start
+ */
 void paging_unhelper(int processNum){
 
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 1;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1; // Magic Num: sets as present
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pwt = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pcd = 1; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.a = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.d = 0; // Magic Num: sets as unpresent
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.g = 0; //must enable global pages
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0;
-    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0;
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.avl_3bits = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.pat = 0; // Magic Num: sets as unpresent
+    page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_addr2 = 0; // Magic Num: sets as unpresent
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.rsvd = 0; //always set to 1
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.base_address = 2 + processNum; //not sure if this correct? ((processNum * FOUR_MB) + EIGHT_MB)
     
@@ -87,18 +129,25 @@ void paging_unhelper(int processNum){
     
 }
 
+/*execute (const uint8_t* command)
+ *   DESCRIPTION: executes the passed in command 
+ *   INPUTS: command
+ *   OUTPUTS: none
+ *   RETURN VALUE: ret which is populated in asm code
+ *   SIDE EFFECTS: executes the command that is passed in by user.
+ */
 int32_t execute (const uint8_t* command){
     int32_t ret;
     if (!command)
-        return -1; 
-    int myProgramNumber = 0;
-    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //6 is the max # of processes/files
-        if(program_arr[myProgramNumber] == 0){
-            program_arr[myProgramNumber] = 1;
+        return ERRORRETURN; 
+    int myProgramNumber = 0; //starts off as zero
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 6 is the max # of processes/files
+        if(program_arr[myProgramNumber] == 0){ //checks if free 
+            program_arr[myProgramNumber] = 1; //sets to filled
             break;
         }
         if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
-            return -1; //all of the others are filled
+            return ERRORRETURN; //all of the others are filled
         }
     }
     //command is a string, have to parge (ex: shell)
@@ -106,16 +155,16 @@ int32_t execute (const uint8_t* command){
     //parse through the string - past 391OS> get after white space 
     int index = 0;
     int j; 
-    while(command[index] == ' '){
+    while(command[index] == ' '){ //checks if a space
         index++;
     }
 
-    uint8_t buffer[128];
-    for (j = 0; j<128; j++ ){
-        buffer[j] = '\0';
+    uint8_t buffer[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
+    for (j = 0; j<128; j++ ){ //MAGIC NUM: 128 - size of the keyboard/terminal array 
+        buffer[j] = '\0'; //Magic Num NULL
     }
     int bufIndex = 0;
-    while(command[index] != ' ' && command[index] != '\n'){
+    while(command[index] != ' ' && command[index] != '\n'){ //checks if a space or a new line
         buffer[bufIndex] = command[index];
         index++;
         bufIndex++;
@@ -124,27 +173,27 @@ int32_t execute (const uint8_t* command){
 
     dentry_t myDentry;
     int check = read_dentry_name(buffer, &myDentry);
-    if(check == -1){
-        return -1; //FAILED TEST
+    if(check == ERRORRETURN){
+        return ERRORRETURN; //FAILED TEST
     }
 
-    if (myDentry.file_type != 2){ //checks if valid type (executable)
-        return -1; //FAILED TEST 
+    if (myDentry.file_type != 2){ //MAGIC NUM 2 - checks if valid type (executable)
+        return ERRORRETURN; //FAILED TEST 
     }
 
-    uint8_t ELFBUFFER[10];
-    read_data(myDentry.inode, 0, ELFBUFFER, 4); //why 4 and not 3?
+    uint8_t ELFBUFFER[10]; //Magic num - holds size of the ELF buffer string 
+    read_data(myDentry.inode, 0, ELFBUFFER, 4); //Magic Num - Grabs the ELF info of first 4 characters 
 
     if (ELFBUFFER[0] != MAGIC0 || ELFBUFFER[1] != MAGIC1 ||
-        ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //ELF string beginning check
-        return -1;
+        ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //Magic Num: ELF string beginning check
+        return ERRORRETURN;
 
-    uint8_t POE_buf[4];
+    uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
 
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
     
-    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
+    //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
     //map to virtual mem
     //zerpadded by 22
@@ -152,7 +201,7 @@ int32_t execute (const uint8_t* command){
     read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory
     
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    program_arr[myProgramNumber] = 1;
+    program_arr[myProgramNumber] = 1; //sets as present
 
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
@@ -186,7 +235,7 @@ int32_t execute (const uint8_t* command){
 
     //save kernel stack bookkeeping info
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4;
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     mypcb -> active = 1;
     
@@ -213,6 +262,13 @@ int32_t execute (const uint8_t* command){
     return ret;
 }
 
+/* halt(uint8_t status)
+ *   DESCRIPTION: halts the process
+ *   INPUTS: status
+ *   OUTPUTS: none
+ *   RETURN VALUE: haltReturn_stat
+ *   SIDE EFFECTS: restores all processes in execute
+ */
 int32_t halt(uint8_t status){
     //first, grab esp and ebp pointers from the pcb 
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
@@ -220,14 +276,14 @@ int32_t halt(uint8_t status){
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     
     tss.ss0 = KERNEL_DS;
-    tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4;
+    tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     int i;
     //close all opened file descriptors
-    for (i = 2; i < 8; i++){
+    for (i = 2; i < 8; i++){ //used to instantiate the indeces from 2-7 
         if (cHiLdPcB->myINFO[i].flags){
             general_close(i);
-            cHiLdPcB->myINFO[i].flags = 0;
+            cHiLdPcB->myINFO[i].flags = 0; //flags to 0 
             cHiLdPcB -> myINFO[i].inode = 0; //inodes to 0
             cHiLdPcB -> myINFO[i].file_position = 0; //file position to 0
             cHiLdPcB -> myINFO[i].fops_table = &fops_none; //file position to 0
@@ -238,10 +294,10 @@ int32_t halt(uint8_t status){
     // printf("child pcb pid #: %d \n", cHiLdPcB->pid);
     // printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
 
-    program_arr[cHiLdPcB->pid] = 0;
+    program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
     // reload a new shell if childpcb's pid = childpcb's parent id
     if (currentProgramNumber == cHiLdPcB->parent_id) 
-        execute((uint8_t*)"shell");
+        execute((uint8_t*)"shell"); // executes shell 
     
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
@@ -276,43 +332,64 @@ int32_t halt(uint8_t status){
     return haltReturn_stat;
 }
 
+/* general_read(int32_t fd, void * buf, int32_t n)
+ *   DESCRIPTION: reads n bytes from fd into buf
+ *   INPUTS: status
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the read value or -1 if no read
+ *   SIDE EFFECTS: none
+ */
 int32_t general_read(int32_t fd, void * buf, int32_t n){
-    if (fd>=0 && fd < 8){
+    if (fd>=0 && fd < 8){ //Magic Nums: checks if it is in between 0 and 8 - valid 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags)
             return mypcb->myINFO[fd].fops_table->read(fd, buf, n); 
     }
-    return -1; 
+    return ERRORRETURN; 
 }
 
+/* general_write(int32_t fd, void * buf, int32_t n)
+ *   DESCRIPTION: writes n bytes from fd into buf
+ *   INPUTS: status
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the write value or -1 if no write
+ *   SIDE EFFECTS: none
+ */
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
-    if ( fd>=0 && fd < 8){
+    if ( fd>=0 && fd < 8){ //Magic Nums: checks if it is in between 0 and 8 - valid 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags) //== 1
             return mypcb->myINFO[fd].fops_table->write(fd, buf, n); 
     }
-    return -1; 
+    return ERRORRETURN; 
 }
 
+/* general_open(const uint8_t * filename)
+ *   DESCRIPTION: opens the file
+ *   INPUTS: const uint8_t * filename
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns -1 if bad open, otherwise index of fd array
+ *   SIDE EFFECTS: none
+ */
 int32_t general_open(const uint8_t * filename){
     dentry_t d;
-    int i = 2;
+    int i = 2; //magic num: sets it for an index for the loop 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
 
     if (read_dentry_name(filename, &d) != 0)
-        return -1;
+        return ERRORRETURN;
 
     if (!filename)
-        return -1;
+        return ERRORRETURN;
 
     read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
         while (i < 8){ //8 is max size idx of fd array
-            if (mypcb->myINFO[i].flags == 0) {
-                mypcb->myINFO[i].flags = 1;
-                mypcb->myINFO[i].file_position = 0;
-                mypcb->myINFO[i].inode = 0;
+            if (mypcb->myINFO[i].flags == 0) { //checks if unpresent
+                mypcb->myINFO[i].flags = 1; //sets to present
+                mypcb->myINFO[i].file_position = 0; //sets to unpresent
+                mypcb->myINFO[i].inode = 0; //sets to unpresent
                 mypcb->myINFO[i].fops_table = &rtc_fops;
                 return i;
             }
@@ -321,56 +398,91 @@ int32_t general_open(const uint8_t * filename){
     }
     if (d.file_type==1){ //dir
         dir_open(filename);
-        i = 2;
+        i = 2; //magic num: checks for indexes of info
         while (i < 8){ //8 is max size idx of fd array
-            if (mypcb->myINFO[i].flags == 0) {
-                mypcb->myINFO[i].flags = 1;
-                mypcb->myINFO[i].file_position = 0;
-                mypcb->myINFO[i].inode = 0;
+            if (mypcb->myINFO[i].flags == 0) { //checks if unpresent
+                mypcb->myINFO[i].flags = 1; //sets to present 
+                mypcb->myINFO[i].file_position = 0; //sets to unpresent
+                mypcb->myINFO[i].inode = 0; //sets to unpresent
                 mypcb->myINFO[i].fops_table = &dir_fops;
                 return i; 
             }
             i++;
         }
     }
-    if (d.file_type==2){ //file
+    if (d.file_type==2){ //checks if 2 - correct type 
         file_open(filename); 
         i = 2;
         while (i < 8){
-            if (mypcb->myINFO[i].flags == 0) {
-                mypcb->myINFO[i].flags = 1;
-                mypcb->myINFO[i].file_position = 0;
-                mypcb->myINFO[i].inode = d.inode;
+            if (mypcb->myINFO[i].flags == 0) { //checks if unpresent
+                mypcb->myINFO[i].flags = 1; //sets as present
+                mypcb->myINFO[i].file_position = 0; //sets as unpresent
+                mypcb->myINFO[i].inode = d.inode; 
                 mypcb->myINFO[i].fops_table = &file_fops;
                 return i;
             }
             i++;
         }
     }
-    return -1; //can't find
+    return ERRORRETURN; //can't find
 }
 
+/* general_close(int32_t fd)
+ *   DESCRIPTION: closes the file
+ *   INPUTS: int32_t fd
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the close value or -1 if no close
+ *   SIDE EFFECTS: none
+ */
 int32_t general_close(int32_t fd){
-    if ( fd>=0 && fd < 8){
+    if ( fd>=0 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags)
             return mypcb->myINFO[fd].fops_table->close(fd); 
     }
-    return -1; 
+    return ERRORRETURN; 
 }
 
+/* general_close(int32_t fd)
+ *   DESCRIPTION: closes the file
+ *   INPUTS: int32_t fd
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the close value or -1 if no close
+ *   SIDE EFFECTS: none
+ */
 int32_t getargs(uint8_t * buf, int32_t n){
     return 0;
 }
 
+/* general_close(int32_t fd)
+ *   DESCRIPTION: closes the file
+ *   INPUTS: int32_t fd
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the close value or -1 if no close
+ *   SIDE EFFECTS: none
+ */
 int32_t vidmap(uint8_t ** screen_start){
     return 0;
 }
 
+/* general_close(int32_t fd)
+ *   DESCRIPTION: closes the file
+ *   INPUTS: int32_t fd
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the close value or -1 if no close
+ *   SIDE EFFECTS: none
+ */
 int32_t set_handler(int32_t signum, void * handler_addr){
     return 0;
 }
 
+/* general_close(int32_t fd)
+ *   DESCRIPTION: closes the file
+ *   INPUTS: int32_t fd
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns the close value or -1 if no close
+ *   SIDE EFFECTS: none
+ */
 int32_t sigreturn (void){
 
     return 0;
