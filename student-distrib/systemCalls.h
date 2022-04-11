@@ -20,6 +20,8 @@
 #define MAGIC2 0x4C
 #define MAGIC3 0x46
 
+#define ERRORRETURN -1
+
 typedef struct pcb{
     unsigned int pid;
     //pcb_t* pcb_parent;
