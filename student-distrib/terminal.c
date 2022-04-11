@@ -9,7 +9,7 @@
  * Inputs: none
  * Return Value: int
  * Function: initializes terminal (returning 0 for now) */
-int terminal_init(void){
+int32_t terminal_init(void){
     return 0;
 }
 
@@ -17,7 +17,7 @@ int terminal_init(void){
  * Inputs: none
  * Return Value: int
  * Function: opens the terminal (returning 0 for now) */
-int terminal_open(void){
+int32_t terminal_open(const uint8_t* filename){
     return 0;
 }
 
@@ -25,8 +25,8 @@ int terminal_open(void){
  * Inputs: none
  * Return Value: int
  * Function: closes the terminal (returning 0 for now) */
-int terminal_close(void){
-    return 0;
+int32_t terminal_close(int32_t fd){
+    return -1;
 }
 
 
@@ -36,7 +36,7 @@ int terminal_close(void){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: reads from keyboardBuffer to passed in buf */
-int terminal_read(int n, unsigned char * buf){
+int32_t terminal_read(int32_t fd, void * buf, int n){
 
     TERMINALFLAG = 0; //shared varable from the keyboard
 
@@ -72,10 +72,8 @@ int terminal_read(int n, unsigned char * buf){
  * Inputs: int n, unsigned char * buf
  * Return Value: num bytes copied
  * Function: writes from buf to screen */
-int terminal_write(int n, unsigned char * buf){
+int32_t terminal_write(int32_t fd, const void * buf, int n){
     //check if the keyboard buffer size is greater thatn n or not 
-
-    
     int charsPrinted = 0; 
 
     if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
@@ -87,23 +85,26 @@ int terminal_write(int n, unsigned char * buf){
         if(p == NUM_COLS){
             newLine();
         }
-        if(buf[p] != '\0'){ //checks if it is NULL
-            if(buf[p] == '\n'){ //checks if it is NewLine
+        if(((unsigned char *)(buf))[p] != '\0'){ //checks if it is NULL
+            if(((unsigned char *)(buf))[p] == '\n'){ //checks if it is NewLine
                 newLine();
             }
-            else if (buf[p] == '\t'){ //checks if it is Tab
-                putc(' ');
+            else if (((unsigned char *)(buf))[p] == '\t'){ //checks if it is Tab
+                putc('h');
                 putc(' ');
                 putc(' ');
                 putc(' ');
                 charsPrinted = charsPrinted + 4;
             }
-            else if (buf[p] == '\b'){ //checks if it is Backspace
-                putBackspace(buf[p]);
-                charsPrinted--;
+            else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
+                if (strncmp((int8_t *)buf, "391OS> ", 7) == 0){
+                    printf("bwuh \n"); 
+                    putBackspace(((unsigned char *)(buf))[p], (unsigned char *)buf);
+                    charsPrinted--;
+                }
             }
             else{
-                putc(buf[p]);
+                putc(((unsigned char *)(buf))[p]);
                 charsPrinted++;
             }
         }

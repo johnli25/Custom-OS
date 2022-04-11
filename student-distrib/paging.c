@@ -1,7 +1,7 @@
 #include "paging.h" //include header files
 #include "lib.h"
 
-PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
+//PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
 PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096))); 
 /*above reference: https://wiki.osdev.org/Setting_Up_Paging*/
 
@@ -59,11 +59,11 @@ void setup_paging_structures(void){
             page_dir[i]._PDE_kernel_4MB.r_w = 1;
             page_dir[i]._PDE_kernel_4MB.u_s = 0;
             page_dir[i]._PDE_kernel_4MB.pwt = 0;
-            page_dir[i]._PDE_kernel_4MB.pcd = 0;
+            page_dir[i]._PDE_kernel_4MB.pcd = 1;
             page_dir[i]._PDE_kernel_4MB.a = 0;
             page_dir[i]._PDE_kernel_4MB.d = 0;
             page_dir[i]._PDE_kernel_4MB.ps = 1; //page size = 1 for kernel
-            page_dir[i]._PDE_kernel_4MB.g = 0;
+            page_dir[i]._PDE_kernel_4MB.g = 1; //global kernel page 3.3
             page_dir[i]._PDE_kernel_4MB.avl_3bits = 0;
             page_dir[i]._PDE_kernel_4MB.pat = 0;
             page_dir[i]._PDE_kernel_4MB.base_addr2 = 0;
@@ -74,7 +74,6 @@ void setup_paging_structures(void){
     
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem >> DATA_ALIGN_SHIFT;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
-//    printf("paging lolz. \n");
     return;
 }
 

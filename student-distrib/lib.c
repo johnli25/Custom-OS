@@ -20,7 +20,7 @@
 #define CURSORFF    0xFF
 
 
-
+int counterScreen = 0; //starts off as zero
 
 static int screen_x;
 static int screen_y;
@@ -89,6 +89,7 @@ void clear(void) {
         *(uint8_t *)(video_mem + (i << 1)) = ' ';
         *(uint8_t *)(video_mem + (i << 1) + 1) = ATTRIB;
     }
+    counterScreen = 0;
 }
 
 /* void clearText(void);
@@ -100,6 +101,7 @@ void clearText(void) {
     screen_y = 0;
     update_cursor(screen_x, screen_y);
     clear();
+    counterScreen = 0;
 }
 
 // /* void clearTop(void);
@@ -126,6 +128,7 @@ void clearBottom(void) {
         *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1)) = ' ';
         *(uint8_t *)(video_mem + ((NUM_COLS * (NUM_ROWS-1) + x) << 1) + 1) = ATTRIB;
     }
+    counterScreen = 0;
 }
 
 /* void newLine(void);
@@ -143,6 +146,8 @@ void newLine(void) {
     screen_y++;
 
     update_cursor(screen_x, screen_y);
+
+    counterScreen = 0;
 
     return;
 }
@@ -207,6 +212,14 @@ void newLine(void) {
  *       Also note: %x is the only conversion specifier that can use
  *       the "#" modifier to alter output. */
 int32_t printf(int8_t *format, ...) {
+
+    if((strlen(format) + counterScreen) > NUM_COLS){
+        newLine();
+        counterScreen = strlen(format);
+    }
+    else{
+        counterScreen = counterScreen + strlen(format);
+    }
 
     /* Pointer to the format string */
     int8_t* buf = format;
@@ -320,6 +333,13 @@ format_char_switch:
  *   Return Value: Number of bytes written
  *    Function: Output a string to the console */
 int32_t puts(int8_t* s) {
+    if((strlen(s) + counterScreen) > NUM_COLS){
+        newLine();
+        counterScreen = strlen(s);
+    }
+    else{
+        counterScreen = counterScreen + strlen(s); 
+    }
     register int32_t index = 0;
     while (s[index] != '\0') {
         putc(s[index]);
@@ -333,6 +353,13 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
+    if(1 + counterScreen > NUM_COLS){ //1 because the character is size 1 
+        newLine();
+        counterScreen = 1; //1 because the character is size 1 
+    }
+    else{
+        counterScreen = counterScreen + 1; //1 because the character is size 1 
+    }
     if(c == '\n' || c == '\r') {
         screen_y++;
         screen_x = 0;
@@ -350,10 +377,12 @@ void putc(uint8_t c) {
  * Inputs: uint_8* c = character to print
  * Return Value: void
  *  Function: Output a backspace to the console */
-void putBackspace(uint8_t c){
+void putBackspace(uint8_t c, unsigned char * buf){
     //adding if statement for backspace
-
+    if (buf[0] == '\0')
+        return;
     if(screen_y != 0 || screen_x != 0){
+        counterScreen--;
         if (screen_x != 0){
             screen_x--;
         }
