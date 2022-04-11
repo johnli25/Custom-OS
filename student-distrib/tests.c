@@ -3,6 +3,7 @@
 #include "lib.h"
 #include "terminal.h"
 
+
 #define PASS 1
 #define FAIL 0
 
@@ -776,6 +777,14 @@ int terminalDifSizes(){
 }
 
 /* Checkpoint 3 tests */
+int syscall_test(){
+	TEST_HEADER;
+	int result = PASS;
+	if (-1 != general_close(5))
+		return FAIL;
+
+	return result;
+}
 /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
@@ -818,7 +827,8 @@ void launch_tests(){
 	*/
 	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-	TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
 }
