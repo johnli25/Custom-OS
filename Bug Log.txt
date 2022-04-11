@@ -64,3 +64,18 @@
 -Issue: Empty data (displayed as 0) in inodes + data_blocks.
 -Resolved by: switching inode and filetype in inode structure
 -3/27/2022
+
+12.
+-Issue: Page Fault exception
+-Resolved by: Issue was in the general open/read/write/close functions. We were calling the wrong funtions inside each function.
+-4/10/2022
+
+13.
+-Issue: Halt would close every process, including Shell
+-Resolved by: Including a check to reexecute shell if there were no processes running
+-4/10/2022
+
+14. 
+-Issue: Vertical Scroll not working with the commands
+-Resolved by: Adding vertical line call in our printf
+-4/10/2022
