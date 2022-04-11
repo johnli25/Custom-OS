@@ -272,11 +272,8 @@ int32_t halt(uint8_t status){
         : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn)
         :"%eax" //saved "clobbered" regs 
     );
-    //^^where do we jump in asm?
+    //^^where do we jump in asm and return?
     return haltReturn;
-    // return status
-    //^^ not sure what to return exactly.
-
 }
 
 
