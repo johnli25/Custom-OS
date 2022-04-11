@@ -153,6 +153,9 @@ int32_t execute (const uint8_t* command){
     
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     program_arr[myProgramNumber] = 1;
+
+    //save user program bookkeeping info
+    mypcb-> pid = myProgramNumber;
     mypcb -> parent_id = currentProgramNumber;
     currentProgramNumber = myProgramNumber; //update parent number
 
@@ -173,11 +176,8 @@ int32_t execute (const uint8_t* command){
         mypcb -> myINFO[i].inode = 0; //inodes to 0
         mypcb -> myINFO[i].file_position = 0; //file position to 0
         mypcb -> myINFO[i].fops_table = &fops_none; //file position to 0
-
     }
 
-    //save user program bookkeeping info
-    mypcb-> pid = myProgramNumber;
     asm volatile(
         "movl %%esp, %0;"
         "movl %%ebp, %1;"
@@ -203,7 +203,7 @@ int32_t execute (const uint8_t* command){
         "pushl %2 \n" //push USER_CS
         "pushl %3 \n" //push eip = point of entry = 24 onto stack
         "iret \n;"
-        //"executeEnd: \n"
+        //"executeContinue: \n"
         "movl %%eax, %4;"
         //move return value from register into 
         :
@@ -217,12 +217,13 @@ int32_t halt(uint8_t status){
     //first, grab esp and ebp pointers from the pcb 
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
-    int32_t haltReturn = (int32_t)(status); //our return value, what do we return? this added as asm return
+    int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4;
 
     int i;
+    //close all opened file descriptors
     for (i = 2; i < 8; i++){
         if (cHiLdPcB->myINFO[i].flags){
             general_close(i);
@@ -233,45 +234,47 @@ int32_t halt(uint8_t status){
         }
     }
 
+    printf("current prog #: %d \n", currentProgramNumber);
+    printf("child pcb pid #: %d \n", cHiLdPcB->pid);
+    printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
+
     program_arr[cHiLdPcB->pid] = 0;
-    // reload a new shell if a at the root (index i sless than 0) reexecute a shell
-    if (cHiLdPcB->pid == 0){
+    // reload a new shell if childpcb's pid = childpcb's parent id
+    if (cHiLdPcB->pid == cHiLdPcB->parent_id) 
         execute((uint8_t*)"shell");
-    }
+    
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
 
     cHiLdPcB -> active = 0; //unused? 
     parentPcb -> active = 1; //set active bits for comprehension/reference
 
-    paging_unhelper(parentPcb -> pid); // - flushes TLB as well 
+    paging_unhelper(cHiLdPcB->parent_id); // - flushes TLB as well 
 
     // assembluuuuu linkeage asm - for 
     // halt needs to jump to th eend of execute asm volitile :"-.globl LABEL" - able to return to this label in dif asm volatiles 
     // halt return value
      asm volatile( 
-        "mov %0, %%esp;" //esp contains saved_esp
-        "mov %1, %%ebp;" //ebp contains saved_ebp
-        //"mov %2, %%eax;" eax contains return value
+        "movl %0, %%esp;" //esp contains saved_esp
+        "movl %1, %%ebp;" //ebp contains saved_ebp
         //check status
-        "cmp $1, %2;"
-        "jne myValid;"
-        "movl $1, %%eax;"
+        // "cmp $1, %2;"
+        // "jne myValid;"
+        // "movl $1, %%eax;"
         //"jmp executeEnd;"
-        "myValid:"
+        "Valid:"
         "andl $0, %%eax;"
-        //"jmp executeEnd;"
+        "movl %2, %%eax;" //eax contains return value
+        //"jmp executeContinue;"
         "leave;"
         "ret;"
         :
-        : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(status)
+        : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn_stat)
         :"%eax" //saved "clobbered" regs 
     );
     //^^where do we jump in asm?
-    return -1;
+    return haltReturn_stat;
 }
-
-
 
 int32_t general_read(int32_t fd, void * buf, int32_t n){
     if (fd>=0 && fd < 8){
