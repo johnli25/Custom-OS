@@ -89,6 +89,11 @@ void paging_unhelper(int processNum){
 
 int32_t execute (const uint8_t* command){
     int32_t ret;
+    if (0 == strncmp((int8_t *)command, (int8_t*)("exit\n"), 5)){
+        ret = 0;
+        halt(ret);
+        return ret; 
+    }
     if (!command)
         return -1; 
     int myProgramNumber = 0;
@@ -144,7 +149,7 @@ int32_t execute (const uint8_t* command){
 
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
     
-    uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
+    //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
     //map to virtual mem
     //zerpadded by 22
@@ -272,7 +277,7 @@ int32_t halt(uint8_t status){
         : "r"(cHiLdPcB -> saved_esp), "r"(cHiLdPcB -> saved_ebp), "r"(haltReturn_stat)
         :"%eax" //saved "clobbered" regs 
     );
-    
+
     return haltReturn_stat;
 }
 
