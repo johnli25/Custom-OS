@@ -34,14 +34,14 @@ static inline void assertion_failure(){
  * Files: i8259.c
  */
 
-int enable_irq_test_master(){
-	TEST_HEADER;
+// int enable_irq_test_master(){
+// 	TEST_HEADER;
 
-	int result = PASS;
-	enable_irq(5); //a master PIC port to test enable_irq
-	return result;
+// 	int result = PASS;
+// 	enable_irq(5); //a master PIC port to test enable_irq
+// 	return result;
 
-}
+// }
 
 /* Enable IRQ Slave Test
  * 
@@ -52,8 +52,8 @@ int enable_irq_test_master(){
  * Coverage: enable_irq
  * Files: i8259.c
  */
-int enable_irq_test_slave(){
-	TEST_HEADER;
+// int enable_irq_test_slave(){
+// 	TEST_HEADER;
 	
 // 	int result = PASS;
 // 	enable_irq(10); //a slave PIC port to test enable_irq
@@ -765,27 +765,27 @@ int enable_irq_test_slave(){
 // 	terminal_open(input);
 // 	int result = PASS;
 	
-	while(1){
-		unsigned char buf[500]; // a number greater than 500
-		terminal_read(50, buf, 0);	//number less than 500
+// 	while(1){
+// 		unsigned char buf[500]; // a number greater than 500
+// 		terminal_read(50, buf, 0);	//number less than 500
 
-		terminal_write(50, buf, 0);
-    } //infinite while loop
-	terminal_close(0);
+// 		terminal_write(50, buf, 0);
+//     } //infinite while loop
+// 	terminal_close(0);
 
-    return result;
-}
+//     return result;
+// }
 
 /* Checkpoint 3 tests */
-int syscall_test(){
-	TEST_HEADER;
-	int result = PASS;
-	if (-1 != general_close(5))
-		return FAIL;
+// int syscall_test(){
+// 	TEST_HEADER;
+// 	int result = PASS;
+// 	if (-1 != general_close(5))
+// 		return FAIL;
 
-	return result;
-}
-/* Checkpoint 4 tests */
+// 	return result;
+// }
+// /* Checkpoint 4 tests */
 /* Checkpoint 5 tests */
 
 /* Test suite entry point 
@@ -797,7 +797,7 @@ int syscall_test(){
  * Coverage: Load IDT, IDT definition, gdt, paging, rtc, PIC, keyboard
  * Files: pretty much all of them in /student-distrib
  */
-void launch_tests(){
+//void launch_tests(){
 	//TEST_OUTPUT("idt_test", idt_test());
 	// launch your tests here
 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
@@ -828,7 +828,7 @@ void launch_tests(){
 	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
-	TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
-}
+//}

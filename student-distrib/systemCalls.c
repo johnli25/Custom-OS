@@ -145,18 +145,8 @@ int32_t execute (const uint8_t* command){
     }
     if (!command)
         return ERRORRETURN; 
-    int myProgramNumber = 0; //starts off as zero
-    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 6 is the max # of processes/files
-        if(program_arr[myProgramNumber] == 0){ //checks if free 
-            program_arr[myProgramNumber] = 1; //sets to filled
-            break;
-        }
-        if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
-            return ERRORRETURN; //all of the others are filled
-        }
-    }
-    //command is a string, have to parge (ex: shell)
-    //            ls        
+
+    //command is a string, have to parge (ex: shell)     
     //parse through the string - past 391OS> get after white space 
     int index = 0;
     int j; 
@@ -173,8 +163,7 @@ int32_t execute (const uint8_t* command){
         buffer[bufIndex] = command[index];
         index++;
         bufIndex++;
-    }
-    //buffer is the command without all white space ^
+    }  //buffer is the command without all white space ^
 
     dentry_t myDentry;
     int check = read_dentry_name(buffer, &myDentry);
@@ -193,6 +182,17 @@ int32_t execute (const uint8_t* command){
         ELFBUFFER[2] != MAGIC2 || ELFBUFFER[3] != MAGIC3) //Magic Num: ELF string beginning check
         return ERRORRETURN;
 
+    int myProgramNumber = 0; //starts off as zero
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 6 is the max # of processes/files
+        if(program_arr[myProgramNumber] == 0){ //checks if free 
+            program_arr[myProgramNumber] = 1; //sets to filled
+            break;
+        }
+        if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
+            return ERRORRETURN; //all of the others are filled
+        }
+    }
+
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
 
@@ -200,8 +200,7 @@ int32_t execute (const uint8_t* command){
     
     //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
-    //map to virtual mem
-    //zerpadded by 22
+    //map to virtual mem:zer0padded by 22
     paging_helper(myProgramNumber);
     read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory
     
@@ -295,9 +294,9 @@ int32_t halt(uint8_t status){
         }
     }
 
-    // printf("current prog #: %d \n", currentProgramNumber);
-    // printf("child pcb pid #: %d \n", cHiLdPcB->pid);
-    // printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
+    printf("current prog #: %d \n", currentProgramNumber);
+    printf("child pcb pid #: %d \n", cHiLdPcB->pid);
+    printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
     // reload a new shell if childpcb's pid = childpcb's parent id
