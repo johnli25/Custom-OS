@@ -159,6 +159,7 @@ int32_t execute (const uint8_t* command){
         buffer[j] = '\0'; //Magic Num NULL
     }
     int bufIndex = 0;
+    index = 0;
     while(command[index] != ' ' && command[index] != '\n'){ //checks if a space or a new line
         buffer[bufIndex] = command[index];
         index++;
@@ -256,9 +257,7 @@ int32_t execute (const uint8_t* command){
         "pushl %2 \n" //push USER_CS
         "pushl %3 \n" //push eip = point of entry = 24 onto stack
         "iret \n;"
-        //"executeContinue: \n"
-        "movl %%eax, %4;"
-        //move return value from register into 
+        "movl %%eax, %4;" //move return value from register into 
         :
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry), "r"(ret)
         : "eax" //clobbered regs
@@ -294,15 +293,11 @@ int32_t halt(uint8_t status){
         }
     }
 
-    printf("current prog #: %d \n", currentProgramNumber);
-    printf("child pcb pid #: %d \n", cHiLdPcB->pid);
-    printf("child pcb parent id #: %d \n", cHiLdPcB->parent_id);
-
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
     // reload a new shell if childpcb's pid = childpcb's parent id
     if (currentProgramNumber == cHiLdPcB->parent_id) 
         execute((uint8_t*)"shell"); // executes shell 
-    
+    currentProgramNumber = cHiLdPcB->parent_id;    
     // parent process done - now paging 
     // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
 
