@@ -155,8 +155,11 @@ int32_t execute (const uint8_t* command){
     }
 
     uint8_t buffer[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
+    uint8_t arg_buf[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
+
     for (j = 0; j<128; j++ ){ //MAGIC NUM: 128 - size of the keyboard/terminal array 
         buffer[j] = '\0'; //Magic Num NULL
+        arg_buf[j] = '\0';
     }
     int bufIndex = 0;
     index = 0;
@@ -206,6 +209,10 @@ int32_t execute (const uint8_t* command){
     read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory
     
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
+        mypcb->arguments[index] = command[index];
+        index++;
+    }   
     program_arr[myProgramNumber] = 1; //sets as present
 
     //save user program bookkeeping info
