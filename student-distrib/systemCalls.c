@@ -170,7 +170,8 @@ int32_t execute (const uint8_t* command){
     }  //buffer is the command without all white space ^
 
     dentry_t myDentry;
-    int check = read_dentry_name(buffer, &myDentry);
+    /*IMPORTANT: check and buffer read exec file name and store it in buffer + myDentry
+    int check = read_dentry_name(buffer, &myDentry); 
     if(check == ERRORRETURN){
         return ERRORRETURN; //FAILED TEST
     }
