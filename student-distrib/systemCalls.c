@@ -450,6 +450,24 @@ int32_t general_close(int32_t fd){
  *   SIDE EFFECTS: none
  */
 int32_t getargs(uint8_t * buf, int32_t n){
+    //error checks
+    if (buf == NULL)
+        return ERRORRETURN;
+    
+    if (n < MAX_ARG_SIZE)
+        return ERRORRETURN;
+    
+    //initialize PCB
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer
+        return ERRORRETURN;
+
+    /*populate buffer with mypcb->args*/
+    int i;
+    for (i = 0; i < n; i++){
+        buf[i] = mypcb->arguments[i];
+    }
+    buf[n-1] = '\0'; //set last char in buffer to null
     return 0;
 }
 
@@ -460,8 +478,29 @@ int32_t getargs(uint8_t * buf, int32_t n){
  *   RETURN VALUE: returns the close value or -1 if no close
  *   SIDE EFFECTS: none
  */
+PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
+
 int32_t vidmap(uint8_t ** screen_start){
-    return 0;
+    if ((uint32_t)screen_start < MB128_START || (uint32_t)screen_start > MB_132)
+        return ERRORRETURN;
+
+    //391 = random video page_table offset. this fine?
+    video_pt[391].p = 1;
+    video_pt[391].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
+
+    page_dir[USER_VIDMEM]._PDE_regular.p = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.u_s = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.a = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
+    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
+
+    *screen_start = (uint8_t)MB_132;
+    return MB_132; //return 132 (MB)
 }
 
 /* general_close(int32_t fd)
