@@ -292,7 +292,8 @@ int32_t halt(uint8_t status){
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
-    
+    if (haltReturn_stat == 255)
+        haltReturn_stat = 256;
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
@@ -354,10 +355,13 @@ int32_t halt(uint8_t status){
  *   SIDE EFFECTS: none
  */
 int32_t general_read(int32_t fd, void * buf, int32_t n){
+    int temp = 0;
     if (fd>=0 && fd < 8){ //Magic Nums: checks if it is in between 0 and 8 - valid 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (mypcb->myINFO[fd].flags)
+        if (mypcb->myINFO[fd].flags){
+            temp = mypcb->myINFO[fd].fops_table->read(fd, buf, n);
             return mypcb->myINFO[fd].fops_table->read(fd, buf, n); 
+        }
     }
     return ERRORRETURN; 
 }
@@ -396,7 +400,7 @@ int32_t general_open(const uint8_t * filename){
     if (!filename)
         return ERRORRETURN;
 
-    read_dentry_name(filename, &d);
+    //read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
         while (i < 8){ //8 is max size idx of fd array
@@ -451,8 +455,13 @@ int32_t general_open(const uint8_t * filename){
 int32_t general_close(int32_t fd){
     if ( fd>=0 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (mypcb->myINFO[fd].flags)
+        if (!mypcb->myINFO[fd].flags){
+            //mypcb -> myINFO[fd].flags = 0;
+            // mypcb -> myINFO[fd].inode = 0; //inodes to 0
+            // mypcb -> myINFO[fd].file_position = 0; //file position to 0
+            // mypcb -> myINFO[fd].fops_table = &fops_none; //file position to 0
             return mypcb->myINFO[fd].fops_table->close(fd); 
+        }
     }
     return ERRORRETURN; 
 }

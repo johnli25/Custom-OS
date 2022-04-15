@@ -173,14 +173,14 @@ int err_unopened(void) {
 	// try to close all fd's. 0 and 1 are stdin and stdout. The rest
 	// haven't been opened. Nothing should be able to be closed
     for (i = 0; i < 8; i++) {
-	    if (-1 != ece391_close(i)) {
+	    if (-1 != ece391_close(i)) { //close should NOT work BECAUSE WE NVR OPENED. So RETURN -1. If it doesn't return -1, => wrong. 
 			ece391_fdputs (1, (uint8_t*)"close unopened or invalid fd fail\n");
 			fail = 2;
         }
     }
 	for (i = 2; i < 8; i++) {
 	    if (-1 != ece391_read(i, buf, 31)) {
-			ece391_fdputs (1, (uint8_t*)"read from unopened fd fail\n");
+			ece391_fdputs (1, (uint8_t*)"read from unopened fd fail\n");					
 			fail = 2;
         }
     }
