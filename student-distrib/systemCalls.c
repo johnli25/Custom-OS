@@ -292,7 +292,8 @@ int32_t halt(uint8_t status){
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
-    
+    if (haltReturn_stat == 255)
+        haltReturn_stat = 256;
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
