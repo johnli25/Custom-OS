@@ -454,13 +454,8 @@ int32_t general_open(const uint8_t * filename){
 int32_t general_close(int32_t fd){
     if ( fd>=0 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (!mypcb->myINFO[fd].flags){
-            //mypcb -> myINFO[fd].flags = 0;
-            // mypcb -> myINFO[fd].inode = 0; //inodes to 0
-            // mypcb -> myINFO[fd].file_position = 0; //file position to 0
-            // mypcb -> myINFO[fd].fops_table = &fops_none; //file position to 0
+        if (!mypcb->myINFO[fd].flags)
             return mypcb->myINFO[fd].fops_table->close(fd); 
-        }
     }
     return ERRORRETURN; 
 }
