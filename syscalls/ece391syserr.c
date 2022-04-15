@@ -2,6 +2,7 @@
 
 #include "ece391support.h"
 #include "ece391syscall.h"
+#include "student-distrib/lib.c"
 
 #define NEG_FD -1073741823
 #define BIG_FD 1073741823
