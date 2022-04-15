@@ -213,7 +213,7 @@ void EXCEPTION_GENERAL_PROTECTION(void){ //0xD
     return;
 }
 void EXCEPTION_PAGE_FAULT(void){ //0xE
-    printf("Page Fault exception! ");
+    printf("Page Fault exception! \n");
     // while(1) {
 
     // } //infinite while loop

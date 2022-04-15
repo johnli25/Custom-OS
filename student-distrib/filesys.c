@@ -120,7 +120,7 @@ int32_t file_close(int32_t fd)
  */
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
-    
+
     return 0;
 }
 
