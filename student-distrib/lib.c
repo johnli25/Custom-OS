@@ -214,7 +214,7 @@ void newLine(void) {
 int32_t printf(int8_t *format, ...) {
 
     if((strlen(format) + counterScreen) > NUM_COLS){
-        //newLine();
+        newLine();
         counterScreen = strlen(format);
     }
     else{

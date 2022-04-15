@@ -16,7 +16,7 @@
 #include "filesys.h"
 #include "systemCalls.h"
 
-#define RUN_TESTS
+#define RUN_TESTS 
 
 /* Macros. */
 /* Check if the bit BIT in FLAGS is set. */
@@ -182,10 +182,10 @@ void entry(unsigned long magic, unsigned long addr) {
 
 #ifdef RUN_TESTS
     /* Run tests */
-    //launch_tests();
+    launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    execute((uint8_t*)"shell");
+    //execute((uint8_t*)"shell");
 
     //execute((uint8_t*)"shell");
     /* Spin (nicely, so we don't chew up cycles) */

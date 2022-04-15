@@ -170,7 +170,7 @@ int32_t execute (const uint8_t* command){
     }  //buffer is the command without all white space ^
 
     dentry_t myDentry;
-    /*IMPORTANT: check and buffer read exec file name and store it in buffer + myDentry
+    /*IMPORTANT: check and buffer read exec file name and store it in buffer + myDentry*/
     int check = read_dentry_name(buffer, &myDentry); 
     if(check == ERRORRETURN){
         return ERRORRETURN; //FAILED TEST
@@ -198,22 +198,29 @@ int32_t execute (const uint8_t* command){
         }
     }
 
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    //initialize pcb->args all to '\0'
+    int arg_i;
+    for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
+        mypcb->arguments[arg_i] = '\0'; 
+    }
+    index++;
+    arg_i = 0;
+    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
+        mypcb->arguments[arg_i] = command[index];
+        index++;
+        arg_i++;
+    }  
+
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
-
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
-    
     //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
     //map to virtual mem:zer0padded by 22
     paging_helper(myProgramNumber);
-    read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory
-    
-    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
-        mypcb->arguments[index] = command[index];
-        index++;
-    }   
+    read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory 
+
     program_arr[myProgramNumber] = 1; //sets as present
 
     //save user program bookkeeping info
@@ -506,6 +513,14 @@ int32_t vidmap(uint8_t ** screen_start){
     page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
     page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
     page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
+
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
 
     *screen_start = (uint8_t)MB_132;
     return MB_132; //return 132 (MB)
