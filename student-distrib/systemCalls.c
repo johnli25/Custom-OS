@@ -396,7 +396,7 @@ int32_t general_open(const uint8_t * filename){
     if (!filename)
         return ERRORRETURN;
 
-    read_dentry_name(filename, &d);
+    //read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
         while (i < 8){ //8 is max size idx of fd array
