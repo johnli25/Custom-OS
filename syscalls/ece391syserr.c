@@ -2,7 +2,6 @@
 
 #include "ece391support.h"
 #include "ece391syscall.h"
-#include "student-distrib/lib.c"
 
 #define NEG_FD -1073741823
 #define BIG_FD 1073741823
@@ -175,14 +174,12 @@ int err_unopened(void) {
 	// haven't been opened. Nothing should be able to be closed
     for (i = 0; i < 8; i++) {
 	    if (-1 != ece391_close(i)) {
-			printf(": %d ", i);
 			ece391_fdputs (1, (uint8_t*)"close unopened or invalid fd fail\n");
 			fail = 2;
         }
     }
 	for (i = 2; i < 8; i++) {
 	    if (-1 != ece391_read(i, buf, 31)) {
-			printf(": %d ", i);
 			ece391_fdputs (1, (uint8_t*)"read from unopened fd fail\n");
 			fail = 2;
         }
