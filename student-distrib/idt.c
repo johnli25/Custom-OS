@@ -87,7 +87,7 @@ outputs: void
 side effects: prints to kernel and then freezes it by infinite looping
 */
 void DEFAULT_EXCEPTION(void){ 
-    printf("Default exception!");
+    printf("Default exception! ");
     // while(1){
 
     // } //infinite while loop
@@ -96,7 +96,7 @@ void DEFAULT_EXCEPTION(void){
 }
 
 void EXCEPTION_DIVIDE_BY_ZERO(void){ //0x0
-    printf("Divide by 0 exception!");
+    printf("Divide by 0 exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -105,7 +105,7 @@ void EXCEPTION_DIVIDE_BY_ZERO(void){ //0x0
 }
 
 void SINGLE_STEP_INTERRUPT(void){//0x1
-    printf("Single step interrupt exception!");
+    printf("Single step interrupt exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -114,7 +114,7 @@ void SINGLE_STEP_INTERRUPT(void){//0x1
 }
 
 void EXCEPTION_NMI(void){//0x2
-    printf("NMI exception!");
+    printf("NMI exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -122,7 +122,7 @@ void EXCEPTION_NMI(void){//0x2
     return;
 }
 void EXCEPTION_BREAKPOINT(void){//0x3
-    printf("Breakpoint exception!");
+    printf("Breakpoint exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -130,7 +130,7 @@ void EXCEPTION_BREAKPOINT(void){//0x3
     return;
 }
 void EXCEPTION_OVERFLOW(void){//0x4
-    printf("Overflow exception!");
+    printf("Overflow exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -139,7 +139,7 @@ void EXCEPTION_OVERFLOW(void){//0x4
 }
 
 void EXCEPTION_BOUND_RANGE_EXCEEDED(void){//0x5
-    printf("Bound Range exceeded exception!");
+    printf("Bound Range exceeded exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -147,7 +147,7 @@ void EXCEPTION_BOUND_RANGE_EXCEEDED(void){//0x5
     return;
 }
 void EXCEPTION_INVALID_OPCODE(void){//0x6
-    printf("Invalid Opcode exception!");
+    printf("Invalid Opcode exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -155,7 +155,7 @@ void EXCEPTION_INVALID_OPCODE(void){//0x6
     return;
 }
 void EXCEPTION_COPROCESSOR_NOT_AVAILABLE(void){ //0x7
-    printf("Coprocessor not available exception!");
+    printf("Coprocessor not available exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -163,7 +163,7 @@ void EXCEPTION_COPROCESSOR_NOT_AVAILABLE(void){ //0x7
     return;
 }
 void EXCEPTION_DOUBLE_FAULT(void){ //0x8
-    printf("Double fault exception!");
+    printf("Double fault exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -171,7 +171,7 @@ void EXCEPTION_DOUBLE_FAULT(void){ //0x8
     return;
 }
 void EXCEPTION_COPROCESSOR_SEG_OVERRUN(void){ //0x9
-    printf("Coprocessor Seg Overrun exception!");
+    printf("Coprocessor Seg Overrun exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -179,7 +179,7 @@ void EXCEPTION_COPROCESSOR_SEG_OVERRUN(void){ //0x9
     return;
 }
 void EXCEPTION_INVALID_TSS(void){ //0xA
-    printf("Invalid TSS exception!");
+    printf("Invalid TSS exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -187,7 +187,7 @@ void EXCEPTION_INVALID_TSS(void){ //0xA
     return;
 }
 void EXCEPTION_SEGMENT_NOT_PRESENT(void){ //0xB
-    printf("Segment not present exception!");
+    printf("Segment not present exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -195,7 +195,7 @@ void EXCEPTION_SEGMENT_NOT_PRESENT(void){ //0xB
     return;
 }
 void EXCEPTION_STACK_SEGMENT_FAULT(void){ //0xC
-    printf("Stack Segment fault exception!");
+    printf("Stack Segment fault exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -204,7 +204,7 @@ void EXCEPTION_STACK_SEGMENT_FAULT(void){ //0xC
 }
 
 void EXCEPTION_GENERAL_PROTECTION(void){ //0xD
-    printf("General Protection exception!");
+    printf("General Protection exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -213,7 +213,7 @@ void EXCEPTION_GENERAL_PROTECTION(void){ //0xD
     return;
 }
 void EXCEPTION_PAGE_FAULT(void){ //0xE
-    printf("Page Fault exception!");
+    printf("Page Fault exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -221,7 +221,7 @@ void EXCEPTION_PAGE_FAULT(void){ //0xE
     return;
 }
 void EXCEPTION_RESERVED(void){ //0xF
-    printf("Reserved exception!");
+    printf("Reserved exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -229,7 +229,7 @@ void EXCEPTION_RESERVED(void){ //0xF
     return;
 }
 void EXCEPTION_FLOATING_POINT(void){ //0x10
-    printf("Floating Point exception!");
+    printf("Floating Point exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -237,7 +237,7 @@ void EXCEPTION_FLOATING_POINT(void){ //0x10
     return;
 }
 void EXCEPTION_ALIGNMENT_CHECK(void){ //0x11
-    printf("Alignment Check exception!");
+    printf("Alignment Check exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -245,7 +245,7 @@ void EXCEPTION_ALIGNMENT_CHECK(void){ //0x11
     return;
 }
 void EXCEPTION_MACHINE_CHECK(void){ //0x12
-    printf("Machine Check exception!");
+    printf("Machine Check exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -253,7 +253,7 @@ void EXCEPTION_MACHINE_CHECK(void){ //0x12
     return;
 }
 void EXCEPTION_SIMD_FLOATING_POINT(void){ //0x13
-    printf("SIMD Floating Point exception!");
+    printf("SIMD Floating Point exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -261,7 +261,7 @@ void EXCEPTION_SIMD_FLOATING_POINT(void){ //0x13
     return; 
 }
 void EXCEPTION_VIRTUALIZATION(void){ //0x14
-    printf("Virtualization exception!");
+    printf("Virtualization exception! ");
     // while(1) {
 
     // } //infinite while loop
@@ -269,7 +269,7 @@ void EXCEPTION_VIRTUALIZATION(void){ //0x14
     return;
 }
 void EXCEPTION_CONTROL_PROTECTION(void){ //0x15
-    printf("Control Protection exception!");
+    printf("Control Protection exception! ");
     // while(1) {
 
     // } //infinite while loop
