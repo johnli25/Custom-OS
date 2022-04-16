@@ -1,8 +1,10 @@
 #include "filesys.h"
 #include "types.h"
 #include "lib.h"
+#include "systemCalls.h"
 
 /*Checkpoint 3.2 directory functions*/
+
 /* 
  *initialize_filesys
  *   DESCRIPTION: Used to as a getter
@@ -120,8 +122,12 @@ int32_t file_close(int32_t fd)
  */
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
+    int cur_process_id = getProgNum();
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //what's the hardcoded numerical addr?
 
-    return 0;
+    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, buf, nbytes))
+        return -1;
+    return nbytes;
 }
 
 /* 

@@ -8,6 +8,7 @@
 #define NUM_DATA_BLOCKS 1023
 #define NUM_OF_FILES 63
 #define KB_4 4096
+#define MAX_ARG_SIZE 128
 
 typedef struct dentry_struct {
     int8_t fileName[FILE_NAME_LENGTH];
@@ -46,6 +47,18 @@ typedef struct fd_info{
     uint32_t file_position;
     uint32_t flags;
 } __attribute__((packed)) fd_info_t;
+
+typedef struct pcb{
+    unsigned int pid;
+    //pcb_t* pcb_parent;
+    unsigned int parent_id;
+    fd_info_t myINFO[8];
+    uint32_t saved_esp;
+    uint32_t saved_ebp;
+    unsigned int active;
+    uint8_t arguments[MAX_ARG_SIZE];
+
+} __attribute__((packed)) pcb_t;
 
 bootBlock_t * bootBlock;
 dataBlock_t * data_block_initial_ptr;

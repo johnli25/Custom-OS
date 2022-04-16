@@ -1,7 +1,6 @@
 #ifndef SYSCALLS_H
 #define SYSCALLS_H
 
-#include "filesys.h"
 #include "types.h"
 #include "rtc.h"
 
@@ -22,19 +21,18 @@
 #define MAGIC3 0x46
 
 #define ERRORRETURN -1
-#define MAX_ARG_SIZE 128
 
-typedef struct pcb{
-    unsigned int pid;
-    //pcb_t* pcb_parent;
-    unsigned int parent_id;
-    fd_info_t myINFO[8];
-    uint32_t saved_esp;
-    uint32_t saved_ebp;
-    unsigned int active;
-    uint8_t arguments[MAX_ARG_SIZE];
+// typedef struct pcb{
+//     unsigned int pid;
+//     //pcb_t* pcb_parent;
+//     unsigned int parent_id;
+//     fd_info_t myINFO[8];
+//     uint32_t saved_esp;
+//     uint32_t saved_ebp;
+//     unsigned int active;
+//     uint8_t arguments[MAX_ARG_SIZE];
 
-} __attribute__((packed)) pcb_t;
+// } __attribute__((packed)) pcb_t;
 
 extern void paging_helper(int processNum);
 
@@ -48,6 +46,8 @@ extern int32_t getargs(uint8_t * buf, int32_t n);
 extern int32_t vidmap(uint8_t ** screen_start);
 extern int32_t set_handler(int32_t signum, void * handler_addr);
 extern int32_t sigreturn(void);
+
+extern int getProgNum();
 
 #endif
 

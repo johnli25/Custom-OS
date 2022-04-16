@@ -5,7 +5,14 @@
 #include "lib.h"
 #include "terminal.h"
 #include "rtc.h"
+#include "filesys.h"
 
+static int program_arr[6] = {0,0,0,0,0,0};  
+static int currentProgramNumber = 0;
+
+int getProgNum(){
+    return currentProgramNumber;
+}
 /* do_nothing_r(int32_t theres, void * nothing, int lol)
  *   DESCRIPTION: function to do nothing read for fops_none
  *   INPUTS: none
@@ -59,8 +66,6 @@ fops_t fops_none = {do_nothing_open, do_nothing_close, do_nothing_r, do_nothing_
 // fops_t stdin;
 // stdin.open = (int32_t)terminal_open;
 
-int program_arr[6] = {0,0,0,0,0,0};  
-int currentProgramNumber = 0;
 
 /* paging_helper(int processNum)
  *   DESCRIPTION: sets up paging for execute
