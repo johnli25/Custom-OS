@@ -457,7 +457,7 @@ int32_t general_open(const uint8_t * filename){
 int32_t general_close(int32_t fd){
     if ( fd>=0 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (!mypcb->myINFO[fd].flags)
+        if (mypcb->myINFO[fd].flags)
             return mypcb->myINFO[fd].fops_table->close(fd); 
     }
     return ERRORRETURN; 
