@@ -122,12 +122,17 @@ int32_t file_close(int32_t fd)
  */
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
+    if (buf == NULL)
+        return -1;
     int cur_process_id = getProgNum();
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //what's the hardcoded numerical addr?
+    int32_t n = read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes); //why is setting to a var => page fault? 
 
-    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, buf, nbytes))
+    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes))
         return -1;
-    return nbytes;
+
+    mypcb->myINFO[fd].file_position += n; //update file position
+    return n;
 }
 
 /* 
