@@ -213,13 +213,13 @@ void newLine(void) {
  *       the "#" modifier to alter output. */
 int32_t printf(int8_t *format, ...) {
 
-    if((strlen(format) + counterScreen) > NUM_COLS){
-        newLine();
-        counterScreen = strlen(format);
-    }
-    else{
-        counterScreen = counterScreen + strlen(format);
-    }
+    // if((strlen(format) + counterScreen) > NUM_COLS){
+    //     newLine();
+    //     counterScreen = strlen(format);
+    // }
+    // else{
+    //     counterScreen = counterScreen + strlen(format);
+    // }
 
     /* Pointer to the format string */
     int8_t* buf = format;
@@ -333,13 +333,13 @@ format_char_switch:
  *   Return Value: Number of bytes written
  *    Function: Output a string to the console */
 int32_t puts(int8_t* s) {
-    if((strlen(s) + counterScreen) > NUM_COLS){
-        newLine();
-        counterScreen = strlen(s);
-    }
-    else{
-        counterScreen = counterScreen + strlen(s); 
-    }
+    // if((strlen(s) + counterScreen) > NUM_COLS){
+    //     newLine();
+    //     counterScreen = strlen(s);
+    // }
+    // else{
+    //     counterScreen = counterScreen + strlen(s); 
+    // }
     register int32_t index = 0;
     while (s[index] != '\0') {
         putc(s[index]);
@@ -353,13 +353,13 @@ int32_t puts(int8_t* s) {
  * Return Value: void
  *  Function: Output a character to the console */
 void putc(uint8_t c) {
-    if(1 + counterScreen > NUM_COLS){ //1 because the character is size 1 
-        newLine();
-        counterScreen = 1; //1 because the character is size 1 
-    }
-    else{
-        counterScreen = counterScreen + 1; //1 because the character is size 1 
-    }
+    // if(1 + counterScreen > NUM_COLS){ //1 because the character is size 1 
+    //     newLine();
+    //     counterScreen = 1; //1 because the character is size 1 
+    // }
+    // else{
+    //     counterScreen = counterScreen + 1; //1 because the character is size 1 
+    // }
     if(c == '\n' || c == '\r') {
         screen_y++;
         screen_x = 0;

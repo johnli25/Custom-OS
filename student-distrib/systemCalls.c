@@ -155,8 +155,11 @@ int32_t execute (const uint8_t* command){
     }
 
     uint8_t buffer[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
+    uint8_t arg_buf[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
+
     for (j = 0; j<128; j++ ){ //MAGIC NUM: 128 - size of the keyboard/terminal array 
         buffer[j] = '\0'; //Magic Num NULL
+        arg_buf[j] = '\0';
     }
     int bufIndex = 0;
     index = 0;
@@ -167,7 +170,8 @@ int32_t execute (const uint8_t* command){
     }  //buffer is the command without all white space ^
 
     dentry_t myDentry;
-    int check = read_dentry_name(buffer, &myDentry);
+    /*IMPORTANT: check and buffer read exec file name and store it in buffer + myDentry*/
+    int check = read_dentry_name(buffer, &myDentry); 
     if(check == ERRORRETURN){
         return ERRORRETURN; //FAILED TEST
     }
@@ -194,18 +198,29 @@ int32_t execute (const uint8_t* command){
         }
     }
 
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    //initialize pcb->args all to '\0'
+    int arg_i;
+    for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
+        mypcb->arguments[arg_i] = '\0'; 
+    }
+    index++;
+    arg_i = 0;
+    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
+        mypcb->arguments[arg_i] = command[index];
+        index++;
+        arg_i++;
+    }  
+
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
-
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
-    
     //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
     //map to virtual mem:zer0padded by 22
     paging_helper(myProgramNumber);
-    read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory
-    
-    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory 
+
     program_arr[myProgramNumber] = 1; //sets as present
 
     //save user program bookkeeping info
@@ -277,7 +292,8 @@ int32_t halt(uint8_t status){
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
-    
+    if (haltReturn_stat == 255)
+        haltReturn_stat = 256;
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
@@ -381,7 +397,7 @@ int32_t general_open(const uint8_t * filename){
     if (!filename)
         return ERRORRETURN;
 
-    read_dentry_name(filename, &d);
+    //read_dentry_name(filename, &d);
     if (d.file_type==0){ //rtc
         open_RTC (filename); 
         while (i < 8){ //8 is max size idx of fd array
@@ -436,7 +452,7 @@ int32_t general_open(const uint8_t * filename){
 int32_t general_close(int32_t fd){
     if ( fd>=0 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (mypcb->myINFO[fd].flags)
+        if (!mypcb->myINFO[fd].flags)
             return mypcb->myINFO[fd].fops_table->close(fd); 
     }
     return ERRORRETURN; 
@@ -450,6 +466,24 @@ int32_t general_close(int32_t fd){
  *   SIDE EFFECTS: none
  */
 int32_t getargs(uint8_t * buf, int32_t n){
+    //error checks
+    if (buf == NULL)
+        return ERRORRETURN;
+    
+    if (n < MAX_ARG_SIZE)
+        return ERRORRETURN;
+    
+    //initialize PCB
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
+    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer
+        return ERRORRETURN;
+
+    /*populate buffer with mypcb->args*/
+    int i;
+    for (i = 0; i < n; i++){
+        buf[i] = mypcb->arguments[i];
+    }
+    buf[n-1] = '\0'; //set last char in buffer to null
     return 0;
 }
 
@@ -460,8 +494,37 @@ int32_t getargs(uint8_t * buf, int32_t n){
  *   RETURN VALUE: returns the close value or -1 if no close
  *   SIDE EFFECTS: none
  */
+PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
+
 int32_t vidmap(uint8_t ** screen_start){
-    return 0;
+    if ((uint32_t)screen_start < MB128_START || (uint32_t)screen_start > MB_132)
+        return ERRORRETURN;
+
+    //391 = random video page_table offset. this fine?
+    video_pt[391].p = 1;
+    video_pt[391].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
+
+    page_dir[USER_VIDMEM]._PDE_regular.p = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.u_s = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.a = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
+    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
+
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+
+    *screen_start = (uint8_t)MB_132;
+    return MB_132; //return 132 (MB)
 }
 
 /* general_close(int32_t fd)

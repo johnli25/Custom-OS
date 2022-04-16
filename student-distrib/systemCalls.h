@@ -14,6 +14,7 @@
 #define PO3_OF_ENTRY 24
 #define PROG_START_VIRTUAL_ADDR 0x8048000
 #define MB_132 0x8400000
+#define USER_VIDMEM 132/4 //132 mb/4 mb = 33
 
 #define MAGIC0 0x7F
 #define MAGIC1 0x45
@@ -21,6 +22,7 @@
 #define MAGIC3 0x46
 
 #define ERRORRETURN -1
+#define MAX_ARG_SIZE 128
 
 typedef struct pcb{
     unsigned int pid;
@@ -30,6 +32,8 @@ typedef struct pcb{
     uint32_t saved_esp;
     uint32_t saved_ebp;
     unsigned int active;
+    uint8_t arguments[MAX_ARG_SIZE];
+
 } __attribute__((packed)) pcb_t;
 
 extern void paging_helper(int processNum);
