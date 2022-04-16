@@ -56,8 +56,19 @@ int32_t dir_close(int32_t fd)
  */
 int32_t dir_read(int32_t fd, void *buf, int idx)
 {
+    if (!buf)
+        return ERRORRETURN;
+
     int j, bytes_read;
     bytes_read = 0;
+    dentry_t * myDentry;
+
+    int cur_process_id = getProgNum();
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); 
+
+    int file_check = read_dentry_index(mypcb->myINFO[fd].file_position, myDentry);
+    if (file_check == -1)
+        return ERRORRETURN;
 
     int length = strlen(bootBlock->dentry_list[idx].fileName) + 1;
     if (length > FILE_NAME_LENGTH)
@@ -67,6 +78,9 @@ int32_t dir_read(int32_t fd, void *buf, int idx)
         ((int8_t *)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j];
         bytes_read += 1;
     }
+
+    mypcb->myINFO[fd].file_position++; //from OH: why do I have to increment file_posi by 1???
+    
     return bytes_read;
 }
 
@@ -122,8 +136,9 @@ int32_t file_close(int32_t fd)
  */
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
-    if (buf == NULL)
+    if (!buf) //do I need to check? 
         return -1;
+
     int cur_process_id = getProgNum();
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //what's the hardcoded numerical addr?
     int32_t n = read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes); //why is setting to a var => page fault? 
@@ -198,7 +213,7 @@ int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
 {
     if (dentry == NULL)
         return -1;
-    printf(" # of inodes: %d \n", bootBlock->numberOfInodes);
+    // printf(" # of inodes: %d \n", bootBlock->numberOfInodes); the # is currently 64 lol
     if (index < 0 || index >= bootBlock->numberOfInodes)
         return -1;
 
