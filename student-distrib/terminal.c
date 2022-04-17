@@ -74,6 +74,8 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
  * Function: writes from buf to screen */
 int32_t terminal_write(int32_t fd, const void * buf, int n){
     //check if the keyboard buffer size is greater thatn n or not 
+    //n = 198;
+    //198 is the number of chars that the frame0.txt file consists of
     int charsPrinted = 0; 
 
     if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n

@@ -376,6 +376,8 @@ int32_t general_read(int32_t fd, void * buf, int32_t n){
  *   SIDE EFFECTS: none
  */
 int32_t general_write(int32_t fd, const  void * buf, int32_t n){
+    //n = 198;
+    //198 is the number of chars that the frame0.txt file consists of
     if ( fd>=0 && fd < 8){ //Magic Nums: checks if it is in between 0 and 8 - valid 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
         if (mypcb->myINFO[fd].flags) //== 1
