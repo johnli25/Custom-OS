@@ -455,10 +455,16 @@ int32_t general_open(const uint8_t * filename){
  *   SIDE EFFECTS: none
  */
 int32_t general_close(int32_t fd){
-    if ( fd>=0 && fd < 8){ //checks if valid index
+    if ( fd>=2 && fd < 8){ //checks if valid index
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-        if (mypcb->myINFO[fd].flags)
+        if (mypcb->myINFO[fd].flags){
+            mypcb->myINFO[fd].flags = 0;
+            /*is below necessary? */
+            mypcb->myINFO[fd].file_position = 0; //sets as unpresent
+            mypcb->myINFO[fd].inode = 0; 
+            mypcb->myINFO[fd].fops_table = &fops_none;
             return mypcb->myINFO[fd].fops_table->close(fd); 
+        }
     }
     return ERRORRETURN; 
 }
@@ -511,7 +517,7 @@ int32_t vidmap(uint8_t ** screen_start){
 
     page_dir[USER_VIDMEM]._PDE_regular.p = 1;
     page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
-    page_dir[USER_VIDMEM]._PDE_regular.u_s = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.u_s = 1;//we are using a USER page for vid map //function that flips 1/0 
     page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
     page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
     page_dir[USER_VIDMEM]._PDE_regular.a = 0;

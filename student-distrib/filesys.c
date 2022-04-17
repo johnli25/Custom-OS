@@ -54,28 +54,28 @@ int32_t dir_close(int32_t fd)
  *   RETURN VALUE: bytes read
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t dir_read(int32_t fd, void *buf, int idx)
+int32_t dir_read(int32_t fd, void *buf, int n)
 {
     if (!buf)
         return ERRORRETURN;
 
     int j, bytes_read;
     bytes_read = 0;
-    dentry_t * myDentry;
+    dentry_t myDentry;
 
     int cur_process_id = getProgNum();
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); 
 
-    int file_check = read_dentry_index(mypcb->myINFO[fd].file_position, myDentry);
+    int file_check = read_dentry_index(mypcb->myINFO[fd].file_position, &myDentry);
     if (file_check == -1)
         return ERRORRETURN;
 
-    int length = strlen(bootBlock->dentry_list[idx].fileName) + 1;
+    int length = strlen(/*bootBlock->dentry_list[n]*/myDentry.fileName) + 1;
     if (length > FILE_NAME_LENGTH)
         length = FILE_NAME_LENGTH;
     for (j = 0; j < length; j++)
     {
-        ((int8_t *)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j];
+        ((int8_t *)(buf))[bytes_read] = /*bootBlock->dentry_list[n]*/myDentry.fileName[j];
         bytes_read += 1;
     }
     // uint32_t temp = mypcb->myINFO[fd].file_position;
@@ -219,7 +219,7 @@ int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
         return -1;
 
     if (index == bootBlock->dentry_list[index].inode) // this necessary?
-        *dentry = bootBlock->dentry_list[index];
+        dentry = &(bootBlock->dentry_list[index]);
     return 0;
 }
 

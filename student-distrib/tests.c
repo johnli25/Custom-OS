@@ -806,14 +806,14 @@ void launch_tests(){
 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
-	TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
-	//TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+	TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
 
 	//RTC TESTS
 	//Run these tests together
