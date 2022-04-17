@@ -460,9 +460,9 @@ int32_t general_close(int32_t fd){
         if (mypcb->myINFO[fd].flags){
             mypcb->myINFO[fd].flags = 0;
             /*is below necessary? */
-            mypcb->myINFO[fd].file_position = 0; //sets as unpresent
-            mypcb->myINFO[fd].inode = 0; 
-            mypcb->myINFO[fd].fops_table = &fops_none;
+            // mypcb->myINFO[fd].file_position = 0; //sets as unpresent
+            // mypcb->myINFO[fd].inode = 0; 
+            // mypcb->myINFO[fd].fops_table = &fops_none;
             return mypcb->myINFO[fd].fops_table->close(fd); 
         }
     }
@@ -508,12 +508,20 @@ int32_t getargs(uint8_t * buf, int32_t n){
 PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
 
 int32_t vidmap(uint8_t ** screen_start){
-    if ((uint32_t)screen_start < MB128_START || (uint32_t)screen_start > MB_132)
+    if (screen_start == NULL || (uint32_t)screen_start < MB128_START || (uint32_t)screen_start >= MB_132)
         return ERRORRETURN;
 
-    //391 = random video page_table offset. this fine?
-    video_pt[391].p = 1;
-    video_pt[391].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
+    video_pt[0].r_w = 1; //set r_w bit to 1
+    video_pt[0].u_s = 0;
+    video_pt[0].pwt = 0;
+    video_pt[0].pcd = 0;
+    video_pt[0].a = 0;
+    video_pt[0].d = 0;
+    video_pt[0].pat = 0;
+    video_pt[0].g = 0;
+    video_pt[0].avl_3bits = 0;    
+    video_pt[0].p = 1;
+    video_pt[0].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
 
     page_dir[USER_VIDMEM]._PDE_regular.p = 1;
     page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
@@ -534,8 +542,9 @@ int32_t vidmap(uint8_t ** screen_start){
         :"%eax" //saved "clobbered" regs 
     );
 
-    *screen_start = (uint8_t)MB_132;
-    return MB_132; //return 132 (MB)
+    *screen_start = (uint8_t *)MB_132;
+    return 0;
+    //return MB_132; //return 132 (MB)
 }
 
 /* general_close(int32_t fd)

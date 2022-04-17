@@ -70,7 +70,7 @@ int32_t dir_read(int32_t fd, void *buf, int n)
     if (file_check == -1)
         return ERRORRETURN;
 
-    int length = strlen(/*bootBlock->dentry_list[n]*/myDentry.fileName) + 1;
+    int length = strlen(/*bootBlock->dentry_list[n]*/myDentry.fileName); //removed + 1
     if (length > FILE_NAME_LENGTH)
         length = FILE_NAME_LENGTH;
     for (j = 0; j < length; j++)
@@ -78,8 +78,8 @@ int32_t dir_read(int32_t fd, void *buf, int n)
         ((int8_t *)(buf))[bytes_read] = /*bootBlock->dentry_list[n]*/myDentry.fileName[j];
         bytes_read += 1;
     }
-    // uint32_t temp = mypcb->myINFO[fd].file_position;
-    // temp++;
+    uint32_t temp = mypcb->myINFO[fd].file_position;
+    temp++;
     mypcb->myINFO[fd].file_position++; //from OH: why do I have to increment file_posi by 1???
     
     return bytes_read;
@@ -218,8 +218,15 @@ int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
     if (index < 0 || index >= bootBlock->numberOfInodes)
         return -1;
 
-    if (index == bootBlock->dentry_list[index].inode) // this necessary?
-        dentry = &(bootBlock->dentry_list[index]);
+    //if (index == bootBlock->dentry_list[index].inode) // this necessary?
+    //dentry = &(bootBlock->dentry_list[index]);
+    dentry->file_type = bootBlock->dentry_list[index].file_type;
+    dentry->inode = bootBlock->dentry_list[index].inode;
+    //dentry->fileName = bootBlock->dentry_list[index].fileName;
+    int i;
+    for (i = 0; i < FILE_NAME_LENGTH; i++){
+        dentry->fileName[i] = bootBlock->dentry_list[index].fileName[i];
+    }
     return 0;
 }
 
