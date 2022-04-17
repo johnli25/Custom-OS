@@ -70,7 +70,7 @@ void initialize_filesys(uint32_t * addr);
 
 extern int32_t dir_open(const uint8_t *filename);
 extern int32_t dir_close(int32_t fd);
-extern int32_t dir_read(int32_t fd, void *buf, int idx);
+extern int32_t dir_read(int32_t fd, void *buf, int n);
 extern int32_t dir_write(int32_t fd, const void *buf, int nbytes);
 
 extern int32_t file_open(const uint8_t *filename);
