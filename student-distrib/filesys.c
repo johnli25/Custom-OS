@@ -78,10 +78,10 @@ int32_t dir_read(int32_t fd, void *buf, int idx)
         ((int8_t *)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j];
         bytes_read += 1;
     }
-    uint32_t temp = mypcb->myINFO[fd].file_position;
-    temp++;
-    mypcb->myINFO[fd].file_position = temp; //from OH: why do I have to increment file_posi by 1???
-    
+   // uint32_t temp = mypcb->myINFO[fd].file_position;
+   // temp++;
+    //mypcb->myINFO[fd].file_position = temp; //from OH: why do I have to increment file_posi by 1???
+    mypcb->myINFO[fd].file_position++;
     return bytes_read;
 }
 
