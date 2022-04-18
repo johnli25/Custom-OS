@@ -135,27 +135,27 @@ void paging_unhelper(int processNum){
 }
 
 extern void vid_paging_helper(){
-    video_pt[0].p = 1;
+    video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1
     video_pt[0].u_s = 1; //set user privileges for video page table ON
-    video_pt[0].pwt = 0;
-    video_pt[0].pcd = 0;
-    video_pt[0].a = 0;
-    video_pt[0].d = 0;
-    video_pt[0].pat = 0;
-    video_pt[0].g = 0;
-    video_pt[0].avl_3bits = 0;    
+    video_pt[0].pwt = 0; // Magic Num: sets as unpresent
+    video_pt[0].pcd = 0; // Magic Num: sets as unpresent
+    video_pt[0].a = 0; // Magic Num: sets as unpresent
+    video_pt[0].d = 0; // Magic Num: sets as unpresent
+    video_pt[0].pat = 0; // Magic Num: sets as unpresent
+    video_pt[0].g = 0; // Magic Num: sets as unpresent
+    video_pt[0].avl_3bits = 0;   // Magic Num: sets as unpresent
     video_pt[0].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
 
-    page_dir[USER_VIDMEM]._PDE_regular.p = 1;
-    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.p = 1; // Magic Num: sets as present
+    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1; // Magic Num: sets as present
     page_dir[USER_VIDMEM]._PDE_regular.u_s = 1;//we are using a USER page for vid map //function that flips 1/0 
-    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.a = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0; // Magic Num: sets as unpresent
+    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0; // Magic Num: sets as unpresent
+    page_dir[USER_VIDMEM]._PDE_regular.a = 0; // Magic Num: sets as unpresent
+    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0; // Magic Num: sets as unpresent
     page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
-    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0; // Magic Num: sets as unpresent
     page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> DATA_ALIGN_SHIFT; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
 
     asm volatile ( //flush tlb
@@ -177,7 +177,7 @@ extern void vid_paging_helper(){
  */
 int32_t execute (const uint8_t* command){
     int32_t ret;
-    if (0 == strncmp((int8_t *)command, (int8_t*)("exit\n"), 5)){
+    if (0 == strncmp((int8_t *)command, (int8_t*)("exit\n"), 5)){ //Magic Num: 5 Used for the correct function call
         ret = 0;
         halt(ret);
         return ret; 
@@ -198,7 +198,7 @@ int32_t execute (const uint8_t* command){
     int j; 
     for (j = 0; j<128; j++ ){ //MAGIC NUM: 128 - size of the keyboard/terminal array 
         buffer[j] = '\0'; //Magic Num NULL
-        arg_buf[j] = '\0';
+        arg_buf[j] = '\0'; //MAgic Num NULL
     }
     int bufIndex = 0;
     //index = 0;
@@ -243,11 +243,11 @@ int32_t execute (const uint8_t* command){
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
-        mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0'
+        mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0' - NULL
     }
     index++;
     arg_i = 0;
-    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
+    while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){ //Magic Num: NULL or NewLine
 //        if (command[index] != ' ')
         mypcb->arguments[arg_i] = command[index];
         index++;
@@ -255,7 +255,7 @@ int32_t execute (const uint8_t* command){
     }  
 
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
-    read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); //4 is total size of bytes 24-27
+    read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); // Magic Num 4 is total size of bytes 24-27
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
     //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
@@ -263,7 +263,7 @@ int32_t execute (const uint8_t* command){
     paging_helper(myProgramNumber);
     read_data(myDentry.inode, 0, (unsigned char *)PROG_START_VIRTUAL_ADDR,  FOURMB); //load file into memory 
 
-    program_arr[myProgramNumber] = 1; //sets as present
+    program_arr[myProgramNumber] = 1; //Magic Num sets as present
 
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
@@ -333,8 +333,8 @@ int32_t halt(uint8_t status){
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
-    if (haltReturn_stat == 255)
-        haltReturn_stat = 256;
+    if (haltReturn_stat == 255) //Magic Num: 255 - Checks if it is the last 
+        haltReturn_stat = 256; //Magic Num: 266 - Sets to the last possible value
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
@@ -472,7 +472,7 @@ int32_t general_open(const uint8_t * filename){
     }
     if (d.file_type==2){ //checks if 2 - correct type 
         file_open(filename); 
-        i = 2;
+        i = 2; //sets index as 2
         while (i < 8){
             if (mypcb->myINFO[i].flags == 0) { //checks if unpresent
                 mypcb->myINFO[i].flags = 1; //sets as present
@@ -526,7 +526,7 @@ int32_t getargs(uint8_t * buf, int32_t n){
     
     //initialize PCB
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer
+    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
         return ERRORRETURN;
 
     /*populate buffer with mypcb->args*/
@@ -549,7 +549,7 @@ int32_t vidmap(uint8_t ** screen_start){
     if (screen_start == NULL || (uint32_t)screen_start < MB128_START || (uint32_t)screen_start >= MB_132)
         return ERRORRETURN;
 
-    vp_flag = 1;
+    vp_flag = 1; //sets as 1
     vid_paging_helper();
     *screen_start = (uint8_t *)MB_132;
     return 0;
