@@ -64,7 +64,7 @@ int32_t dir_read(int32_t fd, void *buf, int n)
     dentry_t myDentry;
 
     int cur_process_id = getProgNum();
-    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); 
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //Add 1 to get to the next one
 
     int file_check = read_dentry_index(mypcb->myINFO[fd].file_position, &myDentry);
     if (file_check == -1)
@@ -94,7 +94,7 @@ int32_t dir_read(int32_t fd, void *buf, int n)
 int32_t dir_write(int32_t fd, const void *buf, int nbytes)
 {
 
-    return -1; // read-only file system, so return -1 automatically and uncondiionally
+    return -1; // read-only file system, so return -1 automatically and uncondiionally, return error 
 }
 
 /* 
@@ -136,14 +136,14 @@ int32_t file_close(int32_t fd)
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
     if (!buf) //do I need to check? 
-        return -1;
+        return -1; //Magic: return error
 
     int cur_process_id = getProgNum();
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //what's the hardcoded numerical addr?
     int32_t n = read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes); //why is setting to a var => page fault? 
 
-    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes))
-        return -1;
+    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes)) //checks if error
+        return -1; //Magic: return error
 
     mypcb->myINFO[fd].file_position += n; //update file position
     return n;
@@ -175,15 +175,15 @@ int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
 {
     int i;
     if (file_name == NULL)
-        return -1;
+        return -1;//Magic: return error
     // int dentry_fname_len = strlen(bootBlock->dentry_list[i].fileName);
     int arg_fname_len = strlen((int8_t *)file_name);
     if (arg_fname_len > FILE_NAME_LENGTH) // if it's too long...
-        return -1;
+        return -1;//Magic: return error
 
     for (i = 0; i < bootBlock->numberOfDentries; i++)
     {
-            if (strncmp((int8_t *)bootBlock->dentry_list[i].fileName, (int8_t *)file_name, 32) == 0)
+            if (strncmp((int8_t *)bootBlock->dentry_list[i].fileName, (int8_t *)file_name, 32) == 0) //Magic Number 32: Used for offset
             {
                 //*dentry = bootBlock->dentry_list[i];
                 strcpy(dentry->fileName, bootBlock->dentry_list[i].fileName);
@@ -206,10 +206,10 @@ int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
 int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
 {
     if (dentry == NULL)
-        return -1;
+        return -1; //Magic: return error
     // printf(" # of inodes: %d \n", bootBlock->numberOfInodes); the # is currently 64 lol
     if (index < 0 || index >= bootBlock->numberOfInodes)
-        return -1;
+        return -1; //Magic: return error
 
     //if (index == bootBlock->dentry_list[index].inode) // this necessary?
     //dentry = &(bootBlock->dentry_list[index]);
