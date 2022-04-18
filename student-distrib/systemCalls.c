@@ -10,6 +10,8 @@
 static int program_arr[6] = {0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
 
+static int vp_flag = 0; //vid paging (vp) flag 
+
 int getProgNum(){
     return currentProgramNumber;
 }
@@ -108,7 +110,6 @@ void paging_helper(int processNum){
  *   SIDE EFFECTS: alters paging at the program mem start
  */
 void paging_unhelper(int processNum){
-
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.p = 1; // Magic Num: sets as present
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.r_w = 1; // Magic Num: sets as present
     page_dir[POGRAM_MEM_START]._PDE_kernel_4MB.u_s = 1; // Magic Num: sets as present
@@ -131,7 +132,40 @@ void paging_unhelper(int processNum){
         : 
         :"%eax" //saved "clobbered" regs 
     );
-    
+}
+
+extern void vid_paging_helper(){
+    video_pt[0].p = 1;
+    video_pt[0].r_w = 1; //set r_w bit to 1
+    video_pt[0].u_s = 0;
+    video_pt[0].pwt = 0;
+    video_pt[0].pcd = 0;
+    video_pt[0].a = 0;
+    video_pt[0].d = 0;
+    video_pt[0].pat = 0;
+    video_pt[0].g = 0;
+    video_pt[0].avl_3bits = 0;    
+    video_pt[0].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
+
+    page_dir[USER_VIDMEM]._PDE_regular.p = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
+    page_dir[USER_VIDMEM]._PDE_regular.u_s = 1;//we are using a USER page for vid map //function that flips 1/0 
+    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.a = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
+    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
+    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
+
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+    return;
 }
 
 /*execute (const uint8_t* command)
@@ -202,6 +236,8 @@ int32_t execute (const uint8_t* command){
             return ERRORRETURN; //all of the others are filled
         }
     }
+
+    vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     //initialize pcb->args all to '\0'
@@ -326,6 +362,8 @@ int32_t halt(uint8_t status){
     parentPcb -> active = 1; //set active bits for comprehension/reference
 
     paging_unhelper(cHiLdPcB->parent_id); // - flushes TLB as well 
+    if (vp_flag == 1) 
+        vid_paging_helper();
 
     // assembluuuuu linkeage asm - for 
     // halt needs to jump to th eend of execute asm volitile :"-.globl LABEL" - able to return to this label in dif asm volatiles 
@@ -507,43 +545,12 @@ int32_t getargs(uint8_t * buf, int32_t n){
  *   RETURN VALUE: returns the close value or -1 if no close
  *   SIDE EFFECTS: none
  */
-PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
-
 int32_t vidmap(uint8_t ** screen_start){
     if (screen_start == NULL || (uint32_t)screen_start < MB128_START || (uint32_t)screen_start >= MB_132)
         return ERRORRETURN;
 
-    video_pt[0].r_w = 1; //set r_w bit to 1
-    video_pt[0].u_s = 0;
-    video_pt[0].pwt = 0;
-    video_pt[0].pcd = 0;
-    video_pt[0].a = 0;
-    video_pt[0].d = 0;
-    video_pt[0].pat = 0;
-    video_pt[0].g = 0;
-    video_pt[0].avl_3bits = 0;    
-    video_pt[0].p = 1;
-    video_pt[0].base_address = paging_vidmem >> DATA_ALIGN_SHIFT; //is this correct?
-
-    page_dir[USER_VIDMEM]._PDE_regular.p = 1;
-    page_dir[USER_VIDMEM]._PDE_regular.r_w = 1;
-    page_dir[USER_VIDMEM]._PDE_regular.u_s = 1;//we are using a USER page for vid map //function that flips 1/0 
-    page_dir[USER_VIDMEM]._PDE_regular.pwt = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.pcd = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.a = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
-    page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
-
-    asm volatile ( //flush tlb
-        "movl %%cr3, %%eax;"
-        "movl %%eax, %%cr3;"  
-        : 
-        : 
-        :"%eax" //saved "clobbered" regs 
-    );
-
+    vp_flag = 1;
+    vid_paging_helper();
     *screen_start = (uint8_t *)MB_132;
     return 0;
     //return MB_132; //return 132 (MB)

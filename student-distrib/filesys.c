@@ -258,14 +258,13 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
     {
         if (inode_ptr->length == offset + i)
             break;
-        if (data_block_offset + alt_i >= KB_4)
+        if (data_block_offset + alt_i >= KB_4) //if it needs to overflow..
         {
             data_block_offset = 0;
             alt_i = 0;
             inode_db_idx++; //calculate new inode_db_idx in order to get...
             data_block_idx = inode_ptr->data_block[inode_db_idx]; //new data block idx
             data_block_ptr = data_block_initial_ptr + data_block_idx;
-
         }
         buf[i] = data_block_ptr->data[data_block_offset + alt_i];
         //putc(buf[i]);

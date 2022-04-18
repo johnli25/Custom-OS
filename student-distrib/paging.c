@@ -27,6 +27,18 @@ void setup_paging_structures(void){
         page_tab[i].avl_3bits = 0;
         page_tab[i].base_address = 0; 
 
+        video_pt[i].p = 0; 
+        video_pt[i].r_w = 1; //set r_w bit to 1
+        video_pt[i].u_s = 0;
+        video_pt[i].pwt = 0;
+        video_pt[i].pcd = 0;
+        video_pt[i].a = 0;
+        video_pt[i].d = 0;
+        video_pt[i].pat = 0;
+        video_pt[i].g = 0;
+        video_pt[i].avl_3bits = 0;
+        video_pt[i].base_address = 0; 
+
         /*initialize the page directory as all empty*/
         page_dir[i]._PDE_regular.p = 0;
         page_dir[i]._PDE_regular.r_w = 0;
