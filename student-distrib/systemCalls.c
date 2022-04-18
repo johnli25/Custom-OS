@@ -137,7 +137,7 @@ void paging_unhelper(int processNum){
 extern void vid_paging_helper(){
     video_pt[0].p = 1;
     video_pt[0].r_w = 1; //set r_w bit to 1
-    video_pt[0].u_s = 0;
+    video_pt[0].u_s = 1; //set user privileges for video page table ON
     video_pt[0].pwt = 0;
     video_pt[0].pcd = 0;
     video_pt[0].a = 0;
@@ -156,7 +156,7 @@ extern void vid_paging_helper(){
     page_dir[USER_VIDMEM]._PDE_regular.avl_1bit = 0;
     page_dir[USER_VIDMEM]._PDE_regular.ps = 0; //page size = 0 for page table 
     page_dir[USER_VIDMEM]._PDE_regular.avl_3bits = 0;
-    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> 12; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
+    page_dir[USER_VIDMEM]._PDE_regular.base_address = (unsigned int)video_pt >> DATA_ALIGN_SHIFT; //12 is the page-aligned/shift offset that contains the attributes for 4 KB pages (which I shift or offset away)
 
     asm volatile ( //flush tlb
         "movl %%cr3, %%eax;"
