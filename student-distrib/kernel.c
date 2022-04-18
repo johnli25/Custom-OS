@@ -45,18 +45,18 @@ void entry(unsigned long magic, unsigned long addr) {
     printf("flags = 0x%#x\n", (unsigned)mbi->flags);
 
     /* Are mem_* valid? */
-    if (CHECK_FLAG(mbi->flags, 0))
+    if (CHECK_FLAG(mbi->flags, 0)) //Magic Num: Used for the correct offset
         printf("mem_lower = %uKB, mem_upper = %uKB\n", (unsigned)mbi->mem_lower, (unsigned)mbi->mem_upper);
 
     /* Is boot_device valid? */
-    if (CHECK_FLAG(mbi->flags, 1))
+    if (CHECK_FLAG(mbi->flags, 1)) //Magic Num: Used for the correct offset
         printf("boot_device = 0x%#x\n", (unsigned)mbi->boot_device);
 
     /* Is the command line passed? */
-    if (CHECK_FLAG(mbi->flags, 2))
+    if (CHECK_FLAG(mbi->flags, 2)) //Magic Num: Used for the correct offset
         printf("cmdline = %s\n", (char *)mbi->cmdline);
 
-    if (CHECK_FLAG(mbi->flags, 3)) {
+    if (CHECK_FLAG(mbi->flags, 3)) { //Magic Num: Used for the correct offset
         int mod_count = 0;
         int i;
         module_t* mod = (module_t*)mbi->mods_addr;
@@ -66,7 +66,7 @@ void entry(unsigned long magic, unsigned long addr) {
             printf("Module %d loaded at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_start);
             printf("Module %d ends at address: 0x%#x\n", mod_count, (unsigned int)mod->mod_end);
             printf("First few bytes of module:\n");
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < 16; i++) { //Magic num: 16 is the amount of the addresses we need to check 
                 printf("0x%x ", *((char*)(mod->mod_start+i)));
             }
             printf("\n");
@@ -75,13 +75,13 @@ void entry(unsigned long magic, unsigned long addr) {
         }
     }
     /* Bits 4 and 5 are mutually exclusive! */
-    if (CHECK_FLAG(mbi->flags, 4) && CHECK_FLAG(mbi->flags, 5)) {
+    if (CHECK_FLAG(mbi->flags, 4) && CHECK_FLAG(mbi->flags, 5)) {  //Magic Nums 4 and 5: Used for the correct offset
         printf("Both bits 4 and 5 are set.\n");
         return;
     }
 
     /* Is the section header table of ELF valid? */
-    if (CHECK_FLAG(mbi->flags, 5)) {
+    if (CHECK_FLAG(mbi->flags, 5)) { //Magic Num: Used for the correct offset
         elf_section_header_table_t *elf_sec = &(mbi->elf_sec);
         printf("elf_sec: num = %u, size = 0x%#x, addr = 0x%#x, shndx = 0x%#x\n",
                 (unsigned)elf_sec->num, (unsigned)elf_sec->size,
@@ -89,7 +89,7 @@ void entry(unsigned long magic, unsigned long addr) {
     }
 
     /* Are mmap_* valid? */
-    if (CHECK_FLAG(mbi->flags, 6)) {
+    if (CHECK_FLAG(mbi->flags, 6)) { //Magic Num: Used for the correct offset
         memory_map_t *mmap;
         printf("mmap_addr = 0x%#x, mmap_length = 0x%x\n",
                 (unsigned)mbi->mmap_addr, (unsigned)mbi->mmap_length);
