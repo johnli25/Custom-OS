@@ -76,7 +76,7 @@ int32_t dir_read(int32_t fd, void *buf, int n)
     for (j = 0; j < length; j++)
     {
         ((int8_t *)(buf))[bytes_read] = /*bootBlock->dentry_list[n]*/myDentry.fileName[j];
-        bytes_read += 1;
+        bytes_read++;
     }
     mypcb->myINFO[fd].file_position++; //from OH: why do I have to increment file_posi by 1???
     
@@ -183,21 +183,16 @@ int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
 
     for (i = 0; i < bootBlock->numberOfDentries; i++)
     {
-        //int dentry_fname_len = strlen(bootBlock->dentry_list[i].fileName);
-        //if (arg_fname_len == dentry_fname_len)
-        //{
             if (strncmp((int8_t *)bootBlock->dentry_list[i].fileName, (int8_t *)file_name, 32) == 0)
             {
                 //*dentry = bootBlock->dentry_list[i];
                 strcpy(dentry->fileName, bootBlock->dentry_list[i].fileName);
                 dentry->inode = bootBlock->dentry_list[i].inode;
                 dentry->file_type = bootBlock->dentry_list[i].file_type;
-                // printf("inode #: %d \n", dentry->inode);
                 return 0;
             }
-        //}
     }
-    return -1;
+    return ERRORRETURN;
 }
 
 /* 
@@ -266,7 +261,7 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
         }
         buf[i] = data_block_ptr->data[data_block_offset + alt_i];
         //putc(buf[i]);
-        count++;
+        count++; //i == COUNT
         alt_i++; 
     }
     return count; // return # of bytes read AKA # of bytes placed in buffer
