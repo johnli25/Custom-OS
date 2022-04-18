@@ -471,11 +471,11 @@ int32_t general_close(int32_t fd){
     return ERRORRETURN; 
 }
 
-/* general_close(int32_t fd)
- *   DESCRIPTION: closes the file
- *   INPUTS: int32_t fd
+/* getargs(uint8_t * buf, int32_t n)
+ *   DESCRIPTION: gets arguements from buf
+ *   INPUTS: uint8_t * buf, int32_t n
  *   OUTPUTS: none
- *   RETURN VALUE: returns the close value or -1 if no close
+ *   RETURN VALUE: returns 0 if success
  *   SIDE EFFECTS: none
  */
 int32_t getargs(uint8_t * buf, int32_t n){
@@ -500,11 +500,11 @@ int32_t getargs(uint8_t * buf, int32_t n){
     return 0;
 }
 
-/* general_close(int32_t fd)
- *   DESCRIPTION: closes the file
- *   INPUTS: int32_t fd
+/* vidmap(uint8_t ** screen_start)
+ *   DESCRIPTION: maps the text mode video memory into user space
+ *   INPUTS: uint8_t ** screen_start
  *   OUTPUTS: none
- *   RETURN VALUE: returns the close value or -1 if no close
+ *   RETURN VALUE: returns 0 if success
  *   SIDE EFFECTS: none
  */
 PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
