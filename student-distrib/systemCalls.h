@@ -1,7 +1,6 @@
 #ifndef SYSCALLS_H
 #define SYSCALLS_H
 
-#include "filesys.h"
 #include "types.h"
 #include "rtc.h"
 
@@ -14,6 +13,7 @@
 #define PO3_OF_ENTRY 24
 #define PROG_START_VIRTUAL_ADDR 0x8048000
 #define MB_132 0x8400000
+#define USER_VIDMEM 132/4 //132 mb/4 mb = 33
 
 #define MAGIC0 0x7F
 #define MAGIC1 0x45
@@ -22,17 +22,21 @@
 
 #define ERRORRETURN -1
 
-typedef struct pcb{
-    unsigned int pid;
-    //pcb_t* pcb_parent;
-    unsigned int parent_id;
-    fd_info_t myINFO[8];
-    uint32_t saved_esp;
-    uint32_t saved_ebp;
-    unsigned int active;
-} __attribute__((packed)) pcb_t;
+// typedef struct pcb{
+//     unsigned int pid;
+//     //pcb_t* pcb_parent;
+//     unsigned int parent_id;
+//     fd_info_t myINFO[8];
+//     uint32_t saved_esp;
+//     uint32_t saved_ebp;
+//     unsigned int active;
+//     uint8_t arguments[MAX_ARG_SIZE];
+
+// } __attribute__((packed)) pcb_t;
 
 extern void paging_helper(int processNum);
+extern void paging_unhelper(int processNum);
+extern void vid_paging_helper();
 
 extern int32_t execute(const uint8_t * command);
 extern int32_t halt(uint8_t status);
@@ -44,6 +48,8 @@ extern int32_t getargs(uint8_t * buf, int32_t n);
 extern int32_t vidmap(uint8_t ** screen_start);
 extern int32_t set_handler(int32_t signum, void * handler_addr);
 extern int32_t sigreturn(void);
+
+extern int getProgNum();
 
 #endif
 

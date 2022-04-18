@@ -4,6 +4,7 @@
 #include "rtc.h"
 #include "keyboard.h"
 #include "devicewrappers.h"
+#include "systemCalls.h"
 
 /*initialize_idt()
 *Description: follows x86 standard OP and fills the IDT 
@@ -86,169 +87,193 @@ outputs: void
 side effects: prints to kernel and then freezes it by infinite looping
 */
 void DEFAULT_EXCEPTION(void){ 
-    printf("Default exception! \n");
-    while(1){
+    printf("Default exception! ");
+    // while(1){
 
-    } //infinite while loop
+    // } //infinite while loop
+
     return;
 }
 
 void EXCEPTION_DIVIDE_BY_ZERO(void){ //0x0
-    printf("Divide by 0 exception! \n");
-    while(1){
+    printf("Divide by 0 exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 
 void SINGLE_STEP_INTERRUPT(void){//0x1
-    printf("Single step interrupt exception! \n");
-    while(1){
+    printf("Single step interrupt exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 
 void EXCEPTION_NMI(void){//0x2
-    printf("NMI exception! \n");
-    while(1){
+    printf("NMI exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_BREAKPOINT(void){//0x3
-    printf("Breakpoint exception! \n");
-    while(1) {
+    printf("Breakpoint exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_OVERFLOW(void){//0x4
-    printf("Overflow exception! \n");
-    while(1) {
+    printf("Overflow exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 
 void EXCEPTION_BOUND_RANGE_EXCEEDED(void){//0x5
-    printf("Bound Range exceeded exception! \n");
-    while(1) {
+    printf("Bound Range exceeded exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_INVALID_OPCODE(void){//0x6
-    printf("Invalid Opcode exception! \n");
-    while(1) {
+    printf("Invalid Opcode exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_COPROCESSOR_NOT_AVAILABLE(void){ //0x7
-    printf("Coprocessor not available exception! \n");
-    while(1) {
+    printf("Coprocessor not available exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_DOUBLE_FAULT(void){ //0x8
-    printf("Double fault exception! \n");
-    while(1) {
+    printf("Double fault exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_COPROCESSOR_SEG_OVERRUN(void){ //0x9
-    printf("Coprocessor Seg Overrun exception! \n");
-    while(1) {
+    printf("Coprocessor Seg Overrun exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_INVALID_TSS(void){ //0xA
-    printf("Invalid TSS exception! \n");
-    while(1) {
+    printf("Invalid TSS exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_SEGMENT_NOT_PRESENT(void){ //0xB
-    printf("Segment not present exception! \n");
-    while(1) {
+    printf("Segment not present exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_STACK_SEGMENT_FAULT(void){ //0xC
-    printf("Stack Segment fault exception! \n");
-    while(1) {
+    printf("Stack Segment fault exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 
 void EXCEPTION_GENERAL_PROTECTION(void){ //0xD
-    printf("General Protection exception! \n");
-    while(1) {
+    printf("General Protection exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
+
     return;
 }
 void EXCEPTION_PAGE_FAULT(void){ //0xE
-    printf("Page Fault exception! \n");
-    while(1) {
+    printf("Page Fault exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_RESERVED(void){ //0xF
-    printf("Reserved exception! \n");
-    while(1) {
+    printf("Reserved exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_FLOATING_POINT(void){ //0x10
-    printf("Floating Point exception! \n");
-    while(1) {
+    printf("Floating Point exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_ALIGNMENT_CHECK(void){ //0x11
-    printf("Alignment Check exception! \n");
-    while(1) {
+    printf("Alignment Check exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_MACHINE_CHECK(void){ //0x12
-    printf("Machine Check exception! \n");
-    while(1) {
+    printf("Machine Check exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_SIMD_FLOATING_POINT(void){ //0x13
-    printf("SIMD Floating Point exception! \n");
-    while(1) {
+    printf("SIMD Floating Point exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return; 
 }
 void EXCEPTION_VIRTUALIZATION(void){ //0x14
-    printf("Virtualization exception! \n");
-    while(1) {
+    printf("Virtualization exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 void EXCEPTION_CONTROL_PROTECTION(void){ //0x15
-    printf("Control Protection exception! \n");
-    while(1) {
+    printf("Control Protection exception! ");
+    // while(1) {
 
-    } //infinite while loop
+    // } //infinite while loop
+    halt(255); //MAGIC #: 256 is return # for exceptions
     return;
 }
 // void SYS_CALL(void){ //0x80

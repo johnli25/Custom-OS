@@ -74,11 +74,13 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
  * Function: writes from buf to screen */
 int32_t terminal_write(int32_t fd, const void * buf, int n){
     //check if the keyboard buffer size is greater thatn n or not 
+    //n = 198;
+    //198 is the number of chars that the frame0.txt file consists of
     int charsPrinted = 0; 
 
-    if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
-        n = (keyboardBufferSize-1);
-    }
+    // if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
+    //     n = (keyboardBufferSize-1);
+    // }
 
     int p = 0; 
     for(p = 0; p < n; p++){
@@ -97,11 +99,9 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 charsPrinted = charsPrinted + 4;
             }
             else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
-                if (strncmp((int8_t *)buf, "391OS> ", 7) == 0){
-                    printf("bwuh \n"); 
-                    putBackspace(((unsigned char *)(buf))[p], (unsigned char *)buf);
-                    charsPrinted--;
-                }
+                printf("bwuh \n"); 
+                putBackspace(((unsigned char *)(buf))[p], (unsigned char *)buf);
+                charsPrinted--;
             }
             else{
                 putc(((unsigned char *)(buf))[p]);

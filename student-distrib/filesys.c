@@ -1,8 +1,10 @@
 #include "filesys.h"
 #include "types.h"
 #include "lib.h"
+#include "systemCalls.h"
 
 /*Checkpoint 3.2 directory functions*/
+
 /* 
  *initialize_filesys
  *   DESCRIPTION: Used to as a getter
@@ -52,19 +54,32 @@ int32_t dir_close(int32_t fd)
  *   RETURN VALUE: bytes read
  *   SIDE EFFECTS: reads from file memory
  */
-int32_t dir_read(int32_t fd, void *buf, int idx)
+int32_t dir_read(int32_t fd, void *buf, int n)
 {
+    if (!buf)
+        return ERRORRETURN;
+
     int j, bytes_read;
     bytes_read = 0;
+    dentry_t myDentry;
 
-    int length = strlen(bootBlock->dentry_list[idx].fileName) + 1;
+    int cur_process_id = getProgNum();
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); 
+
+    int file_check = read_dentry_index(mypcb->myINFO[fd].file_position, &myDentry);
+    if (file_check == -1)
+        return ERRORRETURN;
+
+    int length = strlen(/*bootBlock->dentry_list[n]*/myDentry.fileName); //removed + 1
     if (length > FILE_NAME_LENGTH)
         length = FILE_NAME_LENGTH;
     for (j = 0; j < length; j++)
     {
-        ((int8_t *)(buf))[bytes_read] = bootBlock->dentry_list[idx].fileName[j];
-        bytes_read += 1;
+        ((int8_t *)(buf))[bytes_read] = /*bootBlock->dentry_list[n]*/myDentry.fileName[j];
+        bytes_read++;
     }
+    mypcb->myINFO[fd].file_position++; //from OH: why do I have to increment file_posi by 1???
+    
     return bytes_read;
 }
 
@@ -120,8 +135,18 @@ int32_t file_close(int32_t fd)
  */
 int32_t file_read(int32_t fd, void *buf, int nbytes)
 {
+    if (!buf) //do I need to check? 
+        return -1;
 
-    return 0;
+    int cur_process_id = getProgNum();
+    pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //what's the hardcoded numerical addr?
+    int32_t n = read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes); //why is setting to a var => page fault? 
+
+    if (-1 == read_data(mypcb->myINFO[fd].inode, mypcb->myINFO[fd].file_position, (uint8_t *)buf, nbytes))
+        return -1;
+
+    mypcb->myINFO[fd].file_position += n; //update file position
+    return n;
 }
 
 /* 
@@ -158,21 +183,16 @@ int32_t read_dentry_name(const uint8_t *file_name, dentry_t *dentry)
 
     for (i = 0; i < bootBlock->numberOfDentries; i++)
     {
-        //int dentry_fname_len = strlen(bootBlock->dentry_list[i].fileName);
-        //if (arg_fname_len == dentry_fname_len)
-        //{
             if (strncmp((int8_t *)bootBlock->dentry_list[i].fileName, (int8_t *)file_name, 32) == 0)
             {
                 //*dentry = bootBlock->dentry_list[i];
                 strcpy(dentry->fileName, bootBlock->dentry_list[i].fileName);
                 dentry->inode = bootBlock->dentry_list[i].inode;
                 dentry->file_type = bootBlock->dentry_list[i].file_type;
-                // printf("inode #: %d \n", dentry->inode);
                 return 0;
             }
-        //}
     }
-    return -1;
+    return ERRORRETURN;
 }
 
 /* 
@@ -187,12 +207,19 @@ int32_t read_dentry_index(uint32_t index, dentry_t *dentry)
 {
     if (dentry == NULL)
         return -1;
-    printf(" # of inodes: %d \n", bootBlock->numberOfInodes);
+    // printf(" # of inodes: %d \n", bootBlock->numberOfInodes); the # is currently 64 lol
     if (index < 0 || index >= bootBlock->numberOfInodes)
         return -1;
 
-    if (index == bootBlock->dentry_list[index].inode) // this necessary?
-        *dentry = bootBlock->dentry_list[index];
+    //if (index == bootBlock->dentry_list[index].inode) // this necessary?
+    //dentry = &(bootBlock->dentry_list[index]);
+    dentry->file_type = bootBlock->dentry_list[index].file_type;
+    dentry->inode = bootBlock->dentry_list[index].inode;
+    //dentry->fileName = bootBlock->dentry_list[index].fileName;
+    int i;
+    for (i = 0; i < FILE_NAME_LENGTH; i++){
+        dentry->fileName[i] = bootBlock->dentry_list[index].fileName[i];
+    }
     return 0;
 }
 
@@ -224,18 +251,17 @@ int32_t read_data(uint32_t inode, uint32_t offset, uint8_t *buf, uint32_t length
     {
         if (inode_ptr->length == offset + i)
             break;
-        if (data_block_offset + alt_i >= KB_4)
+        if (data_block_offset + alt_i >= KB_4) //if it needs to overflow..
         {
             data_block_offset = 0;
             alt_i = 0;
             inode_db_idx++; //calculate new inode_db_idx in order to get...
             data_block_idx = inode_ptr->data_block[inode_db_idx]; //new data block idx
             data_block_ptr = data_block_initial_ptr + data_block_idx;
-
         }
         buf[i] = data_block_ptr->data[data_block_offset + alt_i];
         //putc(buf[i]);
-        count++;
+        count++; //i == COUNT
         alt_i++; 
     }
     return count; // return # of bytes read AKA # of bytes placed in buffer
