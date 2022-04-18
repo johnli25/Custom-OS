@@ -105,7 +105,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     );
 
     char rate = 16 - log_freq;			// set the RTC freq to 16 - log_2(freq) 
-    printf("RATE: 0x0%x FREQ: %u \n", rate, freq);
+    //printf("RATE: 0x0%x FREQ: %u \n", rate, freq);
     outb(0x8A, RTC_CMD);		// set index to register A, disable NMI
     char prev = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_CMD, 0x8A);		// reset index to A

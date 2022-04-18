@@ -78,9 +78,9 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
     //198 is the number of chars that the frame0.txt file consists of
     int charsPrinted = 0; 
 
-    if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
-        n = (keyboardBufferSize-1);
-    }
+    // if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
+    //     n = (keyboardBufferSize-1);
+    // }
 
     int p = 0; 
     for(p = 0; p < n; p++){
