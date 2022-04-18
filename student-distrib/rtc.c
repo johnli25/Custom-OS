@@ -95,7 +95,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
 
     uint32_t freq =  *((uint32_t*)buf);
 
-    if (freq > 1024 || freq < 2 || freq & (freq - 1)) return -1; 
+    if (freq > 1024 || freq < 2 || freq & (freq - 1)) return -1; //checks if frequency is within bounds
 
     //https://stackoverflow.com/questions/994593/how-to-do-an-integer-log2-in-c
     uint32_t log_freq;
@@ -123,7 +123,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
  * Side Effects: None
 */
 int32_t close_RTC (int32_t fd){
-    if (!state_data[2]) return -1;
+    if (!state_data[2]) return -1; //checks if valid
     state_data[2] = 0; 
     return 0; 
 }
