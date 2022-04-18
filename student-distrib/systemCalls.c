@@ -188,7 +188,6 @@ int32_t execute (const uint8_t* command){
     //command is a string, have to parge (ex: shell)     
     //parse through the string - past 391OS> get after white space 
     int index = 0;
-    int j; 
     while(command[index] == ' '){ //checks if a space
         index++;
     }
@@ -196,13 +195,15 @@ int32_t execute (const uint8_t* command){
     uint8_t buffer[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
     uint8_t arg_buf[128]; //MAGIC NUM: 128 - size of the keyboard/terminal array 
 
+    int j; 
     for (j = 0; j<128; j++ ){ //MAGIC NUM: 128 - size of the keyboard/terminal array 
         buffer[j] = '\0'; //Magic Num NULL
         arg_buf[j] = '\0';
     }
     int bufIndex = 0;
-    index = 0;
+    //index = 0;
     while(command[index] != ' ' && command[index] != '\n'){ //checks if a space or a new line
+//        if (command[index] != ' ')
         buffer[bufIndex] = command[index];
         index++;
         bufIndex++;
@@ -240,14 +241,14 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    //initialize pcb->args all to '\0'
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
-        mypcb->arguments[arg_i] = '\0'; 
+        mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0'
     }
     index++;
     arg_i = 0;
     while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){
+//        if (command[index] != ' ')
         mypcb->arguments[arg_i] = command[index];
         index++;
         arg_i++;
@@ -302,7 +303,6 @@ int32_t execute (const uint8_t* command){
     
     /*context switch*/
     //enable interrupt on flags: or flags x200 in assembly w register
-     //".globl executeEnd;" 
     asm volatile( 
         "pushl %0 \n" //push USER_DS
         "pushl %1 \n" //push esp
