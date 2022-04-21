@@ -7,7 +7,7 @@
 #include "rtc.h"
 #include "filesys.h"
 
-static int program_arr[6] = {0,0,0,0,0,0};  
+static int program_arr[3] = {0,0,0};  
 static int currentProgramNumber = 0;
 
 static int vp_flag = 0; //vid paging (vp) flag 
@@ -228,12 +228,12 @@ int32_t execute (const uint8_t* command){
         return ERRORRETURN;
 
     int myProgramNumber = 0; //starts off as zero
-    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 6 is the max # of processes/files
+    for(myProgramNumber = 0; myProgramNumber < 3; myProgramNumber++){ //magic num: 3 is the max # of processes/files
         if(program_arr[myProgramNumber] == 0){ //checks if free 
             program_arr[myProgramNumber] = 1; //sets to filled
             break;
         }
-        if(myProgramNumber == 5){ //MAGIC #: 5 = MAX NUMBER OF PROCESSES AKA we reached end iteration and they were all filled (= 1)
+        if(myProgramNumber == 2){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
             return ERRORRETURN; //all of the others are filled
         }
     }
