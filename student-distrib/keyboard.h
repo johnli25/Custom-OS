@@ -30,6 +30,15 @@
 #define DOWNCHAR 0x50
 #define RIGHTCHAR 0x4D
 #define LEFTCHAR 0x4B
+#define ALTPRESS 0x38
+#define ALTRELEASE 0xB8
+#define CCHARACTER 0x2E
+#define FONE 0x3B
+#define FTWO 0x3C
+#define FTHREE 0x3D
+
+
+
 
 #define INTTRUE 1
 #define INTFALSE 0

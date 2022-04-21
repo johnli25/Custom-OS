@@ -5,6 +5,7 @@
 int capsLock = INTFALSE;
 int shift = INTFALSE;
 int control = INTFALSE;
+int alt = INTFALSE;
 
 int counter = 0; //starts off as zero
 
@@ -217,6 +218,14 @@ void interrupt_keyboard(void){
         }
     }
 
+    if(myInput == ALTPRESS){
+        alt = INTTRUE;
+    }
+
+    if(myInput == ALTRELEASE){
+        alt = INTFALSE;
+    }
+
     if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //checks for shift 
         shift = INTTRUE;
     }
@@ -240,6 +249,23 @@ void interrupt_keyboard(void){
         send_eoi(KEYBOARDIRQNUM);
         sti();
         return;
+    }
+
+    // NOT SURE if we need to implement CONTROL C  
+    // if(control == INTTRUE && myInput == CCHARACTER){
+
+    // }
+
+    if(alt == INTTRUE && myInput == FONE){
+        
+    }
+
+    if(alt == INTTRUE && myInput == FTWO){
+
+    }
+
+    if(alt == INTTRUE && myInput == FTHREE){
+        
     }
 
     //ignore the arrow keys
