@@ -8,6 +8,7 @@
 
 
 #define PIT_IRQ_NUM 0
+#define IO_PORT_NUM 0x43
 
 extern void initialize_PIT();
 

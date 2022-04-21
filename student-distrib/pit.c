@@ -2,9 +2,9 @@
 
 void initialize_PIT(){
     
-    //outb();
+    //outb( , IO_PORT_NUM);
     enable_irq(PIT_IRQ_NUM);
-}
+}   
 
 
 
