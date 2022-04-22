@@ -1,6 +1,7 @@
 #include "lib.h"
 #include "i8259.h"
 #include "keyboard.h"
+#include "keyboard.h"
 
 int capsLock = INTFALSE;
 int shift = INTFALSE;
@@ -9,8 +10,10 @@ int alt = INTFALSE;
 
 int counter = 0; //starts off as zero
 
-
-static unsigned char keyboardBuffer[keyboardBufferSize];
+static unsigned char keyboardBuffer[keyboardBufferSize]; //main keyboard buffer
+static unsigned char keyboardBuffer1[keyboardBufferSize];
+static unsigned char keyboardBuffer2[keyboardBufferSize];
+static unsigned char keyboardBuffer3[keyboardBufferSize];
 
 /* 
  *getKeyboardBuffer
@@ -257,15 +260,19 @@ void interrupt_keyboard(void){
     // }
 
     if(alt == INTTRUE && myInput == FONE){
-        
+        clearKeyboardBuffer();
+        memcpy(keyboardBuffer, keyboardBuffer1, sizeof(keyboardBuffer1));
     }
 
     if(alt == INTTRUE && myInput == FTWO){
-
+        clearKeyboardBuffer();
+        memcpy(keyboardBuffer, keyboardBuffer2, sizeof(keyboardBuffer2));
     }
 
     if(alt == INTTRUE && myInput == FTHREE){
-        
+
+        clearKeyboardBuffer();
+        memcpy(keyboardBuffer, keyboardBuffer3, sizeof(keyboardBuffer3));
     }
 
     //ignore the arrow keys

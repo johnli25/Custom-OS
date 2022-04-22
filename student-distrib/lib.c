@@ -97,10 +97,27 @@ void clear(void) {
  * Return Value: none
  * Function: Clears text and video memory */
 void clearText(void) {
-    screen_x = 0;
+    screen_x = 7;
     screen_y = 0;
     update_cursor(screen_x, screen_y);
     clear();
+
+    /*for checkpoint 5: rewriting "391os> " here*/
+    *(uint8_t *)(video_mem + (0 << 1)) = '3';
+    *(uint8_t *)(video_mem + (0 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (1 << 1)) = '9';
+    *(uint8_t *)(video_mem + (1 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (2 << 1)) = '1';
+    *(uint8_t *)(video_mem + (2 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (3 << 1)) = 'O';
+    *(uint8_t *)(video_mem + (3 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (4 << 1)) = 'S';
+    *(uint8_t *)(video_mem + (4 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (5 << 1)) = '>';
+    *(uint8_t *)(video_mem + (5 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (6 << 1)) = ' ';
+    *(uint8_t *)(video_mem + (6 << 1) + 1) = ATTRIB;
+
     counterScreen = 0;
 }
 
