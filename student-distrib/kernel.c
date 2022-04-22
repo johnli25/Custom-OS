@@ -11,6 +11,7 @@
 #include "rtc.h"
 #include "idt.h"
 #include "keyboard.h"
+#include "pit.h"
 
 #include "paging.h"
 #include "filesys.h"
@@ -174,6 +175,8 @@ void entry(unsigned long magic, unsigned long addr) {
 
     //printf("INITIALIZING RTC . . . \n");
     initialize_RTC(); //RTC initialization
+
+    initialize_PIT();
 
     clear();
     sti(); //idt we need this anymore?

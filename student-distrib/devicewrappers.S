@@ -23,6 +23,8 @@ DEVICE_WRAPPER(RTC_WRAPPER, interrupt_RTC);
 
 DEVICE_WRAPPER(KEYBOARD_WRAPPER, interrupt_keyboard);
 
+DEVICE_WRAPPER(PIT_WRAPPER, interrupt_PIT)
+
 .globl syscall_wrapper
 
 syscall_wrapper:
