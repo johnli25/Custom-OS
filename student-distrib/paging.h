@@ -6,6 +6,10 @@
 #define TOTAL_ENTRIES 1024
 #define KB_4 4096 //1 KB = 1024
 #define paging_vidmem 0xB8000
+#define terminal_back1 0xB9000
+#define terminal_back2 0xBA000
+#define terminal_back3 0xBB000
+
 #define DATA_ALIGN_SHIFT 12
 
 //create 1024 (use only first 2-ignore next 1022 entries) PDs entries, each 4 MB each
