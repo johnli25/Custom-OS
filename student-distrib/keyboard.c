@@ -263,6 +263,8 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FONE){
         //clearKeyboardBuffer();
         //clearText();
+        memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        currTerm = 0;
         memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
         switch_terms(0);
         send_eoi(KEYBOARDIRQNUM);
@@ -273,6 +275,8 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTWO){
         //clearKeyboardBuffer();
         //clearText();
+        memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        currTerm = 1;
         memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
         switch_terms(1);
         send_eoi(KEYBOARDIRQNUM);
@@ -283,6 +287,8 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTHREE){
         //clearKeyboardBuffer();
         //clearText();
+        memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        currTerm = 2;
         memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
         switch_terms(2);
         send_eoi(KEYBOARDIRQNUM);
