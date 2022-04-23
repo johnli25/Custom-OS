@@ -28,15 +28,15 @@ void interrupt_PIT(void){
         }
         break;
     case 1:
-        if (multi_terms[0].bootup_flag == 0){
+        if (multi_terms[1].bootup_flag == 0){
             execute((uint8_t*)"shell");
-            multi_terms[0].bootup_flag = 1;
+            multi_terms[1].bootup_flag = 1;
         }
         break;
     case 2:
-        if (multi_terms[0].bootup_flag == 0){
+        if (multi_terms[2].bootup_flag == 0){
             execute((uint8_t*)"shell");
-            multi_terms[0].bootup_flag = 1;
+            multi_terms[2].bootup_flag = 1;
         }
         break;
 
