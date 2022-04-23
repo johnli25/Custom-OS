@@ -86,7 +86,12 @@ void setup_paging_structures(void){
     
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem >> DATA_ALIGN_SHIFT;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
-
+    page_tab[terminal_back1  >> DATA_ALIGN_SHIFT].base_address = terminal_back1 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back1 >> DATA_ALIGN_SHIFT].p = 1;
+    page_tab[terminal_back2 >> DATA_ALIGN_SHIFT].base_address = terminal_back2 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back2 >> DATA_ALIGN_SHIFT].p = 1;
+    page_tab[terminal_back3 >> DATA_ALIGN_SHIFT].base_address = terminal_back3 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back3 >> DATA_ALIGN_SHIFT].p = 1;
     // allocating page within startup
     return;
 }

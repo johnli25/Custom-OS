@@ -5,9 +5,9 @@
 
 //HAVE TO ADD IN INTERFACES
 void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
-    memcpy((void *)paging_vidmem + oldTerminalNum * KB_4, (void *)paging_vidmem, KB_4); //first, save old/current program memory
+    memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old/current program memory
 
-    memcpy((void *)paging_vidmem, (void *)paging_vidmem + newTerminalNum * KB_4, KB_4); //then put new program memory into current
+    memcpy((void *)paging_vidmem, (void *)paging_vidmem + (newTerminalNum + 1) * KB_4, KB_4); //then put new program memory into current
     // asm volatile ( //flush TLB
     //     "movl %%cr3, %%eax;"
     //     "movl %%eax, %%cr3;"  
@@ -18,7 +18,7 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
 }
 
 void switch_terms(int terminalNum){
-    
+    cli();
     multi_terms[currTerm].cursor_x = get_cursor_x();
     multi_terms[currTerm].cursor_y = get_cursor_y();
 
@@ -28,7 +28,7 @@ void switch_terms(int terminalNum){
     terminal_remap_mem(currTerm, terminalNum);
 
     currTerm = terminalNum;
-
+    sti();
 }
 
 /* void terminal_init(void);
