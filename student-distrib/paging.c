@@ -15,17 +15,29 @@ PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096)));
 void setup_paging_structures(void){
     int i;
     for (i = 0; i < TOTAL_ENTRIES; i++){
-        page_tab[i].p = 0; 
+        page_tab[i].p = 0;  //Magic Num: Setting as Unpresent
         page_tab[i].r_w = 1; //set r_w bit to 1
-        page_tab[i].u_s = 0;
-        page_tab[i].pwt = 0;
-        page_tab[i].pcd = 0;
-        page_tab[i].a = 0;
-        page_tab[i].d = 0;
-        page_tab[i].pat = 0;
-        page_tab[i].g = 0;
-        page_tab[i].avl_3bits = 0;
-        page_tab[i].base_address = 0; 
+        page_tab[i].u_s = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].pwt = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].pcd = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].a = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].d = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].pat = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].g = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].avl_3bits = 0;  //Magic Num: Setting as Unpresent
+        page_tab[i].base_address = 0;   //Magic Num: Setting as Unpresent
+
+        video_pt[i].p = 0;   //Magic Num: Setting as Unpresent
+        video_pt[i].r_w = 1; //set r_w bit to 1
+        video_pt[i].u_s = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].pwt = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].pcd = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].a = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].d = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].pat = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].g = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].avl_3bits = 0;  //Magic Num: Setting as Unpresent
+        video_pt[i].base_address = i; 
 
         /*initialize the page directory as all empty*/
         page_dir[i]._PDE_regular.p = 0;
@@ -41,8 +53,8 @@ void setup_paging_structures(void){
 
         /*initialize the Page Table 4 MB portion of PD*/
         if (i == 0){
-            page_dir[i]._PDE_regular.p = 1;
-            page_dir[i]._PDE_regular.r_w = 1;
+            page_dir[i]._PDE_regular.p = 1;  //Magic Num: Setting as present
+            page_dir[i]._PDE_regular.r_w = 1;  //Magic Num: Setting as present
             page_dir[i]._PDE_regular.u_s = 0;
             page_dir[i]._PDE_regular.pwt = 0;
             page_dir[i]._PDE_regular.pcd = 0;
@@ -55,8 +67,8 @@ void setup_paging_structures(void){
 
         /*initialize the kernel 4 MB page portion of PD*/
         if (i == 1){
-            page_dir[i]._PDE_kernel_4MB.p = 1;
-            page_dir[i]._PDE_kernel_4MB.r_w = 1;
+            page_dir[i]._PDE_kernel_4MB.p = 1;  //Magic Num: Setting as present
+            page_dir[i]._PDE_kernel_4MB.r_w = 1;  //Magic Num: Setting as present
             page_dir[i]._PDE_kernel_4MB.u_s = 0;
             page_dir[i]._PDE_kernel_4MB.pwt = 0;
             page_dir[i]._PDE_kernel_4MB.pcd = 1;

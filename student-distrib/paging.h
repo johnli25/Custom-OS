@@ -65,6 +65,8 @@ typedef union PD_entry{
 
 PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
 
+PTE video_pt[TOTAL_ENTRIES] __attribute__((aligned(4096))); //4096 = 4 KB (attribute) aligned 
+
 extern void setup_paging_structures(void);
 extern void initialize_paging(void);
 

@@ -7,6 +7,7 @@
 #define keyboardBufferSize 128  //size of the keyboardBuffer 
 #define NUM_COLS    80
 #define NUM_ROWS    25
+#define NUM_OF_KEYBOARDS 3
 
 // SPECIAL CHARACTERS:
 #define BACKSPACEPRESS   0X0E
@@ -36,9 +37,6 @@
 #define FONE 0x3B
 #define FTWO 0x3C
 #define FTHREE 0x3D
-
-
-
 
 #define INTTRUE 1
 #define INTFALSE 0

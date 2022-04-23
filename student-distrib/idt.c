@@ -76,6 +76,8 @@ void initialize_idt(void){
 
     SET_IDT_ENTRY(idt[0x28], RTC_WRAPPER);
 
+    SET_IDT_ENTRY(idt[0x20], PIT_WRAPPER); //0x20 is the PIT timer chip 
+
     lidt(idt_desc_ptr); //specify size of IDT and set base address 
 }
 

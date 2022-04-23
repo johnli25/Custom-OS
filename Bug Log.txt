@@ -79,3 +79,19 @@
 -Issue: Vertical Scroll not working with the commands
 -Resolved by: Adding vertical line call in our printf
 -4/10/2022
+
+15.
+-Issue: Syserr tests worked separately but when testing all at once there was page fault
+-Resolved by: Issue stemmed from us not closing files properly. Therefore, tests all at once caused error.
+-4/16/2022
+
+16. 
+-Issue: Cat frame0.txt/frame1.txt would not print the whole frame
+-Resolved by: Realized we were cutting off the ending of the frame. Had to comment out previous terminal_write code that was causing this issue.
+-4/17/2022
+
+17. 
+-Issue: Fish was page faulting
+-Resolved by: Did not set the user_supervisor bit for video map/mem paging. Added in this bit and was fixed.
+-4/18/2022
+
