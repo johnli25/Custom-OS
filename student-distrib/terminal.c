@@ -1,15 +1,47 @@
 #include "terminal.h"
 #include "keyboard.h"
 #include "lib.h"
-
+#include "paging.h"
 
 //HAVE TO ADD IN INTERFACES
+void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
+    memcpy((void *)paging_vidmem + oldTerminalNum * KB_4, (void *)paging_vidmem, KB_4); //first, save old/current program memory
+
+    memcpy((void *)paging_vidmem, (void *)paging_vidmem + newTerminalNum * KB_4, KB_4); //then put new program memory into current
+
+    // asm volatile ( //flush TLB
+    //     "movl %%cr3, %%eax;"
+    //     "movl %%eax, %%cr3;"  
+    //     : 
+    //     : 
+    //     :"%eax" //saved "clobbered" regs 
+    // );
+}
+
+void switch_terms(int terminalNum){
+    
+    multi_terms[currTerm].cursor_x = get_cursor_x();
+    multi_terms[currTerm].cursor_y = get_cursor_y();
+    
+    terminal_remap_mem(currTerm, terminalNum);
+
+    currTerm = terminalNum;
+
+}
 
 /* void terminal_init(void);
  * Inputs: none
  * Return Value: int
  * Function: initializes terminal (returning 0 for now) */
 int32_t terminal_init(void){
+    int i;
+    currTerm = 0;
+    for (i = 0; i < 3; i++){ //MAX # of terms = 3
+        multi_terms[i].cursor_x = 7;
+        multi_terms[i].cursor_y = 0;
+        multi_terms[i].curr_proc = NULL;
+        multi_terms[i].bootup_flag = 0;
+    }
     return 0;
 }
 
@@ -74,8 +106,7 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
  * Function: writes from buf to screen */
 int32_t terminal_write(int32_t fd, const void * buf, int n){
     //check if the keyboard buffer size is greater thatn n or not 
-    //n = 198;
-    //198 is the number of chars that the frame0.txt file consists of
+    //n = 198 is the number of chars that the frame0.txt file consists of
     int charsPrinted = 0; 
 
     // if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
@@ -92,7 +123,7 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 newLine();
             }
             else if (((unsigned char *)(buf))[p] == '\t'){ //checks if it is Tab
-                putc('h');
+                putc(' ');
                 putc(' ');
                 putc(' ');
                 putc(' ');
@@ -108,11 +139,9 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 charsPrinted++;
             }
         }
-        
     }
     if(charsPrinted > NUM_COLS){
         newLine();
     }
     return n;
-
 }

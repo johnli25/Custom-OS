@@ -6,6 +6,7 @@
 #include "terminal.h"
 #include "rtc.h"
 #include "filesys.h"
+#include "lib.h"
 
 static int program_arr[3] = {0,0,0};  
 static int currentProgramNumber = 0;
@@ -99,7 +100,6 @@ void paging_helper(int processNum){
         : 
         :"%eax" //saved "clobbered" regs 
     );
-
 }
 
 /* paging_unhelper(int processNum)
@@ -177,6 +177,7 @@ extern void vid_paging_helper(){
  */
 int32_t execute (const uint8_t* command){
     int32_t ret;
+    //currTerm = 0;
     if (0 == strncmp((int8_t *)command, (int8_t*)("exit\n"), 5)){ //Magic Num: 5 Used for the correct function call
         ret = 0;
         halt(ret);
@@ -241,6 +242,9 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    multi_terms[currTerm].curr_proc = mypcb;
+    // multi_terms[] = ;
+
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
         mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0' - NULL
@@ -318,6 +322,7 @@ int32_t execute (const uint8_t* command){
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry), "r"(ret)
         : "eax" //clobbered regs
     );
+    printf("%d \n", currentProgramNumber);
     return ret;
 }
 

@@ -1,7 +1,9 @@
 #include "pit.h"
-#include "i8259.h"
+// #include "i8259.h"
 #include "lib.h"
 #include "scheduling.h"
+#include "systemCalls.h"
+#include "terminal.h"
 
 /*Check this link:
 https://wiki.osdev.org/Pit#Operating_Modes */
@@ -16,7 +18,31 @@ void initialize_PIT(void){
 
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
+    int current_pid = getProgNum();
+    switch (current_pid)
+    {
+    case 0:
+        if (multi_terms[0].bootup_flag == 0){
+            execute((uint8_t*)"shell");
+            multi_terms[0].bootup_flag = 1;
+        }
+        break;
+    case 1:
+        if (multi_terms[0].bootup_flag == 0){
+            execute((uint8_t*)"shell");
+            multi_terms[0].bootup_flag = 1;
+        }
+        break;
+    case 2:
+        if (multi_terms[0].bootup_flag == 0){
+            execute((uint8_t*)"shell");
+            multi_terms[0].bootup_flag = 1;
+        }
+        break;
 
+    default:
+        break;
+    }
 }
 
 

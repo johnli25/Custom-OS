@@ -12,6 +12,7 @@
 #include "idt.h"
 #include "keyboard.h"
 #include "pit.h"
+#include "terminal.h"
 
 #include "paging.h"
 #include "filesys.h"
@@ -161,7 +162,9 @@ void entry(unsigned long magic, unsigned long addr) {
 
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
- 
+
+    terminal_init();
+
     printf("INITIALIZING IDT . . . \n");
     initialize_idt(); //idt initialization
 
@@ -191,6 +194,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //execute((uint8_t*)"shell");
 
     execute((uint8_t*)"shell");
+
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }

@@ -26,6 +26,14 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
+int get_cursor_x(){
+    return screen_x;
+}
+
+int get_cursor_y(){
+    return screen_y;
+}
+
 /* void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
  * Inputs: cursor_start, cursor_end
  * Return Value: none

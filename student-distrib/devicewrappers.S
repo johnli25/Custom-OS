@@ -35,7 +35,7 @@ syscall_wrapper:
     jge syscall_invalid 
 
     pushfl
-    # pushal
+    # pushal 
     pushl %esi
     pushl %edi
     pushl %ebx

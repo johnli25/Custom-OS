@@ -1,7 +1,8 @@
 #include "lib.h"
 #include "i8259.h"
 #include "keyboard.h"
-#include "keyboard.h"
+#include "terminal.h"
+
 
 int capsLock = INTFALSE;
 int shift = INTFALSE;
@@ -11,9 +12,9 @@ int alt = INTFALSE;
 int counter = 0; //starts off as zero
 
 static unsigned char keyboardBuffer[keyboardBufferSize]; //main keyboard buffer
-static unsigned char keyboardBuffer1[keyboardBufferSize];
-static unsigned char keyboardBuffer2[keyboardBufferSize];
-static unsigned char keyboardBuffer3[keyboardBufferSize];
+static unsigned char keyboardBuffers[NUM_OF_KEYBOARDS][keyboardBufferSize];
+//static unsigned char keyboardBuffer2[NUM_OF_KEYBOARDS][keyboardBufferSize];
+//static unsigned char keyboardBuffer3[NUM_OF_KEYBOARDS][keyboardBufferSize];
 
 /* 
  *getKeyboardBuffer
@@ -260,19 +261,33 @@ void interrupt_keyboard(void){
     // }
 
     if(alt == INTTRUE && myInput == FONE){
-        clearKeyboardBuffer();
-        memcpy(keyboardBuffer, keyboardBuffer1, sizeof(keyboardBuffer1));
+        //clearKeyboardBuffer();
+        //clearText();
+        memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
+        switch_terms(0);
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
     }
 
     if(alt == INTTRUE && myInput == FTWO){
-        clearKeyboardBuffer();
-        memcpy(keyboardBuffer, keyboardBuffer2, sizeof(keyboardBuffer2));
+        //clearKeyboardBuffer();
+        //clearText();
+        memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
+        switch_terms(1);
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
     }
 
     if(alt == INTTRUE && myInput == FTHREE){
-
-        clearKeyboardBuffer();
-        memcpy(keyboardBuffer, keyboardBuffer3, sizeof(keyboardBuffer3));
+        //clearKeyboardBuffer();
+        //clearText();
+        memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
+        switch_terms(2);
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
     }
 
     //ignore the arrow keys
