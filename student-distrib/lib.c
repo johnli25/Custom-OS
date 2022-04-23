@@ -393,6 +393,10 @@ void putc(uint8_t c) {
     // else{
     //     counterScreen = counterScreen + 1; //1 because the character is size 1 
     // }
+
+    // screen_x = get_cursor_x();
+    // screen_y = get_cursor_y();
+
     if(c == '\n' || c == '\r') { //checks if Newline or r
         screen_y++;
         screen_x = 0;

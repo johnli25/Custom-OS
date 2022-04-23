@@ -22,6 +22,10 @@ void switch_terms(int terminalNum){
     multi_terms[currTerm].cursor_x = get_cursor_x();
     multi_terms[currTerm].cursor_y = get_cursor_y();
 
+    // screen_x = get_cursor_x();
+    // screen_y = get_cursor_y();
+
+
    // set_cursor_x(multi_terms[terminalNum].cursor_x);
     //set_cursor_y(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
