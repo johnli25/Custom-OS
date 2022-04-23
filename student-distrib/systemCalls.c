@@ -202,9 +202,7 @@ int32_t execute (const uint8_t* command){
         arg_buf[j] = '\0'; //MAgic Num NULL
     }
     int bufIndex = 0;
-    //index = 0;
     while(command[index] != ' ' && command[index] != '\n'){ //checks if a space or a new line
-//        if (command[index] != ' ')
         buffer[bufIndex] = command[index];
         index++;
         bufIndex++;
@@ -243,7 +241,6 @@ int32_t execute (const uint8_t* command){
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     multi_terms[currTerm].curr_proc = mypcb;
-    // multi_terms[] = ;
 
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){

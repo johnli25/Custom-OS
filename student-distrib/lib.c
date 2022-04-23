@@ -34,6 +34,14 @@ int get_cursor_y(){
     return screen_y;
 }
 
+void set_cursor_x(int new_x){
+    screen_x = new_x;
+}
+
+void set_cursor_y(int new_y){
+    screen_y = new_y;
+}
+
 /* void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
  * Inputs: cursor_start, cursor_end
  * Return Value: none

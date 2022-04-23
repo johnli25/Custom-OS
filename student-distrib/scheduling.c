@@ -1,5 +1,5 @@
 #include "scheduling.h"
-
+#include "pit.h"
 
 void scheduler(){
     int cur_process_id = getProgNum();

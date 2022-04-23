@@ -8,7 +8,6 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
     memcpy((void *)paging_vidmem + oldTerminalNum * KB_4, (void *)paging_vidmem, KB_4); //first, save old/current program memory
 
     memcpy((void *)paging_vidmem, (void *)paging_vidmem + newTerminalNum * KB_4, KB_4); //then put new program memory into current
-
     // asm volatile ( //flush TLB
     //     "movl %%cr3, %%eax;"
     //     "movl %%eax, %%cr3;"  
@@ -22,6 +21,9 @@ void switch_terms(int terminalNum){
     
     multi_terms[currTerm].cursor_x = get_cursor_x();
     multi_terms[currTerm].cursor_y = get_cursor_y();
+
+    set_cursor_x(multi_terms[terminalNum].cursor_x);
+    set_cursor_y(multi_terms[terminalNum].cursor_y);
     
     terminal_remap_mem(currTerm, terminalNum);
 
@@ -36,8 +38,8 @@ void switch_terms(int terminalNum){
 int32_t terminal_init(void){
     int i;
     currTerm = 0;
-    for (i = 0; i < 3; i++){ //MAX # of terms = 3
-        multi_terms[i].cursor_x = 7;
+    for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
+        multi_terms[i].cursor_x = 0;
         multi_terms[i].cursor_y = 0;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
