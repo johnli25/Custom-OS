@@ -260,19 +260,19 @@ void interrupt_keyboard(void){
 
     // }
 
-    // if(alt == INTTRUE && myInput == FONE){
-    //     //clearKeyboardBuffer();
-    //     //clearText();
-    //     //if(keyboardBuffer[0] != '\0'){
-    //      memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-    //     //}
-    //     currTerm = 0;
-    //     memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
-    //     switch_terms(0);
-    //     send_eoi(KEYBOARDIRQNUM);
-    //     sti();
-    //     return;
-    // }
+    if(alt == INTTRUE && myInput == FONE){
+        //clearKeyboardBuffer();
+        //clearText();
+        //if(keyboardBuffer[0] != '\0'){
+         memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        //}
+        currTerm = 0;
+        memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
+        switch_terms(0);
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
 
     if(alt == INTTRUE && myInput == FTWO){
         //clearKeyboardBuffer();
@@ -288,19 +288,19 @@ void interrupt_keyboard(void){
         return;
     }
 
-    if(alt == INTTRUE && myInput == FTHREE){
-        //clearKeyboardBuffer();
-        //clearText();
-        //if(keyboardBuffer[0] != '\0'){
-        memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        //}
-        currTerm = 2;
-        memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
-        switch_terms(2);
-        send_eoi(KEYBOARDIRQNUM);
-        sti();
-        return;
-    }
+    // if(alt == INTTRUE && myInput == FTHREE){
+    //     //clearKeyboardBuffer();
+    //     //clearText();
+    //     //if(keyboardBuffer[0] != '\0'){
+    //     memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+    //     //}
+    //     currTerm = 2;
+    //     memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
+    //     switch_terms(2);
+    //     send_eoi(KEYBOARDIRQNUM);
+    //     sti();
+    //     return;
+    // }
 
     //ignore the arrow keys
     if(myInput == UPCHAR){

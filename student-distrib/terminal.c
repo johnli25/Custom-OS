@@ -25,7 +25,6 @@ void switch_terms(int terminalNum){
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
 
-
    // set_cursor_x(multi_terms[terminalNum].cursor_x);
     //set_cursor_y(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
@@ -43,10 +42,11 @@ int32_t terminal_init(void){
     int i;
     currTerm = 0;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
-        multi_terms[i].cursor_x = 0;
+        multi_terms[i].cursor_x = 7;
         multi_terms[i].cursor_y = 0;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
+        multi_terms[i].shell_cnt = 0;
     }
     return 0;
 }
@@ -82,11 +82,9 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
 
     }
 
-
     if(n > (keyboardBufferSize-1)){ //sets n to 127 if its too big
         n = (keyboardBufferSize-1);
     }
-
 
     unsigned char * myKeyboardBuffer = getKeyboardBuffer();
 

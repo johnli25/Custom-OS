@@ -42,13 +42,12 @@ void interrupt_PIT(void){
 
         }
         break;
-    case 2:
+    case -1:
         if (multi_terms[2].bootup_flag == 0){
             currTerm = 2;          
             switch_terms(2);
-            // execute((uint8_t*)"shell");
+            //execute((uint8_t*)"shell");
             execute((uint8_t*)"exit");
-            // execute((uint8_t*)"exit");
             multi_terms[2].bootup_flag = 1;
         }
         break;

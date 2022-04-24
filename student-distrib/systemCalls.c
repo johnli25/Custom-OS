@@ -8,7 +8,7 @@
 #include "filesys.h"
 #include "lib.h"
 
-static int program_arr[3] = {0,0,0};  
+static int program_arr[6] = {0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
 
 static int vp_flag = 0; //vid paging (vp) flag 
@@ -227,12 +227,13 @@ int32_t execute (const uint8_t* command){
         return ERRORRETURN;
 
     int myProgramNumber = 0; //starts off as zero
-    for(myProgramNumber = 0; myProgramNumber < 3; myProgramNumber++){ //magic num: 3 is the max # of processes/files
+    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 3 is the max # of processes/files
         if(program_arr[myProgramNumber] == 0){ //checks if free 
             program_arr[myProgramNumber] = 1; //sets to filled
+            multi_terms[currTerm].shell_cnt++;
             break;
         }
-        if(myProgramNumber == 2){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
+        if(myProgramNumber == 5 || multi_terms[currTerm].shell_cnt == 3){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
             return ERRORRETURN; //all of the others are filled
         }
     }
@@ -353,6 +354,7 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
+    multi_terms[currTerm].shell_cnt--;
     // reload a new shell if childpcb's pid = childpcb's parent id
     if (currentProgramNumber == cHiLdPcB->parent_id) 
         execute((uint8_t*)"shell"); // executes shell 
