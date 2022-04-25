@@ -26,19 +26,19 @@ static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
 
-int get_cursor_x(){
+int get_screen_x(){
     return screen_x;
 }
 
-int get_cursor_y(){
+int get_screen_y(){
     return screen_y;
 }
 
-void set_cursor_x(int new_x){
+void set_screen_x(int new_x){
     screen_x = new_x;
 }
 
-void set_cursor_y(int new_y){
+void set_screen_y(int new_y){
     screen_y = new_y;
 }
 

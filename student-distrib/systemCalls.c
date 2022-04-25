@@ -182,6 +182,7 @@ int32_t execute (const uint8_t* command){
         ret = 0;
         halt(ret);
         return ret; 
+        //strcpy((int8_t *)command, (int8_t *)("exit"));
     }
     if (!command)
         return ERRORRETURN; 
@@ -230,10 +231,10 @@ int32_t execute (const uint8_t* command){
     for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 3 is the max # of processes/files
         if(program_arr[myProgramNumber] == 0){ //checks if free 
             program_arr[myProgramNumber] = 1; //sets to filled
-            multi_terms[currTerm].shell_cnt++;
+            //multi_terms[currTerm].shell_cnt++; //possibly deprecated-don't need anymore?
             break;
         }
-        if(myProgramNumber == 5 || multi_terms[currTerm].shell_cnt == 3){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
+        if(myProgramNumber == 5 /*|| multi_terms[currTerm].shell_cnt == 3*/){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
             return ERRORRETURN; //all of the others are filled
         }
     }
