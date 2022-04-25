@@ -5,7 +5,7 @@
 
 //HAVE TO ADD IN INTERFACES
 void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
-    memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old/current program memory
+    memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old = current program memory
 
     memcpy((void *)paging_vidmem, (void *)paging_vidmem + (newTerminalNum + 1) * KB_4, KB_4); //then put new program memory into current
     // asm volatile ( //flush TLB
@@ -19,15 +19,14 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
 
 void switch_terms(int terminalNum){
     //cli();
-    multi_terms[currTerm].cursor_x = get_cursor_x();
-    multi_terms[currTerm].cursor_y = get_cursor_y();
+    multi_terms[currTerm].cursor_x = get_screen_x();
+    multi_terms[currTerm].cursor_y = get_screen_y();
 
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
 
-
-   // set_cursor_x(multi_terms[terminalNum].cursor_x);
-    //set_cursor_y(multi_terms[terminalNum].cursor_y);
+    // set_screen_x(multi_terms[terminalNum].cursor_x);
+    // set_screen_x(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
     terminal_remap_mem(currTerm, terminalNum);
 
@@ -43,10 +42,11 @@ int32_t terminal_init(void){
     int i;
     currTerm = 0;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
-        multi_terms[i].cursor_x = 0;
+        multi_terms[i].cursor_x = 7;
         multi_terms[i].cursor_y = 0;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
+        multi_terms[i].shell_cnt = 0;
     }
     return 0;
 }
@@ -82,11 +82,9 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
 
     }
 
-
     if(n > (keyboardBufferSize-1)){ //sets n to 127 if its too big
         n = (keyboardBufferSize-1);
     }
-
 
     unsigned char * myKeyboardBuffer = getKeyboardBuffer();
 

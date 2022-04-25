@@ -26,11 +26,11 @@ void clearBottom(void);
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void disable_cursor();
 
-int get_cursor_x();
-int get_cursor_y();
+int get_screen_x();
+int get_screen_y();
 
-void set_cursor_x();
-void set_cursor_y();
+void set_screen_x();
+void set_screen_y();
 
 void update_cursor(int x, int y);
 uint16_t get_cursor_position(void);

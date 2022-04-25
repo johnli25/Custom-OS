@@ -260,29 +260,29 @@ void interrupt_keyboard(void){
 
     // }
 
-    // if(alt == INTTRUE && myInput == FONE){
-    //     //clearKeyboardBuffer();
-    //     //clearText();
-    //     //if(keyboardBuffer[0] != '\0'){
-    //      memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-    //     //}
-    //     currTerm = 0;
-    //     memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
-    //     switch_terms(0);
-    //     send_eoi(KEYBOARDIRQNUM);
-    //     sti();
-    //     return;
-    // }
+    if(alt == INTTRUE && myInput == FONE){
+        //clearKeyboardBuffer();
+        //clearText();
+        //if(keyboardBuffer[0] != '\0'){
+        currTerm = 0;
+        switch_terms(0);
+        memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        //}
+        memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        return;
+    }
 
     if(alt == INTTRUE && myInput == FTWO){
         //clearKeyboardBuffer();
         //clearText();
         //if(keyboardBuffer[0] != '\0'){
+        currTerm = 1;
+        switch_terms(1);
         memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //}
-        currTerm = 1;
         memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
-        switch_terms(1);
         send_eoi(KEYBOARDIRQNUM);
         sti();
         return;

@@ -10,6 +10,7 @@ typedef struct terminal {
     // int curr_proc;
     pcb_t * curr_proc;
     int bootup_flag;
+    int shell_cnt;
 
 } __attribute__((packed)) terminal_t;
 
