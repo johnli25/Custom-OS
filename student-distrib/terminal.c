@@ -42,8 +42,8 @@ int32_t terminal_init(void){
     int i;
     currTerm = 0;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
-        multi_terms[i].cursor_x = 7;
-        multi_terms[i].cursor_y = 0;
+        multi_terms[i].cursor_x = 7; //7 is the shell start 
+        multi_terms[i].cursor_y = NUM_ROWS - 1;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
         multi_terms[i].shell_cnt = 0;
