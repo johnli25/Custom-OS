@@ -531,7 +531,7 @@ int32_t getargs(uint8_t * buf, int32_t n){
     
     //initialize PCB
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
+    if (n == 0 || mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
         return ERRORRETURN;
 
     /*populate buffer with mypcb->args*/

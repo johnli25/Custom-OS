@@ -19,6 +19,8 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
 
 void switch_terms(int terminalNum){
     //cli();
+    terminal_remap_mem(currTerm, terminalNum);
+
     multi_terms[currTerm].cursor_x = get_screen_x();
     multi_terms[currTerm].cursor_y = get_screen_y();
 
@@ -28,7 +30,6 @@ void switch_terms(int terminalNum){
     // set_screen_x(multi_terms[terminalNum].cursor_x);
     // set_screen_x(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
-    terminal_remap_mem(currTerm, terminalNum);
 
     currTerm = terminalNum;
     //sti();

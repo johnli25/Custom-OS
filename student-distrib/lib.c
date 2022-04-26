@@ -73,6 +73,9 @@ void update_cursor(int x, int y){
 	//have to swap inputs and outputs
 	uint16_t pos = y * NUM_COLS+ x;
  
+    screen_x = x;
+    screen_y = y;
+    
 	outb(CURSOR0F, CURSORD4);
 	outb( (uint8_t) (pos & CURSORFF), CURSORD5);
 	outb( CURSOR0E, CURSORD4);
