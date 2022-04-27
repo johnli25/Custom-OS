@@ -118,10 +118,11 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
     // if(n > (keyboardBufferSize-1)){ //if n is too big, then resize n
     //     n = (keyboardBufferSize-1);
     // }
-
+    int positiontest = 0;
     int p = 0; 
     for(p = 0; p < n; p++){
-        if(p == NUM_COLS){
+        positiontest = get_screen_x();
+        if(positiontest == NUM_COLS-1){
             newLine();
         }
         if(((unsigned char *)(buf))[p] != '\0'){ //checks if it is NULL
