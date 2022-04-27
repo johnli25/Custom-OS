@@ -75,7 +75,7 @@ void update_cursor(int x, int y){
  
     screen_x = x;
     screen_y = y;
-    
+
 	outb(CURSOR0F, CURSORD4);
 	outb( (uint8_t) (pos & CURSORFF), CURSORD5);
 	outb( CURSOR0E, CURSORD4);
@@ -138,6 +138,23 @@ void clearText(void) {
     *(uint8_t *)(video_mem + (6 << 1) + 1) = ATTRIB;
 
     counterScreen = 0;
+}
+
+void rewrite_shell(void){
+    *(uint8_t *)(video_mem + (0 << 1)) = '3';
+    *(uint8_t *)(video_mem + (0 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (1 << 1)) = '9';
+    *(uint8_t *)(video_mem + (1 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (2 << 1)) = '1';
+    *(uint8_t *)(video_mem + (2 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (3 << 1)) = 'O';
+    *(uint8_t *)(video_mem + (3 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (4 << 1)) = 'S';
+    *(uint8_t *)(video_mem + (4 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (5 << 1)) = '>';
+    *(uint8_t *)(video_mem + (5 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (6 << 1)) = ' ';
+    *(uint8_t *)(video_mem + (6 << 1) + 1) = ATTRIB;
 }
 
 // /* void clearTop(void);

@@ -35,6 +35,8 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 
 terminal_t multi_terms[3];
 static int currTerm = 0;
+static int schedTerm = 0;
+
 //static int newTerm = 0;
 
 

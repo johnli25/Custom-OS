@@ -8,13 +8,13 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
     memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old = current program memory
 
     memcpy((void *)paging_vidmem, (void *)paging_vidmem + (newTerminalNum + 1) * KB_4, KB_4); //then put new program memory into current
-    // asm volatile ( //flush TLB
-    //     "movl %%cr3, %%eax;"
-    //     "movl %%eax, %%cr3;"  
-    //     : 
-    //     : 
-    //     :"%eax" //saved "clobbered" regs 
-    // );
+    asm volatile ( //flush TLB
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
 }
 
 void switch_terms(int terminalNum){
@@ -43,11 +43,12 @@ int32_t terminal_init(void){
     int i;
     currTerm = 0;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
-        multi_terms[i].cursor_x = 7; //7 is the shell start 
+        multi_terms[i].cursor_x = 0; //0 is the shell start 
         multi_terms[i].cursor_y = NUM_ROWS - 1;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
         multi_terms[i].shell_cnt = 0;
+        //rewrite_shell();
     }
     return 0;
 }

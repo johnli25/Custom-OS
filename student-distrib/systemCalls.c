@@ -6,7 +6,6 @@
 #include "terminal.h"
 #include "rtc.h"
 #include "filesys.h"
-#include "lib.h"
 
 static int program_arr[6] = {0,0,0,0,0,0};  
 static int currentProgramNumber = 0;

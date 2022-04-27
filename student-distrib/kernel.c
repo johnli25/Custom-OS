@@ -179,7 +179,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //printf("INITIALIZING RTC . . . \n");
     initialize_RTC(); //RTC initialization
 
-    //initialize_PIT();
+    initialize_PIT();
 
     clear();
     sti(); //idt we need this anymore?

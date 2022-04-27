@@ -22,6 +22,8 @@ void verticalScroll(void);
 void test_interrupts(void);
 void clearBottom(void);
 
+void rewrite_shell();
+
 //cursor functions
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void disable_cursor();
@@ -37,8 +39,6 @@ uint16_t get_cursor_position(void);
 
 //used to copy buffers
 unsigned char * strncpyUnsignedChar(unsigned char * dest, const unsigned char * src, int n);
-
-
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);
