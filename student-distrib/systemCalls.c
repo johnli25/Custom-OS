@@ -133,6 +133,18 @@ void paging_unhelper(int processNum){
     );
 }
 
+extern void terminalPageSwitch(int newTerminal){
+    //something currTerm
+   // page_tab[].base_address = ;
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+}
+
 extern void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1

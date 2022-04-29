@@ -14,6 +14,12 @@ void scheduler(){
     
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
     schedTerm++;
+    if(!(multi_terms[schedTerm].curr_proc)){
+        if (schedTerm == 3)
+            schedTerm = 1;
+        schedTerm--;
+        return;
+    }    
     schedTerm = schedTerm % 3;
     pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 
@@ -26,7 +32,7 @@ void scheduler(){
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (nextpcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
-    //vid_paging_helper();
+    vid_paging_helper();
     paging_helper(nextpcb->pid); //paging mapper-helper for next/scheduled terminal process
 
     asm volatile( //save ebp and esp of scheduled terminal

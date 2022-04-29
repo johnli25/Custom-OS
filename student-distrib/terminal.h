@@ -12,6 +12,8 @@ typedef struct terminal {
     int bootup_flag;
     // int shell_cnt;
     int progRunning;
+    int rtc_counter;
+    int relative_frequency;
 
 } __attribute__((packed)) terminal_t;
 
@@ -39,8 +41,8 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 #define NUM_COLS    80
 
 terminal_t multi_terms[3];
-static int currTerm = 10;
-static int schedTerm = 10;
+static int currTerm = 0;
+static int schedTerm = 0;
 
 //static int newTerm = 0;
 
