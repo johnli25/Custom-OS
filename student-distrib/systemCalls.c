@@ -356,7 +356,7 @@ int32_t halt(uint8_t status){
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
     multi_terms[currTerm].shell_cnt--;
     // reload a new shell if childpcb's pid = childpcb's parent id
-    if (currentProgramNumber == cHiLdPcB->parent_id) 
+    if (currentProgramNumber == cHiLdPcB->parent_id || currentProgramNumber < 3) //if currentProgNum less than/within the 3 base shell programs
         execute((uint8_t*)"shell"); // executes shell 
     currentProgramNumber = cHiLdPcB->parent_id;    
     // parent process done - now paging 
