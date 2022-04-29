@@ -10,9 +10,14 @@ typedef struct terminal {
     // int curr_proc;
     pcb_t * curr_proc;
     int bootup_flag;
-    int shell_cnt;
+    // int shell_cnt;
+    int progRunning;
 
 } __attribute__((packed)) terminal_t;
+
+extern int getCurrTerm();
+
+extern int getSchedTerm();
 
 extern void switch_terms(int terminalNum);
 
@@ -34,8 +39,8 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 #define NUM_COLS    80
 
 terminal_t multi_terms[3];
-static int currTerm = 0;
-static int schedTerm = 0;
+static int currTerm = 10;
+static int schedTerm = 10;
 
 //static int newTerm = 0;
 

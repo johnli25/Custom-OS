@@ -22,7 +22,7 @@ void verticalScroll(void);
 void test_interrupts(void);
 void clearBottom(void);
 
-void rewrite_shell();
+//void rewrite_shell();
 
 //cursor functions
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);

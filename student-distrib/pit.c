@@ -20,7 +20,7 @@ void initialize_PIT(void){
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
     pit_count++;
-    int current_pid = getProgNum();
+    // int current_pid = getProgNum();
     switch (pit_count)
     {
     // case 0:
@@ -63,7 +63,9 @@ void interrupt_PIT(void){
     default:
         break;
     }
-    //scheduler();
+    if (multi_terms[schedTerm].progRunning == 1)
+        scheduler();
+
 }
 
 
