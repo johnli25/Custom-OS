@@ -12,10 +12,10 @@ void scheduler(){
     // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (cur_process_id + 1))); //1st program PCB
     //pcb_t * mypcb = multi_terms[currTerm].curr_proc;
     
-    pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc;
+    pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
     schedTerm++;
     schedTerm = schedTerm % 3;
-    pcb_t * nextpcb = multi_terms[schedTerm].curr_proc;
+    pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 
     asm volatile( //save ebp and esp of scheduled terminal
         "movl %%esp, %0;"

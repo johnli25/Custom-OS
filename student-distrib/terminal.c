@@ -4,6 +4,14 @@
 #include "paging.h"
 
 //HAVE TO ADD IN INTERFACES
+int getCurrTerm(){
+    return currTerm;
+}
+
+int getSchedTerm(){
+    return schedTerm;
+}
+
 void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
     memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old = current program memory
 
@@ -47,7 +55,8 @@ int32_t terminal_init(void){
         multi_terms[i].cursor_y = NUM_ROWS - 1;
         multi_terms[i].curr_proc = NULL;
         multi_terms[i].bootup_flag = 0;
-        multi_terms[i].shell_cnt = 0;
+        //multi_terms[i].shell_cnt = 0;
+        multi_terms[i].progRunning = 0;
         //rewrite_shell();
     }
     return 0;
