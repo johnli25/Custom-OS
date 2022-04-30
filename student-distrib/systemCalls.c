@@ -133,9 +133,12 @@ void paging_unhelper(int processNum){
     );
 }
 
-extern void terminalPageSwitch(int newTerminal){
+void terminalPageSwitch(int newTerminal){
     //something currTerm
-   // page_tab[].base_address = ;
+    if (newTerminal < 0 || newTerminal >= 3)
+        return;
+
+    page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal +1;
     asm volatile ( //flush tlb
         "movl %%cr3, %%eax;"
         "movl %%eax, %%cr3;"  
@@ -145,7 +148,7 @@ extern void terminalPageSwitch(int newTerminal){
     );
 }
 
-extern void vid_paging_helper(){
+void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1
     video_pt[0].u_s = 1; //set user privileges for video page table ON

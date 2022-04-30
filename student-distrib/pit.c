@@ -13,7 +13,6 @@ void initialize_PIT(void){
     outb(CMD_BYTE, IO_PORT_NUM);             /* Set our command byte 0x36 */
     outb(PIT_FREQ & 0xFF, CHANNEL_0);   /* Set low byte of divisor */
     outb((PIT_FREQ /*& 0xFF00*/)>> 8, CHANNEL_0);     /* Set high byte of divisor */
-    //outb( , IO_PORT_NUM); //what is this?
     enable_irq(PIT_IRQ_NUM);
 }   
 
@@ -63,10 +62,9 @@ void interrupt_PIT(void){
     default:
         break;
     }
-    schedTerm++;
-    schedTerm = schedTerm % 3;
-    if (multi_terms[schedTerm].progRunning == 1)
-       scheduler();
+
+    //if (multi_terms[schedTerm].progRunning == 1)
+    scheduler();
 
 }
 

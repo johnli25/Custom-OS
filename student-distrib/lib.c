@@ -3,6 +3,7 @@
 
 #include "lib.h"
 #include "terminal.h"
+#include "systemCalls.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -398,7 +399,8 @@ void putc(uint8_t c) {
     // else{
     //     counterScreen = counterScreen + 1; //1 because the character is size 1 
     // }
-
+    if (schedTerm != currTerm)
+        return;
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
     // multi_terms[currTerm].cursor_x = get_screen_x();
@@ -407,7 +409,14 @@ void putc(uint8_t c) {
     //     putc_background(c, currTerm, schedTerm);
     //     screen_x = multi_terms[currTerm].cursor_x;
     //     screen_y = multi_terms[currTerm].cursor_y;
-    //     //return;
+    //     return;
+    // }
+    // if (schedTerm != currTerm){
+    //     multi_terms[currTerm].cursor_x = get_screen_x();
+    //     multi_terms[currTerm].cursor_y = get_screen_y();
+    //     terminalPageSwitch(schedTerm);
+    //     screen_x = multi_terms[schedTerm].cursor_x;
+    //     screen_y = multi_terms[schedTerm].cursor_x;
     // }
 
     if(c == '\n' || c == '\r') { //checks if Newline or r
@@ -420,12 +429,18 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
+    // if (schedTerm != currTerm){
+    //     screen_x = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_x;
+    // }
+    multi_terms[currTerm].cursor_x = screen_x;
+    multi_terms[currTerm].cursor_y = screen_y;
     update_cursor(screen_x, screen_y);
     
 }
 
 void putc_background(uint8_t c, int origTerminal, int newTerminal){
-    int newAddr = newTerminal * KB_4 + VIDEO;
+    int newAddr = (newTerminal + 1) * KB_4 + VIDEO;
     char* background_mem = (char *)newAddr;
 
     screen_x = multi_terms[newTerminal].cursor_x;
