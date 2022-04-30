@@ -43,13 +43,37 @@ void switch_terms(int terminalNum){
     //sti();
 }
 
+// void putc_background(uint8_t c, int origTerminal, int newTerminal){
+//     int newAddr = newTerminal * KB_4 + VIDEO;
+//     char* background_mem = (char *)newAddr;
+
+//     multi_terms[origTerminal].cursor_x = get_screen_x();
+//     multi_terms[origTerminal].cursor_y = get_screen_y();
+
+//     set_screen_x(multi_terms[newTerminal].cursor_x);
+//     set_screen_y(multi_terms[newTerminal].cursor_y);
+
+//     if(c == '\n' || c == '\r') { //checks if Newline or r
+//         screen_y++;
+//         screen_x = 0;
+//     } else {
+//         *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+//         *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+//         screen_x++;
+//         screen_x %= NUM_COLS;
+//         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+//     }
+//     update_cursor(screen_x, screen_y);
+// }
+
 /* void terminal_init(void);
  * Inputs: none
  * Return Value: int
  * Function: initializes terminal (returning 0 for now) */
+// int currTerm = 0;
+// int schedTerm = 0;
 int32_t terminal_init(void){
     int i;
-    currTerm = 0;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
         multi_terms[i].cursor_x = 0; //0 is the shell start 
         multi_terms[i].cursor_y = NUM_ROWS - 1;
@@ -57,8 +81,13 @@ int32_t terminal_init(void){
         multi_terms[i].bootup_flag = 0;
         //multi_terms[i].shell_cnt = 0;
         multi_terms[i].progRunning = 0;
-        //rewrite_shell();
+        multi_terms[i].rtc_counter = 0;
+        multi_terms[i].relative_frequency = 0;
+        // currTerm = 0;
+        // schedTerm = 0;
     }
+    currTerm = 0;
+    schedTerm = 0;
     return 0;
 }
 
@@ -130,10 +159,12 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
     int positiontest = 0;
     int p = 0; 
     for(p = 0; p < n; p++){
-        positiontest = get_screen_x();
-        if(positiontest == NUM_COLS-1){
+        // positiontest = get_screen_x();
+        // if(positiontest == NUM_COLS-1){
+        //     newLine();
+        // }
+        if (p == NUM_COLS)
             newLine();
-        }
         if(((unsigned char *)(buf))[p] != '\0'){ //checks if it is NULL
             if(((unsigned char *)(buf))[p] == '\n'){ //checks if it is NewLine
                 newLine();
@@ -146,7 +177,6 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 charsPrinted = charsPrinted + 4;
             }
             else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
-                printf("bwuh \n"); 
                 putBackspace(((unsigned char *)(buf))[p], (unsigned char *)buf);
                 charsPrinted--;
             }

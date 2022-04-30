@@ -13,7 +13,13 @@ void scheduler(){
     //pcb_t * mypcb = multi_terms[currTerm].curr_proc;
     
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
-    schedTerm++;
+    if(!(multi_terms[schedTerm].curr_proc)){
+        if (schedTerm == 3)
+            schedTerm = 1;
+        schedTerm--;
+        return;
+    }    
+
     schedTerm = schedTerm % 3;
     pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 

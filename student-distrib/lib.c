@@ -2,6 +2,7 @@
  * vim:ts=4 noexpandtab */
 
 #include "lib.h"
+#include "terminal.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -18,13 +19,14 @@
 #define CURSOR0E    0x0E
 #define CURSOR0F    0x0F
 #define CURSORFF    0xFF
-
+#define KB_4 4096
 
 int counterScreen = 0; //starts off as zero
 
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+
 
 int get_screen_x(){
     return screen_x;
@@ -399,7 +401,12 @@ void putc(uint8_t c) {
 
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
-
+    // if (schedTerm != currTerm){
+    //     putc_background(c, 100000, 98571);
+    //     screen_x = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_y;
+    //     return;
+    // }
     if(c == '\n' || c == '\r') { //checks if Newline or r
         screen_y++;
         screen_x = 0;
@@ -412,6 +419,29 @@ void putc(uint8_t c) {
     }
     update_cursor(screen_x, screen_y);
     
+}
+
+void putc_background(uint8_t c, int origTerminal, int newTerminal){
+    int newAddr = newTerminal * KB_4 + VIDEO;
+    char* background_mem = (char *)newAddr;
+
+    multi_terms[origTerminal].cursor_x = get_screen_x();
+    multi_terms[origTerminal].cursor_y = get_screen_y();
+
+    screen_x = multi_terms[newTerminal].cursor_x;
+    screen_y = multi_terms[newTerminal].cursor_y;
+
+    if(c == '\n' || c == '\r') { //checks if Newline or r
+        screen_y++;
+        screen_x = 0;
+    } else {
+        *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+        *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        screen_x++;
+        screen_x %= NUM_COLS;
+        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+    }
+    update_cursor(screen_x, screen_y);
 }
 /* void putBackspace(uint8_t c);
  * Inputs: uint_8* c = character to print

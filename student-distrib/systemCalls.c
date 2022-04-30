@@ -167,6 +167,18 @@ extern void vid_paging_helper(){
     return;
 }
 
+extern void terminalPageSwitch(int newTerminal){
+    //something currTerm
+   // page_tab[].base_address = ;
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+}
+
 /*execute (const uint8_t* command)
  *   DESCRIPTION: executes the passed in command 
  *   INPUTS: command

@@ -9,6 +9,9 @@
 
 
 int32_t printf(int8_t *format, ...);
+
+void putc_background(uint8_t c, int origTerminal, int newTerminal);
+
 void putc(uint8_t c);
 void putBackspace(uint8_t c, unsigned char * buf);
 int32_t puts(int8_t *s);
