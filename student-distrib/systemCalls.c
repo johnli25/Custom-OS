@@ -133,6 +133,18 @@ void paging_unhelper(int processNum){
     );
 }
 
+extern void terminalPageSwitch(int newTerminal){
+    //something currTerm
+   // page_tab[].base_address = ;
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+}
+
 extern void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1
@@ -165,18 +177,6 @@ extern void vid_paging_helper(){
         :"%eax" //saved "clobbered" regs 
     );
     return;
-}
-
-extern void terminalPageSwitch(int newTerminal){
-    //something currTerm
-   // page_tab[].base_address = ;
-    asm volatile ( //flush tlb
-        "movl %%cr3, %%eax;"
-        "movl %%eax, %%cr3;"  
-        : 
-        : 
-        :"%eax" //saved "clobbered" regs 
-    );
 }
 
 /*execute (const uint8_t* command)
@@ -255,7 +255,10 @@ int32_t execute (const uint8_t* command){
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     multi_terms[currTerm].curr_proc = mypcb;
     
-    if(0 != strncmp((int8_t *)buffer, (int8_t*)("shell"), 5)) //not qqual to shell
+    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) //not equal to shell or hello
+        multi_terms[currTerm].progRunning = 0; //program running on term
+    else
         multi_terms[currTerm].progRunning = 1; //program running on term
 
     int arg_i;

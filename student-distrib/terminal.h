@@ -17,10 +17,6 @@ typedef struct terminal {
 
 } __attribute__((packed)) terminal_t;
 
-terminal_t multi_terms[3];
-static int currTerm = 0;
-static int schedTerm = 0;
-
 extern int getCurrTerm();
 
 extern int getSchedTerm();
@@ -44,6 +40,9 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 #define keyboardBufferSize 128  //size of the keyboardBuffer 
 #define NUM_COLS    80
 
+terminal_t multi_terms[3];
+int currTerm; //= 0;
+int schedTerm; // = 0;
 
 //static int newTerm = 0;
 

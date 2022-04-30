@@ -34,7 +34,7 @@ void interrupt_PIT(void){
     //     break;
     case 1:
         if (multi_terms[1].bootup_flag == 0){
-            currTerm = 1;
+            //currTerm = 1;
             switch_terms(1);
             execute((uint8_t*)"shell");
             //execute((uint8_t*)"exit");
@@ -44,7 +44,7 @@ void interrupt_PIT(void){
         break;
     case 2:
         if (multi_terms[2].bootup_flag == 0){
-            currTerm = 2;          
+            //currTerm = 2;          
             switch_terms(2);
             execute((uint8_t*)"shell");
             //execute((uint8_t*)"exit");
@@ -53,7 +53,7 @@ void interrupt_PIT(void){
         break;
     case 3:
         if (multi_terms[0].bootup_flag == 0){
-            currTerm = 0;
+            //currTerm = 0;
             switch_terms(0);
             execute((uint8_t*)"shell");
             //execute((uint8_t*)"exit");
@@ -64,7 +64,7 @@ void interrupt_PIT(void){
         break;
     }
     if (multi_terms[schedTerm].progRunning == 1)
-        scheduler();
+       scheduler();
 
 }
 

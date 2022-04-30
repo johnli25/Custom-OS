@@ -71,7 +71,7 @@ void switch_terms(int terminalNum){
  * Return Value: int
  * Function: initializes terminal (returning 0 for now) */
 // int currTerm = 0;
-// int schedTerm = 0;
+// int schedTerm = 
 int32_t terminal_init(void){
     int i;
     for (i = 0; i < 3; i++){ //MAGIC NUM: MAX # of terms = 3
@@ -83,8 +83,7 @@ int32_t terminal_init(void){
         multi_terms[i].progRunning = 0;
         multi_terms[i].rtc_counter = 0;
         multi_terms[i].relative_frequency = 0;
-        // currTerm = 0;
-        // schedTerm = 0;
+        //rewrite_shell();
     }
     currTerm = 0;
     schedTerm = 0;
@@ -163,8 +162,10 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
         // if(positiontest == NUM_COLS-1){
         //     newLine();
         // }
-        if (p == NUM_COLS)
+        if(p == NUM_COLS){
             newLine();
+        }
+
         if(((unsigned char *)(buf))[p] != '\0'){ //checks if it is NULL
             if(((unsigned char *)(buf))[p] == '\n'){ //checks if it is NewLine
                 newLine();

@@ -401,12 +401,15 @@ void putc(uint8_t c) {
 
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
+    // multi_terms[currTerm].cursor_x = get_screen_x();
+    // multi_terms[currTerm].cursor_y = get_screen_y();
     // if (schedTerm != currTerm){
-    //     putc_background(c, 100000, 98571);
+    //     putc_background(c, currTerm, schedTerm);
     //     screen_x = multi_terms[currTerm].cursor_x;
     //     screen_y = multi_terms[currTerm].cursor_y;
-    //     return;
+    //     //return;
     // }
+
     if(c == '\n' || c == '\r') { //checks if Newline or r
         screen_y++;
         screen_x = 0;
@@ -424,9 +427,6 @@ void putc(uint8_t c) {
 void putc_background(uint8_t c, int origTerminal, int newTerminal){
     int newAddr = newTerminal * KB_4 + VIDEO;
     char* background_mem = (char *)newAddr;
-
-    multi_terms[origTerminal].cursor_x = get_screen_x();
-    multi_terms[origTerminal].cursor_y = get_screen_y();
 
     screen_x = multi_terms[newTerminal].cursor_x;
     screen_y = multi_terms[newTerminal].cursor_y;

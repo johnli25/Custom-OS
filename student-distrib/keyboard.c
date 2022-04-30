@@ -302,7 +302,7 @@ void interrupt_keyboard(void){
 
     if(alt == INTTRUE && myInput == FONE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 0;
+        //currTerm = 0;
         switch_terms(0);
         //memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
         send_eoi(KEYBOARDIRQNUM);
@@ -312,7 +312,7 @@ void interrupt_keyboard(void){
 
     if(alt == INTTRUE && myInput == FTWO){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 1;
+        //currTerm = 1;
         switch_terms(1);
         //memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
         send_eoi(KEYBOARDIRQNUM);
@@ -322,7 +322,7 @@ void interrupt_keyboard(void){
 
     if(alt == INTTRUE && myInput == FTHREE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 2;
+        //currTerm = 2;
         switch_terms(2);
         //memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
         send_eoi(KEYBOARDIRQNUM);
