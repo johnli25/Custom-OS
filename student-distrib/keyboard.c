@@ -190,9 +190,9 @@ void interrupt_keyboard(void){
     cli();  //prevents interrupts 
     int postest = 0;
     if(counters[currTerm] == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
-        //newLine();
-        //TERMINALFLAG = INTTRUE;
-        //counter = 0;
+        // newLine();
+        // //TERMINALFLAG = INTTRUE;
+        // counters[currTerm] = 0; //COMMENTED STUFF 
         // send_eoi(KEYBOARDIRQNUM);
         // sti();
         // return;
@@ -216,11 +216,14 @@ void interrupt_keyboard(void){
         }
     }
 
+    //if turns bad revert till here 
+
     if(myInput == SPACEPRESS){ //checks if it is a space
-        if(counters[currTerm] != (keyboardBufferSize-1)){
+        if(counters[currTerm] != (keyboardBufferSize-3)){
             postest = get_screen_x();
             if(postest == NUM_COLS-1){
                 newLine();
+                // counters[currTerm] = 0; // - nabil added may/may not need, but will mess up a few lines below (enterpress) maybe 
             }
             putc(' ');
             keyboardBuffers[currTerm][counters[currTerm]] = ' '; // to show a space 
@@ -229,6 +232,13 @@ void interrupt_keyboard(void){
     }
     if (myInput == ENTERPRESS){
         //clearKeyboardBuffer();
+
+        // DO NOT NEED TO USE BELOW - IMPLEMENTATION OF NOT WRITING TO 2 WORKS NOW 
+        // if(counters[currTerm] > keyboardBufferSize - 3){ // FIXES PAGE FAULT - BUT HAVE TO SEE IF WE CAN USE IT
+        //     keyboardBuffers[currTerm][counters[currTerm] -1] = '\0';
+        //     keyboardBuffers[currTerm][counters[currTerm] -2] = '\0';
+        //     counters[currTerm] = counters[currTerm] - 2;
+        // }
         keyboardBuffers[currTerm][counters[currTerm]] = '\n'; //to show new line
         counters[currTerm]++; //added newline character when enter pressed
         TERMINALFLAG = INTTRUE;
@@ -238,7 +248,7 @@ void interrupt_keyboard(void){
     if(myInput == TABPRESS){
         //flag 1
         //if counter < 124
-        if(counters[currTerm] < (keyboardBufferSize-4)){
+        if(counters[currTerm] < (keyboardBufferSize-5)){
             //80 and 76
              postest = get_screen_x();
             if(postest < NUM_COLS && postest > NUM_COLS-4){
@@ -369,7 +379,7 @@ void interrupt_keyboard(void){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
             
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counters[currTerm] != (keyboardBufferSize-1)){
+                if(counters[currTerm] != (keyboardBufferSize-3)){
                     postest = get_screen_x();
                     if(postest == NUM_COLS-1){
                         newLine();
@@ -385,7 +395,7 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counters[currTerm] != (keyboardBufferSize-1)){
+                if(counters[currTerm] != (keyboardBufferSize-3)){
                     postest = get_screen_x();
                     if(postest == NUM_COLS-1){
                         newLine();
@@ -402,7 +412,7 @@ void interrupt_keyboard(void){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counters[currTerm] != (keyboardBufferSize-1)){
+            if(counters[currTerm] != (keyboardBufferSize-3)){
                 postest = get_screen_x();
                 if(postest == NUM_COLS-1){
                     newLine();
@@ -417,7 +427,7 @@ void interrupt_keyboard(void){
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
         
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counters[currTerm] != (keyboardBufferSize-1)){
+            if(counters[currTerm] != (keyboardBufferSize-3)){
                 postest = get_screen_x();
                 if(postest == NUM_COLS-1){
                    // postest = get_screen_y();
