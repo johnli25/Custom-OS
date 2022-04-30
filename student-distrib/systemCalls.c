@@ -6,9 +6,8 @@
 #include "terminal.h"
 #include "rtc.h"
 #include "filesys.h"
-#include "lib.h"
 
-static int program_arr[6] = {0,0,0,0,0,0};  
+static int program_arr[9] = {0,0,0,0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
 
 static int vp_flag = 0; //vid paging (vp) flag 
@@ -134,6 +133,18 @@ void paging_unhelper(int processNum){
     );
 }
 
+extern void terminalPageSwitch(int newTerminal){
+    //something currTerm
+   // page_tab[].base_address = ;
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+}
+
 extern void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1
@@ -228,13 +239,13 @@ int32_t execute (const uint8_t* command){
         return ERRORRETURN;
 
     int myProgramNumber = 0; //starts off as zero
-    for(myProgramNumber = 0; myProgramNumber < 6; myProgramNumber++){ //magic num: 3 is the max # of processes/files
+    for(myProgramNumber = 0; myProgramNumber < 9; myProgramNumber++){ //magic num: 3 is the max # of processes/files
         if(program_arr[myProgramNumber] == 0){ //checks if free 
             program_arr[myProgramNumber] = 1; //sets to filled
             //multi_terms[currTerm].shell_cnt++; //possibly deprecated-don't need anymore?
             break;
         }
-        if(myProgramNumber == 5 /*|| multi_terms[currTerm].shell_cnt == 3*/){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
+        if(myProgramNumber == 8){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
             return ERRORRETURN; //all of the others are filled
         }
     }
@@ -243,6 +254,12 @@ int32_t execute (const uint8_t* command){
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     multi_terms[currTerm].curr_proc = mypcb;
+    
+    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) //not equal to shell or hello
+        multi_terms[currTerm].progRunning = 0; //program running on term
+    else
+        multi_terms[currTerm].progRunning = 1; //program running on term
 
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
@@ -355,9 +372,11 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
-    multi_terms[currTerm].shell_cnt--;
+    multi_terms[currTerm].progRunning = 0; //terminal not running program anymore
+    
+    // multi_terms[currTerm].shell_cnt--;
     // reload a new shell if childpcb's pid = childpcb's parent id
-    if (currentProgramNumber == cHiLdPcB->parent_id) 
+    if (currentProgramNumber == cHiLdPcB->parent_id || currentProgramNumber < 3) //if currentProgNum less than/within the 3 base shell programs
         execute((uint8_t*)"shell"); // executes shell 
     currentProgramNumber = cHiLdPcB->parent_id;    
     // parent process done - now paging 
@@ -531,7 +550,7 @@ int32_t getargs(uint8_t * buf, int32_t n){
     
     //initialize PCB
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
+    if (n == 0 || mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
         return ERRORRETURN;
 
     /*populate buffer with mypcb->args*/

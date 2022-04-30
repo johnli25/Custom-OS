@@ -1,13 +1,12 @@
-// #include "tests.h"
-// #include "x86_desc.h"
-// #include "lib.h"
-// #include "terminal.h"
+#include "tests.h"
+#include "x86_desc.h"
+#include "lib.h"
+#include "terminal.h"
 
+#define PASS 1
+#define FAIL 0
 
-// #define PASS 1
-// #define FAIL 0
-
-// #define PRINT_LARGE 0
+#define PRINT_LARGE 0
 
 /* format these macros as you see fit */
 #define TEST_HEADER 	\
@@ -15,11 +14,11 @@
 #define TEST_OUTPUT(name, result)	\
 	printf("[TEST %s] Result = %s\n", name, (result) ? "PASS" : "FAIL");
 
-// static inline void assertion_failure(){
-// 	/* Use exception #15 for assertions, otherwise
-// 	   reserved by Intel */
-// 	asm volatile("int $15");
-// }
+static inline void assertion_failure(){
+	/* Use exception #15 for assertions, otherwise
+	   reserved by Intel */
+	asm volatile("int $15");
+}
 
 // /* Checkpoint 1 tests */
 
@@ -777,16 +776,30 @@
 // // }
 
 // /* Checkpoint 3 tests */
-// // int syscall_test(){
-// // 	TEST_HEADER;
-// // 	int result = PASS;
-// // 	if (-1 != general_close(5))
-// // 		return FAIL;
+// int syscall_test(){
+// 	TEST_HEADER;
+// 	int result = PASS;
+// 	if (-1 != general_close(5))
+// 		return FAIL;
 
-// // 	return result;
-// // }
+// 	return result;
+// }
 // // /* Checkpoint 4 tests */
 // /* Checkpoint 5 tests */
+
+int multi_term_test(){
+	TEST_HEADER;
+	int result = PASS;
+	currTerm++;
+	currTerm++;
+	schedTerm++;
+	schedTerm++;
+	printf("   \n");
+	printf("currTerm: %d \n", currTerm);
+	printf("scheduleTerm: %d \n", schedTerm);
+
+	return result;
+}
 
 // /* Test suite entry point 
 //  * 
@@ -797,38 +810,40 @@
 //  * Coverage: Load IDT, IDT definition, gdt, paging, rtc, PIC, keyboard
 //  * Files: pretty much all of them in /student-distrib
 //  */
-// void launch_tests(){
-// 	//TEST_OUTPUT("idt_test", idt_test());
-// 	// launch your tests here
-// 	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
-// 	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
-// 	//TEST_OUTPUT("VALID PAGING", paging_test()); 
-// 	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
+void launch_tests(){
+	//TEST_OUTPUT("idt_test", idt_test());
+	// launch your tests here
+	//TEST_OUTPUT("Divide by 0 test", divide_by_zero_test());
+	//TEST_OUTPUT("Other exceptions or sys call (basic) test", basic_exception_test(0xE));
+	//TEST_OUTPUT("VALID PAGING", paging_test()); 
+	//TEST_OUTPUT("PIC tests", disable_irq_test_master());
 
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
-// 	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
-// 	TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file()); //other large file tests: read_large_file(), read_large_file2()
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_valid_file2());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_exec_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_nonexisting_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", find_invalid_large_file());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index());
+	//TEST_OUTPUT("filesys CP 3.2 tests", read_file_index_invalid());
+	//TEST_OUTPUT("filesys CP 3.2 tests", ls_dir_test());
 
-// 	//RTC TESTS
-// 	//Run these tests together
-// 	/*
-// 	TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
-// 	TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
-// 	TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
-// 	TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
-// 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
-// 	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
-// 	*/
-// 	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
+	//RTC TESTS
+	//Run these tests together
+	/*
+	TEST_OUTPUT("Call open_RTC (should pass)", rtc_test_open());
+	TEST_OUTPUT("Call open_RTC when already opened (should fail)", rtc_test_open());
+	TEST_OUTPUT("Call close_RTC (should pass)", rtc_test_close());
+	TEST_OUTPUT("Call close_RTC when already closed (should fail)", rtc_test_close());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid freq (should fail)", rtc_test_read_write_invalid_freq());
+	TEST_OUTPUT("Call read_RTC and write_RTC w/ invalid size (should fail)", rtc_test_read_write_invalid_size());
+	*/
+	//TEST_OUTPUT("Test read_RTC and write_RTC (should pass)", rtc_test_read_write()); 	//Run this test alone!
 	
-// 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
-// 	//TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
-// 	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
-// 	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
-// }
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", terminal_read_write());
+	//TEST_OUTPUT("TERMINAL READ WRITE TEST", syscall_test());
+	//TEST_OUTPUT("Terminal Large n", terminal_read_write_128plus());
+	//TEST_OUTPUT("Terminal different sizes ", terminalDifSizes());
+
+	TEST_OUTPUT("multi terminals test", multi_term_test());
+}

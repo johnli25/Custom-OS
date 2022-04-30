@@ -188,7 +188,7 @@ void initialize_Keyboard(void){
 void interrupt_keyboard(void){      
 
     cli();  //prevents interrupts 
-
+    int postest = 0;
     if(counters[currTerm] == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
         //newLine();
         //TERMINALFLAG = INTTRUE;
@@ -218,7 +218,8 @@ void interrupt_keyboard(void){
 
     if(myInput == SPACEPRESS){ //checks if it is a space
         if(counters[currTerm] != (keyboardBufferSize-1)){
-            if(counters[currTerm] == NUM_COLS){
+            postest = get_screen_x();
+            if(postest == NUM_COLS-1){
                 newLine();
             }
             putc(' ');
@@ -239,7 +240,8 @@ void interrupt_keyboard(void){
         //if counter < 124
         if(counters[currTerm] < (keyboardBufferSize-4)){
             //80 and 76
-            if(counters[currTerm] < NUM_COLS && counters[currTerm] > NUM_COLS-4){
+             postest = get_screen_x();
+            if(postest < NUM_COLS && postest > NUM_COLS-4){
                 newLine();
             }
             putc(' ');
@@ -299,10 +301,8 @@ void interrupt_keyboard(void){
     // }
 
     if(alt == INTTRUE && myInput == FONE){
-        //clearKeyboardBuffer();
-        //clearText();
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 0;
+        //currTerm = 0;
         switch_terms(0);
         //memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
         send_eoi(KEYBOARDIRQNUM);
@@ -311,10 +311,8 @@ void interrupt_keyboard(void){
     }
 
     if(alt == INTTRUE && myInput == FTWO){
-        //clearKeyboardBuffer();
-        //clearText();
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 1;
+        //currTerm = 1;
         switch_terms(1);
         //memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
         send_eoi(KEYBOARDIRQNUM);
@@ -323,10 +321,8 @@ void interrupt_keyboard(void){
     }
 
     if(alt == INTTRUE && myInput == FTHREE){
-        //clearKeyboardBuffer();
-        //clearText();
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
-        currTerm = 2;
+        //currTerm = 2;
         switch_terms(2);
         //memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
         send_eoi(KEYBOARDIRQNUM);
@@ -374,7 +370,8 @@ void interrupt_keyboard(void){
             
             if(myChar != ' '){ //checks if its a valid character to print
                 if(counters[currTerm] != (keyboardBufferSize-1)){
-                    if(counters[currTerm] == NUM_COLS){
+                    postest = get_screen_x();
+                    if(postest == NUM_COLS-1){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -389,7 +386,8 @@ void interrupt_keyboard(void){
 
             if(myChar != ' '){ //checks if its a valid character to print
                 if(counters[currTerm] != (keyboardBufferSize-1)){
-                    if(counters[currTerm] == NUM_COLS){
+                    postest = get_screen_x();
+                    if(postest == NUM_COLS-1){
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -405,7 +403,8 @@ void interrupt_keyboard(void){
 
         if(myChar != ' '){ //checks if its a valid character to print
             if(counters[currTerm] != (keyboardBufferSize-1)){
-                if(counters[currTerm] == NUM_COLS){
+                postest = get_screen_x();
+                if(postest == NUM_COLS-1){
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
@@ -416,10 +415,12 @@ void interrupt_keyboard(void){
     }
     else{
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
-
+        
         if(myChar != ' '){ //checks if its a valid character to print
             if(counters[currTerm] != (keyboardBufferSize-1)){
-                if(counters[currTerm] == NUM_COLS){
+                postest = get_screen_x();
+                if(postest == NUM_COLS-1){
+                   // postest = get_screen_y();
                     newLine();
                 }
                 putc(myChar); //outputs the correct character

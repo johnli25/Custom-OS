@@ -2,7 +2,7 @@
 #include "lib.h"
 #include "i8259.h"
 #include "rtc.h"
-
+#include "terminal.h"
 
 
 volatile int state_data [3] = {0, 0, 0}; //{interrupt (bool), freq (int), open (bool)}
@@ -25,7 +25,7 @@ void initialize_RTC(void){
     outb(prev | 0x40, RTC_DATA);    // write the previous value ORed with 0x40. This turns on bit 6 of register B
 
     outb(0x8A, RTC_CMD);    // select register A (0x8A), and disable NMI
-    outb(0x0F, RTC_DATA);   // set the RTC freq = 2 Hz, therefore 16 - log_2(freq) = 16 - 1 = 0x0F 
+    outb(0x0F, RTC_DATA);   // set the RTC freq = 1024 Hz, therefore 16 - log_2(freq) = 16 - 10 = 0x06 
  
     enable_irq(RTC_IRQ);
 }
@@ -79,6 +79,13 @@ int32_t open_RTC (const uint8_t* filename){
 */ 
 int32_t read_RTC (int32_t fd, void* buf, int32_t nbytes){
     while (!state_data[0]);
+
+    // while(multi_terms[currTerm].rtc_counter < multi_terms[currTerm].relative_frequency){
+    //     while (!state_data[0]);
+    //     multi_terms[currTerm].rtc_counter++; 
+    //     state_data[0] = 0; 
+    // }
+
     state_data[0] = 0; 
     return 0;
 }
@@ -104,11 +111,13 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
       : "r" (freq)
     );
 
+    //multi_terms[currTerm].relative_frequency = 1024/freq; 
     char rate = 16 - log_freq;			// set the RTC freq to 16 - log_2(freq) 
     //printf("RATE: 0x0%x FREQ: %u \n", rate, freq);
     outb(0x8A, RTC_CMD);		// set index to register A, disable NMI
     char prev = inb(RTC_DATA);	// get initial value of register A
     outb(RTC_CMD, 0x8A);		// reset index to A
+    //outb((prev & 0xF0) | 0x06, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     outb((prev & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     state_data[1] = freq; 
 
