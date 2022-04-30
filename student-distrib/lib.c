@@ -399,8 +399,8 @@ void putc(uint8_t c) {
     // else{
     //     counterScreen = counterScreen + 1; //1 because the character is size 1 
     // }
-    if (schedTerm != currTerm)
-        return;
+    // if (schedTerm != currTerm)
+    //     return;
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
     // multi_terms[currTerm].cursor_x = get_screen_x();
