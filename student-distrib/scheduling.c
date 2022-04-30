@@ -13,8 +13,6 @@ void scheduler(){
     //pcb_t * mypcb = multi_terms[currTerm].curr_proc;
     
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
-    schedTerm++;
-    schedTerm = schedTerm % 3;
     if(!(multi_terms[schedTerm].curr_proc)){
         //schedTerm = schedTermTemp; //set schedTerm back to original one before
         return;

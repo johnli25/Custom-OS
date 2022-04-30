@@ -63,6 +63,8 @@ void interrupt_PIT(void){
     default:
         break;
     }
+    schedTerm++;
+    schedTerm = schedTerm % 3;
     if (multi_terms[schedTerm].progRunning == 1)
        scheduler();
 
