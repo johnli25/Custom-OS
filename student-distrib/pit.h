@@ -3,7 +3,7 @@
 
 #include "idt.h"
 #include "i8259.h"
-#include "deviceWrappers.h"
+#include "devicewrappers.h"
 #include "x86_desc.h"
 
 
