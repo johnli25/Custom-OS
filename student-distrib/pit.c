@@ -19,6 +19,8 @@ void initialize_PIT(void){
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
     pit_count++;
+    schedTerm++;
+    schedTerm = schedTerm % 3;
     // int current_pid = getProgNum();
     switch (pit_count)
     {
@@ -36,9 +38,7 @@ void interrupt_PIT(void){
             //currTerm = 1;
             switch_terms(1);
             execute((uint8_t*)"shell");
-            //execute((uint8_t*)"exit");
             multi_terms[1].bootup_flag = 1;
-
         }
         break;
     case 2:
@@ -46,7 +46,18 @@ void interrupt_PIT(void){
             //currTerm = 2;          
             switch_terms(2);
             execute((uint8_t*)"shell");
-            //execute((uint8_t*)"exit");
+
+            /*context switch for terminal switch*/
+            // int currProgram = getProgNum();
+
+            // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currProgram + 1))); //save current process PCB
+            // multi_terms[currTerm].curr_proc = mypcb;
+
+            // pcb_t * nextpcb = multi_terms[2].curr_proc;
+
+            // multi_terms[currTerm].curr_proc = mypcb;
+            // contextSwitch(mypcb, nextpcb);
+            /*end of context switch for terminals*/
             multi_terms[2].bootup_flag = 1;
         }
         break;
@@ -55,7 +66,6 @@ void interrupt_PIT(void){
             //currTerm = 0;
             switch_terms(0);
             execute((uint8_t*)"shell");
-            //execute((uint8_t*)"exit");
             multi_terms[0].bootup_flag = 1;
         }
         break;

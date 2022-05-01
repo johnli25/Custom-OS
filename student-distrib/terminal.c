@@ -2,6 +2,8 @@
 #include "keyboard.h"
 #include "lib.h"
 #include "paging.h"
+#include "systemCalls.h"
+#include "scheduling.h"
 
 //HAVE TO ADD IN INTERFACES
 int getCurrTerm(){
@@ -39,32 +41,13 @@ void switch_terms(int terminalNum){
     // set_screen_x(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
 
-    currTerm = terminalNum;
+    int the_pid = getProgNum();
+    multi_terms[currTerm].previous_pid = the_pid; //set pid before..
+
+    currTerm = terminalNum; //updating currTerm to the passed in terminal #
+
     //sti();
 }
-
-// void putc_background(uint8_t c, int origTerminal, int newTerminal){
-//     int newAddr = newTerminal * KB_4 + VIDEO;
-//     char* background_mem = (char *)newAddr;
-
-//     multi_terms[origTerminal].cursor_x = get_screen_x();
-//     multi_terms[origTerminal].cursor_y = get_screen_y();
-
-//     set_screen_x(multi_terms[newTerminal].cursor_x);
-//     set_screen_y(multi_terms[newTerminal].cursor_y);
-
-//     if(c == '\n' || c == '\r') { //checks if Newline or r
-//         screen_y++;
-//         screen_x = 0;
-//     } else {
-//         *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-//         *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
-//         screen_x++;
-//         screen_x %= NUM_COLS;
-//         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
-//     }
-//     update_cursor(screen_x, screen_y);
-// }
 
 /* void terminal_init(void);
  * Inputs: none
@@ -78,6 +61,8 @@ int32_t terminal_init(void){
         multi_terms[i].cursor_x = 0; //0 is the shell start 
         multi_terms[i].cursor_y = NUM_ROWS - 1;
         multi_terms[i].curr_proc = NULL;
+        multi_terms[i].previous_pid = -1;
+
         multi_terms[i].bootup_flag = 0;
         //multi_terms[i].shell_cnt = 0;
         multi_terms[i].progRunning = 0;
