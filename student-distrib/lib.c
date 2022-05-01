@@ -416,7 +416,7 @@ void putc(uint8_t c) {
     //     multi_terms[currTerm].cursor_y = get_screen_y();
     //     terminalPageSwitch(schedTerm);
     //     screen_x = multi_terms[schedTerm].cursor_x;
-    //     screen_y = multi_terms[schedTerm].cursor_x;
+    //     screen_y = multi_terms[schedTerm].cursor_y;
     // }
 
     if(c == '\n' || c == '\r') { //checks if Newline or r
@@ -430,8 +430,12 @@ void putc(uint8_t c) {
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
     // if (schedTerm != currTerm){
+    //     multi_terms[schedTerm].cursor_x = screen_x; 
+    //     multi_terms[schedTerm].cursor_y = screen_y;
+
     //     screen_x = multi_terms[currTerm].cursor_x;
-    //     screen_y = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_y;
+    //     return;
     // }
     multi_terms[currTerm].cursor_x = screen_x;
     multi_terms[currTerm].cursor_y = screen_y;

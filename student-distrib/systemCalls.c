@@ -135,10 +135,11 @@ void paging_unhelper(int processNum){
 
 void terminalPageSwitch(int newTerminal){
     //something currTerm
-    if (newTerminal < 0 || newTerminal >= 3)
-        return;
-
-    page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal +1;
+    if (currTerm == newTerminal)
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12);
+    else
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal + 1;
+    
     asm volatile ( //flush tlb
         "movl %%cr3, %%eax;"
         "movl %%eax, %%cr3;"  
@@ -257,10 +258,11 @@ int32_t execute (const uint8_t* command){
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     multi_terms[currTerm].curr_proc = mypcb;
+    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
     
     if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) //not equal to shell or hello
-        multi_terms[currTerm].progRunning = 0; //program running on term
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+       multi_terms[currTerm].progRunning = 0; //program not running on term
     else
         multi_terms[currTerm].progRunning = 1; //program running on term
 

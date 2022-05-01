@@ -4,10 +4,8 @@
 #include "systemCalls.h"
 //#include "pit.h"
 
-
+extern void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb);
 extern void scheduler();
-
-
 
 #endif
 
