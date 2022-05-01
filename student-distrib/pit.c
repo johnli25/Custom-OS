@@ -24,15 +24,14 @@ void interrupt_PIT(void){
     // int current_pid = getProgNum();
     switch (pit_count)
     {
-    // case 0:
-    //     if (multi_terms[0].bootup_flag == 0){
-    //         currTerm = 0;
-    //         //switch_terms(0);
-    //         execute((uint8_t*)"shell");
-    //         //execute((uint8_t*)"exit");
-    //         multi_terms[0].bootup_flag = 1;
-    //     }
-    //     break;
+    case 0:
+        if (multi_terms[1].bootup_flag == 0){
+            //currTerm = 1;
+            switch_terms(1);
+            execute((uint8_t*)"shell");
+            multi_terms[1].bootup_flag = 1;
+        }
+        break;
     case 1:
         if (multi_terms[1].bootup_flag == 0){
             //currTerm = 1;
