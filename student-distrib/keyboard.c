@@ -2,7 +2,7 @@
 #include "i8259.h"
 #include "keyboard.h"
 #include "terminal.h"
-
+#include "scheduling.h"
 
 int capsLock = INTFALSE;
 int shift = INTFALSE;
@@ -313,7 +313,16 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FONE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 0;
-        switch_terms(0);
+        int the_pid = getProgNum();
+        //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
+        switch_terms(0); //currTerm gets updated here (to 0)
+        int next_pid = multi_terms[currTerm].lastAssignedProcess; //curTerm = 0
+
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+
+        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+
+        //contextSwitch(mypcb, nextpcb);
         //memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
         send_eoi(KEYBOARDIRQNUM);
         sti();
@@ -323,7 +332,16 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTWO){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 1;
-        switch_terms(1);
+        int the_pid = getProgNum();
+        //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
+        switch_terms(1); //currTerm gets updated here
+        int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 1
+
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
+
+        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); 
+
+        //contextSwitch(mypcb, nextpcb);
         //memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
         send_eoi(KEYBOARDIRQNUM);
         sti();
@@ -333,7 +351,15 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTHREE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 2;
-        switch_terms(2);
+        int the_pid = getProgNum();
+        //multi_terms[currTerm].previous_pid = the_pid; //set pid before..
+        switch_terms(2); //currTerm gets updated here
+        int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 2
+        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+
+        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+
+        //contextSwitch(mypcb, nextpcb);
         //memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
         send_eoi(KEYBOARDIRQNUM);
         sti();

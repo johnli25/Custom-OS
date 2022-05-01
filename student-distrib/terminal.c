@@ -41,9 +41,6 @@ void switch_terms(int terminalNum){
     // set_screen_x(multi_terms[terminalNum].cursor_y);
     update_cursor(multi_terms[terminalNum].cursor_x, multi_terms[terminalNum].cursor_y);
 
-    int the_pid = getProgNum();
-    multi_terms[currTerm].previous_pid = the_pid; //set pid before..
-
     currTerm = terminalNum; //updating currTerm to the passed in terminal #
 
     //sti();
@@ -61,7 +58,7 @@ int32_t terminal_init(void){
         multi_terms[i].cursor_x = 0; //0 is the shell start 
         multi_terms[i].cursor_y = NUM_ROWS - 1;
         multi_terms[i].curr_proc = NULL;
-        multi_terms[i].previous_pid = -1;
+        multi_terms[i].lastAssignedProcess = -1;
 
         multi_terms[i].bootup_flag = 0;
         //multi_terms[i].shell_cnt = 0;

@@ -258,6 +258,7 @@ int32_t execute (const uint8_t* command){
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     multi_terms[currTerm].curr_proc = mypcb;
+    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
     
     if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
         0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello

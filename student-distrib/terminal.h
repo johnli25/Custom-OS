@@ -9,7 +9,7 @@ typedef struct terminal {
     int cursor_y;
     // int curr_proc;
     pcb_t * curr_proc;
-    int previous_pid; 
+    int lastAssignedProcess; 
     int bootup_flag;
     // int shell_cnt;
     int progRunning;
