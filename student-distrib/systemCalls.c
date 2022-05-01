@@ -135,10 +135,11 @@ void paging_unhelper(int processNum){
 
 void terminalPageSwitch(int newTerminal){
     //something currTerm
-    if (newTerminal < 0 || newTerminal >= 3)
-        return;
-
-    page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal +1;
+    if (currTerm == newTerminal)
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12);
+    else
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal +1;
+    
     asm volatile ( //flush tlb
         "movl %%cr3, %%eax;"
         "movl %%eax, %%cr3;"  
