@@ -39,9 +39,6 @@ void initialize_RTC(void){
 */ 
 void interrupt_RTC(void){
 
-    // if (multi_terms[currTerm].relative_frequency==1)
-    //     multi_terms[currTerm].relative_frequency = 1000; 
-
     multi_terms[currTerm].rtc_counter++;
     if (multi_terms[currTerm].rtc_counter == multi_terms[currTerm].relative_frequency/2) {
         state_data[0] = 1; 
