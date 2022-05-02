@@ -405,12 +405,17 @@ void putc(uint8_t c) {
     // screen_y = get_cursor_y();
     // multi_terms[currTerm].cursor_x = get_screen_x();
     // multi_terms[currTerm].cursor_y = get_screen_y();
-    // if (schedTerm != currTerm){
-    //     putc_background(c, currTerm, schedTerm);
-    //     screen_x = multi_terms[currTerm].cursor_x;
-    //     screen_y = multi_terms[currTerm].cursor_y;
-    //     return;
-    // }
+    if (schedTerm != currTerm){
+        putc_background(c, currTerm, schedTerm);
+        screen_x = multi_terms[currTerm].cursor_x;
+        screen_y = multi_terms[currTerm].cursor_y;
+        return;
+    }
+    else{
+        putc_background(c, currTerm, schedTerm);
+        screen_x = multi_terms[currTerm].cursor_x;
+        screen_y = multi_terms[currTerm].cursor_y;
+    }
     // if (schedTerm != currTerm){
     //     multi_terms[currTerm].cursor_x = get_screen_x();
     //     multi_terms[currTerm].cursor_y = get_screen_y();

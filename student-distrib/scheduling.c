@@ -18,13 +18,14 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (nextpcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
-    asm volatile( //save ebp and esp of scheduled terminal
+    asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
         "movl %0, %%esp;" //esp contains saved_esp
         "movl %1, %%ebp;" //ebp contains saved_ebp
         :
         : "r"(nextpcb->saved_esp), "r"(nextpcb->saved_ebp)
         :"esp", "ebp"   //clobbers esp, ebp
-    );  
+    );
+
 }
 
 void scheduler(){
@@ -33,12 +34,12 @@ void scheduler(){
     
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
     
-    // schedTerm++;
-    // schedTerm = schedTerm % 3;
+    schedTerm++;
+    schedTerm = schedTerm % 3;
     if (multi_terms[schedTermTemp].progRunning != 1)
         return; 
-    // if (multi_terms[schedTerm].progRunning != 1)
-    //     return; 
+    if (multi_terms[schedTerm].progRunning != 1)
+        return; 
 
     if(!(multi_terms[schedTerm].curr_proc)){ //if scheduled terminal process == null
         //schedTerm = schedTermTemp; //set schedTerm back to original one before
@@ -47,7 +48,7 @@ void scheduler(){
 
     pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 
-    contextSwitch(mypcb, nextpcb);
+   contextSwitch(mypcb, nextpcb);
 
 }
 

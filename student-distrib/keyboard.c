@@ -322,12 +322,13 @@ void interrupt_keyboard(void){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
 
         pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
-        
+         send_eoi(KEYBOARDIRQNUM);
+         sti();
         // if (multi_terms[saveTerm].progRunning == 1)
         //     contextSwitch(mypcb, nextpcb);
         //memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
-        send_eoi(KEYBOARDIRQNUM);
-        sti();
+       // send_eoi(KEYBOARDIRQNUM);
+        
         return;
     }
 
@@ -343,12 +344,13 @@ void interrupt_keyboard(void){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
 
         pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); 
-
+         send_eoi(KEYBOARDIRQNUM);
+          sti();
         // if (multi_terms[saveTerm].progRunning == 1)
-        //     contextSwitch(mypcb, nextpcb);
+        //     contextSwitch(mypcb, nextpcb); 
         //memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
-        send_eoi(KEYBOARDIRQNUM);
-        sti();
+       
+       
         return;
     }
 
@@ -363,12 +365,13 @@ void interrupt_keyboard(void){
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
 
         pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
-
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
         // if (multi_terms[saveTerm].progRunning == 1)
         //     contextSwitch(mypcb, nextpcb);
         //memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
-        send_eoi(KEYBOARDIRQNUM);
-        sti();
+       // send_eoi(KEYBOARDIRQNUM);
+        
         return;
     }
 

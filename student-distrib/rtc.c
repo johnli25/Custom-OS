@@ -39,8 +39,11 @@ void initialize_RTC(void){
 */ 
 void interrupt_RTC(void){
 
+    if (multi_terms[currTerm].relative_frequency==1)
+    multi_terms[currTerm].relative_frequency = 5000; 
+
     multi_terms[currTerm].rtc_counter++;
-    if (multi_terms[currTerm].rtc_counter==multi_terms[currTerm].relative_frequency/2) {
+    if (multi_terms[currTerm].rtc_counter >= multi_terms[currTerm].relative_frequency/2) {
         state_data[0] = 1; 
         multi_terms[currTerm].rtc_counter = 0; 
     }
@@ -85,16 +88,18 @@ int32_t open_RTC (const uint8_t* filename){
  * Side Effects: Set interrupt bool within state_data to true (1)
 */ 
 int32_t read_RTC (int32_t fd, void* buf, int32_t nbytes){
-    while (!state_data[0]);
-    {
+    state_data[0] = 0;
+    while (!state_data[0]){
+        
+    }
+    
         //while (multi_terms[currTerm].rtc_counter < multi_terms[currTerm].relative_frequency) {
         //    multi_terms[currTerm].rtc_counter++;
         //    //printf("counter: 0x0%x rel_freq: %u \n", multi_terms[currTerm].rtc_counter, multi_terms[currTerm].relative_frequency);
         //}
-    }
+    
     //multi_terms[currTerm].rtc_counter = 0;
-    state_data[0] = 0;
-
+    //state_data[0] = 0;
     return 0;
 }
 
