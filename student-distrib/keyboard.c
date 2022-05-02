@@ -12,8 +12,8 @@ int alt = INTFALSE;
 //int counter = 0; //starts off as zero
 
 //static unsigned char keyboardBuffer[keyboardBufferSize]; //main keyboard buffer
-static unsigned char keyboardBuffers[NUM_OF_KEYBOARDS][keyboardBufferSize];
-int counters[NUM_OF_KEYBOARDS] = {0, 0, 0};
+static unsigned char keyboardBuffers[NUM_OF_KEYBOARDS][keyboardBufferSize]; //buffer for each terminal
+int counters[NUM_OF_KEYBOARDS] = {0, 0, 0}; //counter for each terminal
 
 // static unsigned char keyboardBuffer0[keyboardBufferSize];
 // static unsigned char keyboardBuffer1[keyboardBufferSize];
@@ -219,7 +219,7 @@ void interrupt_keyboard(void){
     //if turns bad revert till here 
 
     if(myInput == SPACEPRESS){ //checks if it is a space
-        if(counters[currTerm] != (keyboardBufferSize-3)){
+        if(counters[currTerm] != (keyboardBufferSize-3)){ // MAGIC: - 3 for the correct buffer size - prevents overflow
             postest = get_screen_x();
             if(postest == NUM_COLS-1){
                 newLine();
@@ -248,10 +248,10 @@ void interrupt_keyboard(void){
     if(myInput == TABPRESS){
         //flag 1
         //if counter < 124
-        if(counters[currTerm] < (keyboardBufferSize-5)){
+        if(counters[currTerm] < (keyboardBufferSize-5)){// MAGIC: - 5 for the correct buffer size - prevents overflow
             //80 and 76
              postest = get_screen_x();
-            if(postest < NUM_COLS && postest > NUM_COLS-4){
+            if(postest < NUM_COLS && postest > NUM_COLS-4){// MAGIC: - 4 for the correct screen newLine
                 newLine();
             }
             putc(' ');
@@ -298,7 +298,7 @@ void interrupt_keyboard(void){
 
     if(control == INTTRUE && myInput == LCHARACTER){ //control l clears screen
         clearText();
-        counters[currTerm] = 0;
+        counters[currTerm] = 0; //clears counter
         clearKeyboardBuffer(); //THIS IS FROM THE TA - OKAN - TO CLEAR BUFFER 
         send_eoi(KEYBOARDIRQNUM);
         sti();
@@ -316,7 +316,7 @@ void interrupt_keyboard(void){
         int the_pid = getProgNum();
         //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
         int saveTerm = currTerm;
-        switch_terms(0); //currTerm gets updated here (to 0), so...
+        switch_terms(0); //MAGIC: SWITCHES TO 0th (THIRD) TERMINAL currTerm gets updated here (to 0), so...
         int next_pid = multi_terms[currTerm].lastAssignedProcess; //curTerm = 0
 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
@@ -338,7 +338,7 @@ void interrupt_keyboard(void){
         int the_pid = getProgNum();
         //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
         int saveTerm = currTerm;
-        switch_terms(1); //currTerm gets updated here, so...
+        switch_terms(1); //MAGIC: SWITCHES TO 1st TERMINAL currTerm gets updated here, so...
         int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 1
 
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
@@ -359,7 +359,7 @@ void interrupt_keyboard(void){
         int the_pid = getProgNum();
         //multi_terms[currTerm].previous_pid = the_pid; //set pid before..
         int saveTerm = currTerm;
-        switch_terms(2); //currTerm gets updated here, so...
+        switch_terms(2); //MAGIC: SWITCHES TO SECOND TERMINAL currTerm gets updated here, so...
         int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 2
         pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
 
@@ -413,9 +413,9 @@ void interrupt_keyboard(void){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
             
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counters[currTerm] != (keyboardBufferSize-3)){
+                if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
                     postest = get_screen_x();
-                    if(postest == NUM_COLS-1){
+                    if(postest == NUM_COLS-1){ //gets the last val before screen overflow
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -429,9 +429,9 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counters[currTerm] != (keyboardBufferSize-3)){
+                if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
                     postest = get_screen_x();
-                    if(postest == NUM_COLS-1){
+                    if(postest == NUM_COLS-1){//gets the last val before screen overflow
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
@@ -448,7 +448,7 @@ void interrupt_keyboard(void){
         if(myChar != ' '){ //checks if its a valid character to print
             if(counters[currTerm] != (keyboardBufferSize-3)){
                 postest = get_screen_x();
-                if(postest == NUM_COLS-1){
+                if(postest == NUM_COLS-1){//gets the last val before screen overflow
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
@@ -461,9 +461,9 @@ void interrupt_keyboard(void){
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
         
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counters[currTerm] != (keyboardBufferSize-3)){
+            if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
                 postest = get_screen_x();
-                if(postest == NUM_COLS-1){
+                if(postest == NUM_COLS-1){//gets the last val before screen overflow
                    // postest = get_screen_y();
                     newLine();
                 }
