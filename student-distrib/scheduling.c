@@ -5,6 +5,13 @@
 #include "filesys.h"
 #include "systemCalls.h"
 
+/* contextSwitch(pcb_t * mypcb, pcb_t * nextpcb)
+ * Description: context switch with mypcb and nextpcb
+ * Inputs: pcb_t * mypcb, pcb_t * nextpcb
+ * Outputs: None
+ * Return Value: None
+ * Side Effects: responsible for context switching 
+*/ 
 void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
     asm volatile( //save ebp and esp of scheduled terminal
         "movl %%esp, %0;"
@@ -27,7 +34,13 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
     );
 
 }
-
+/* scheduler()
+ * Description: handles scheduling implementation
+ * Inputs: none
+ * Outputs: None
+ * Return Value: None
+ * Side Effects: calls contextSwitch function
+*/ 
 void scheduler(){
     //int cur_process_id = getProgNum();
     int schedTermTemp = schedTerm;
@@ -35,7 +48,7 @@ void scheduler(){
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
     
     schedTerm++;
-    schedTerm = schedTerm % 3;
+    schedTerm = schedTerm % 3; //MAGIC NUMBER: 3 as we have 3 terminals. Setting to next terminal
     if (multi_terms[schedTermTemp].progRunning != 1)
         return; 
     if (multi_terms[schedTerm].progRunning != 1)
