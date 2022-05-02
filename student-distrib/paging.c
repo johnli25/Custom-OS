@@ -95,7 +95,7 @@ void setup_paging_structures(void){
     return;
 }
 
-/* initialize_paging()
+/* initialize_paging()  
  *   DESCRIPTION: Used to initialize paging
  *   INPUTS: none
  *   OUTPUTS: none
