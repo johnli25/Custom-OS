@@ -1,6 +1,6 @@
 #include "paging.h" //include header files
 #include "lib.h"
-
+ 
 //PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
 /*above reference: https://wiki.osdev.org/Setting_Up_Paging*/
 
