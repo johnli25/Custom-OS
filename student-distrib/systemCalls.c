@@ -272,6 +272,16 @@ int32_t execute (const uint8_t* command){
         arg_i++;
     }  
 
+    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+        multi_terms[currTerm].progRunning = 0; //special prog (not) running on term
+    else if (0 == strncmp((int8_t *)buffer, (int8_t*)("pingpong"), 8) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("counter"), 7) || 
+        0 == strncmp((int8_t *)buffer, (int8_t*)("fish"), 4))
+        multi_terms[currTerm].progRunning = 1; //program running on term
+    else
+        multi_terms[currTerm].progRunning = 2; //instantaneous program
+    
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); // Magic Num 4 is total size of bytes 24-27
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
@@ -318,11 +328,6 @@ int32_t execute (const uint8_t* command){
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     mypcb -> active = 1;
-    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
-        multi_terms[currTerm].progRunning = 0; //program not running on term
-    else
-        multi_terms[currTerm].progRunning = 1; //program running on term
 
     /*fill multi_terms's pcb*/
     multi_terms[currTerm].curr_proc = mypcb;
