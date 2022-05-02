@@ -19,36 +19,8 @@ void initialize_PIT(void){
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
     pit_count++;
-    // schedTerm++;
-    // schedTerm = schedTerm % 3;
-    //int current_pid = getProgNum();
-    // if(term_shell_cnt < 3)
-    // {
-    //     term_shell_cnt += 1;
-    //     switch_terms(term_shell_cnt - 1);
-    //     execute((uint8_t*)("shell"));
-    // }
-
-    // if (term_shell_cnt == 3)
-    // {
-    // //swap term0 and term2 that were swapped upon initialization
-    //     pcb_t * pcb0 = multi_terms[0].curr_proc;
-    //     pcb_t * pcb2 = multi_terms[2].curr_proc;
-    //     int shell0 = multi_terms[0].lastAssignedProcess;
-    //     int shell2 = multi_terms[2].lastAssignedProcess;
-
-    //     int rtc0 = multi_terms[0].rtc_counter;
-    //     int rtc2 = multi_terms[2].rtc_counter;
-
-    //     multi_terms[0].curr_proc = pcb2;
-    //     multi_terms[0].lastAssignedProcess = shell2;
-    //     multi_terms[0].rtc_counter = rtc2;
-
-    //     multi_terms[2].curr_proc = pcb0;
-    //     multi_terms[2].lastAssignedProcess = shell0;
-    //     multi_terms[2].rtc_counter = rtc0;
-    //     currTerm = currTerm; //dummy debug 
-    // }
+    uint32_t esp;
+    uint32_t ebp;
     switch (pit_count)
     {
     // case 0:
@@ -72,19 +44,16 @@ void interrupt_PIT(void){
         if (multi_terms[2].bootup_flag == 0){
             //currTerm = 2;          
             switch_terms(2);
+            // esp = EIGHTMB - (EIGHTKB * 0) -4;
+            // ebp = EIGHTMB - (EIGHTKB * 0) -4;
+            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
+            //     "movl %0, %%esp;" //esp contains saved_esp
+            //     "movl %1, %%ebp;" //ebp contains saved_ebp
+            //     :
+            //     : "r"(esp), "r"(ebp)
+            //     :"esp", "ebp"   //clobbers esp, ebp
+            // );
             execute((uint8_t*)"shell");
-
-            /*context switch for terminal switch*/
-            // int currProgram = getProgNum();
-
-            // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currProgram + 1))); //save current process PCB
-            // multi_terms[currTerm].curr_proc = mypcb;
-
-            // pcb_t * nextpcb = multi_terms[2].curr_proc;
-
-            // multi_terms[currTerm].curr_proc = mypcb;
-            // contextSwitch(mypcb, nextpcb);
-            /*end of context switch for terminals*/
             multi_terms[2].bootup_flag = 1;
         }
         break;
@@ -93,6 +62,15 @@ void interrupt_PIT(void){
         if (multi_terms[0].bootup_flag == 0){
             //currTerm = 0;
             switch_terms(0);
+            // esp = EIGHTMB - (EIGHTKB * 1) -4;
+            // ebp = EIGHTMB - (EIGHTKB * 1) -4;
+            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
+            //     "movl %0, %%esp;" //esp contains saved_esp
+            //     "movl %1, %%ebp;" //ebp contains saved_ebp
+            //     :
+            //     : "r"(esp), "r"(ebp)
+            //     :"esp", "ebp"   //clobbers esp, ebp
+            // );
             execute((uint8_t*)"shell");
             multi_terms[0].bootup_flag = 1;
         }
@@ -100,21 +78,6 @@ void interrupt_PIT(void){
         //return;
     case 4: //swap term0 and term2 that were swapped upon initialization
         if(1){
-            // pcb_t * pcb0 = multi_terms[0].curr_proc;
-            // pcb_t * pcb2 = multi_terms[2].curr_proc;
-            // int shell0 = multi_terms[0].lastAssignedProcess;
-            // int shell2 = multi_terms[2].lastAssignedProcess;
-
-            // int rtc0 = multi_terms[0].rtc_counter;
-            // int rtc2 = multi_terms[2].rtc_counter;
-
-            // multi_terms[0].curr_proc = pcb2;
-            // multi_terms[0].lastAssignedProcess = shell2;
-            // multi_terms[0].rtc_counter = rtc2;
-
-            // multi_terms[2].curr_proc = pcb0;
-            // multi_terms[2].lastAssignedProcess = shell0;
-            // multi_terms[2].rtc_counter = rtc0;
             terminal_t t0 = multi_terms[0];
             terminal_t t1 = multi_terms[1];
             terminal_t t2 = multi_terms[2];
@@ -133,7 +96,7 @@ void interrupt_PIT(void){
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
-    scheduler();
+    //scheduler();
 
 }
 
