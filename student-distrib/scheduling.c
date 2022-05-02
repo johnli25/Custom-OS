@@ -13,7 +13,7 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
         : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
     );
 
-    vid_paging_helper();
+    vid_paging_helper(); //3.4 vidmap
     paging_helper(nextpcb->pid); //paging mapper-helper for next/scheduled terminal process
 
     mypcb->ss0 = KERNEL_DS;
@@ -33,8 +33,11 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
     );
 
     // printf("esp: %x \n", nextpcb->saved_esp);
-    // printf("esp: %x \n", nextpcb->saved_ebp);
-
+    // printf("ebp: %x \n", nextpcb->saved_ebp);
+    // printf("mypcb esp0: %x \n", mypcb->esp0);
+    // printf("tss esp0: %x \n", tss.esp);
+    // printf("pid: %x \n", mypcb->pid);
+    // printf("pid: %x \n", nextpcb->pid);
 }
 
 void scheduler(){
