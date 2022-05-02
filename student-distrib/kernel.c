@@ -26,6 +26,14 @@
 
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
+/* 
+ *entry
+ *   DESCRIPTION: Used as the Entry for the Boot System
+ *   INPUTS: magic, addr
+ *   OUTPUTS: None
+ *   RETURN VALUE: None
+ *   SIDE EFFECTS: Checks if MAGIC is valid and prints the Multiboot info from Addr
+ */
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
@@ -191,7 +199,7 @@ void entry(unsigned long magic, unsigned long addr) {
     //launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    //execute((uint8_t*)"shell");
+    execute((uint8_t*)"shell");
 
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");

@@ -95,3 +95,24 @@
 -Resolved by: Did not set the user_supervisor bit for video map/mem paging. Added in this bit and was fixed.
 -4/18/2022
 
+18. 
+- Issue: OSDEV + Hello Overwritten
+- Resolved by: Implementing checks to new line correctly and not to backspace too much
+- 4/28/2022
+
+19. 
+- Issue: Cursor position was incorrect when switching Terminals 
+- Resolved by: Updated cursor position depending on which terminal we were in
+- 4/28/2022
+
+20. 
+- Issue: Keyboard Buffer for Terminals
+- Resolved by: Rewriting Keyboard.c by incorporating an array of keyboard buffers and its correesponding counter
+- 4/29/2022
+
+21. 
+- Issue: Shell buffer overflow would cause page fault
+- Resolved by: Making it so that we cannot write more than the buffer size
+- 4/29/2022
+
+
