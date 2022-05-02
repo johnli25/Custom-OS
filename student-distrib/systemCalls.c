@@ -326,6 +326,9 @@ int32_t execute (const uint8_t* command){
     //save kernel stack bookkeeping info
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
+    
+    mypcb->ss0 = tss.ss0; //added for 3.5
+    mypcb->esp0 = tss.esp0;
 
     mypcb -> active = 1;
 
