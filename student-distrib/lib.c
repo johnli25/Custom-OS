@@ -452,6 +452,9 @@ void putc(uint8_t c) {
 
 void putc_background(uint8_t c, int origTerminal, int newTerminal){
 
+    multi_terms[origTerminal].cursor_x = screen_x; //save orig terminal screen x + y
+    multi_terms[origTerminal].cursor_y = screen_y;
+
     screen_x = multi_terms[newTerminal].cursor_x;
     screen_y = multi_terms[newTerminal].cursor_y;
 
@@ -476,6 +479,12 @@ void putc_background(uint8_t c, int origTerminal, int newTerminal){
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
     update_cursor(screen_x, screen_y);
+
+    multi_terms[newTerminal].cursor_x = screen_x; //save orig terminal screen x + y
+    multi_terms[newTerminal].cursor_y = screen_y; 
+
+    screen_x = multi_terms[origTerminal].cursor_x;
+    screen_y = multi_terms[origTerminal].cursor_y;
 }
 /* void putBackspace(uint8_t c);
  * Inputs: uint_8* c = character to print
