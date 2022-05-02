@@ -11,6 +11,13 @@ static int program_arr[9] = {0,0,0,0,0,0,0,0,0};
 static int currentProgramNumber = 0;
 
 static int vp_flag = 0; //vid paging (vp) flag 
+/* getProgNum()
+ *   DESCRIPTION: returns program number
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns program number
+ *   SIDE EFFECTS: none
+ */
 
 int getProgNum(){
     return currentProgramNumber;
@@ -148,7 +155,13 @@ void terminalPageSwitch(int newTerminal){
         :"%eax" //saved "clobbered" regs 
     );
 }
-
+/* vid_paging_helper()
+ *   DESCRIPTION: sets up video mapping
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: alters video mapping 
+ */
 void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1

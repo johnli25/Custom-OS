@@ -74,7 +74,7 @@ int32_t open_RTC (const uint8_t* filename){
     outb(RTC_CMD, 0x8A);		// reset index to A
     outb((prev & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     multi_terms[currTerm].relative_frequency = 1; 
-    state_data[1] = 1024; //1024 Hz is default freq 
+    state_data[1] = virtFreq; //1024 Hz is default freq 
     state_data[2] = 1; 
     //printf("default_freq: 0x0%x rate: %u \n", state_data[1], rate);
     return 0; 
@@ -111,11 +111,12 @@ int32_t read_RTC (int32_t fd, void* buf, int32_t nbytes){
  * Side Effects: Set RTC freq to 2Hz  
 */ 
 int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
-    if (!buf || nbytes!=4)  return -1;
+    if (!buf || nbytes!=nByteCheck)  return -1;
 
     uint32_t freq =  *((uint32_t*)buf);
 
-    if (freq > 1024 || freq < 2 || freq & (freq - 1)) return -1; //checks if frequency is within bounds
+    if (freq > virtFreq || freq < 2 || freq & (freq - 1)) return -1; //checks if frequency is within bounds
+    //MAGIC NUMBER: 2 used to check below bounds for our freq
 
     //https://stackoverflow.com/questions/994593/how-to-do-an-integer-log2-in-c
     uint32_t log_freq;
@@ -132,7 +133,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     outb(RTC_CMD, 0x8A);		// reset index to A
     outb((prev & 0xF0) | 0x06, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
     //outb((prev & 0xF0) | rate, RTC_DATA); //write only our rate to A. Note, rate is the bottom 4 bits.
-    multi_terms[currTerm].relative_frequency = 1024/freq; 
+    multi_terms[currTerm].relative_frequency = virtFreq/freq; 
     state_data[1] = freq; 
 
     return 0; 

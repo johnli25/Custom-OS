@@ -5,15 +5,36 @@
 #include "systemCalls.h"
 #include "scheduling.h"
 
-//HAVE TO ADD IN INTERFACES
+
+/* getCurrTerm()
+ *   DESCRIPTION: gets current Terminal number
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: currTerm
+ *   SIDE EFFECTS: none
+ */
 int getCurrTerm(){
     return currTerm;
 }
 
+/* getSchedTerm()
+ *   DESCRIPTION: gets schedTerm number
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: schedTerm
+ *   SIDE EFFECTS: none
+ */
 int getSchedTerm(){
     return schedTerm;
 }
 
+/* terminal_remap_mem(int oldTerminalNum, int newTerminalNum)
+ *   DESCRIPTION: remaps memory with corresponding terminal
+ *   INPUTS: int oldTerminalNum, int newTerminalNum
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: none
+ */
 void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
     memcpy((void *)paging_vidmem + (oldTerminalNum + 1) * KB_4, (void *)paging_vidmem, KB_4); //first, save old = current program memory
 
@@ -27,12 +48,19 @@ void terminal_remap_mem(int oldTerminalNum, int newTerminalNum){
     );
 }
 
+/* switch_terms(int terminalNum)
+ *   DESCRIPTION: switches terminals
+ *   INPUTS: int terminalNum
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: switches terminal
+ */
 void switch_terms(int terminalNum){
     //cli();
     terminal_remap_mem(currTerm, terminalNum);
 
-    multi_terms[currTerm].cursor_x = get_screen_x();
-    multi_terms[currTerm].cursor_y = get_screen_y();
+    multi_terms[currTerm].cursor_x = get_screen_x(); //updates terminal cursor pos
+    multi_terms[currTerm].cursor_y = get_screen_y(); // updates terminal cursor pos
 
     // screen_x = get_cursor_x();
     // screen_y = get_cursor_y();
