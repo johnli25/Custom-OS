@@ -9,6 +9,9 @@
 
 
 int32_t printf(int8_t *format, ...);
+
+void putc_background(uint8_t c, int origTerminal, int newTerminal);
+
 void putc(uint8_t c);
 void putBackspace(uint8_t c, unsigned char * buf);
 int32_t puts(int8_t *s);
@@ -22,16 +25,23 @@ void verticalScroll(void);
 void test_interrupts(void);
 void clearBottom(void);
 
+//void rewrite_shell();
+
 //cursor functions
 void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
 void disable_cursor();
+
+int get_screen_x();
+int get_screen_y();
+
+void set_screen_x();
+void set_screen_y();
+
 void update_cursor(int x, int y);
 uint16_t get_cursor_position(void);
 
 //used to copy buffers
 unsigned char * strncpyUnsignedChar(unsigned char * dest, const unsigned char * src, int n);
-
-
 
 void* memset(void* s, int32_t c, uint32_t n);
 void* memset_word(void* s, int32_t c, uint32_t n);

@@ -37,6 +37,7 @@
 extern void paging_helper(int processNum);
 extern void paging_unhelper(int processNum);
 extern void vid_paging_helper();
+extern void terminalPageSwitch(int newTerminal);
 
 extern int32_t execute(const uint8_t * command);
 extern int32_t halt(uint8_t status);

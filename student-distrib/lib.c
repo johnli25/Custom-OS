@@ -2,6 +2,8 @@
  * vim:ts=4 noexpandtab */
 
 #include "lib.h"
+#include "terminal.h"
+#include "systemCalls.h"
 
 #define VIDEO       0xB8000
 #define NUM_COLS    80
@@ -18,13 +20,46 @@
 #define CURSOR0E    0x0E
 #define CURSOR0F    0x0F
 #define CURSORFF    0xFF
-
+#define KB_4 4096
 
 int counterScreen = 0; //starts off as zero
 
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
+static char * background_mem1 = (char *)(1 * KB_4 + VIDEO); //MAGIC NUMBER: 1 for first terminal
+static char * background_mem2 = (char *)(2 * KB_4 + VIDEO); //MAGIC NUMBER: 2 for second terminal
+static char * background_mem3 = (char *)(3 * KB_4 + VIDEO);//MAGIC NUMBER: 3 for third terminal
+/* get_screen_x()
+ * Inputs: none
+ * Return Value: none
+ * Function: returns screen_x */
+int get_screen_x(){
+    return screen_x;
+}
+/* get_screen_y()
+ * Inputs: none
+ * Return Value: none
+ * Function: returns screen_y */
+int get_screen_y(){
+    return screen_y;
+}
+
+/* set_screen_x(int new_x)
+ * Inputs: new_x
+ * Return Value: none
+ * Function: sets screen_x to input */
+void set_screen_x(int new_x){
+    screen_x = new_x;
+}
+
+/* set_screen_y(int new_y)
+ * Inputs: new_y
+ * Return Value: none
+ * Function: sets screen_y to input */
+void set_screen_y(int new_y){
+    screen_y = new_y;
+}
 
 /* void enable_cursor(uint8_t cursor_start, uint8_t cursor_end);
  * Inputs: cursor_start, cursor_end
@@ -57,6 +92,9 @@ void update_cursor(int x, int y){
 	//have to swap inputs and outputs
 	uint16_t pos = y * NUM_COLS+ x;
  
+    screen_x = x;
+    screen_y = y;
+
 	outb(CURSOR0F, CURSORD4);
 	outb( (uint8_t) (pos & CURSORFF), CURSORD5);
 	outb( CURSOR0E, CURSORD4);
@@ -97,10 +135,27 @@ void clear(void) {
  * Return Value: none
  * Function: Clears text and video memory */
 void clearText(void) {
-    screen_x = 0;
+    screen_x = 7;
     screen_y = 0;
     update_cursor(screen_x, screen_y);
     clear();
+
+    /*for checkpoint 5: rewriting "391os> " here*/
+    *(uint8_t *)(video_mem + (0 << 1)) = '3';
+    *(uint8_t *)(video_mem + (0 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (1 << 1)) = '9';
+    *(uint8_t *)(video_mem + (1 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (2 << 1)) = '1';
+    *(uint8_t *)(video_mem + (2 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (3 << 1)) = 'O';
+    *(uint8_t *)(video_mem + (3 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (4 << 1)) = 'S';
+    *(uint8_t *)(video_mem + (4 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (5 << 1)) = '>';
+    *(uint8_t *)(video_mem + (5 << 1) + 1) = ATTRIB;
+    *(uint8_t *)(video_mem + (6 << 1)) = ' ';
+    *(uint8_t *)(video_mem + (6 << 1) + 1) = ATTRIB;
+
     counterScreen = 0;
 }
 
@@ -360,6 +415,31 @@ void putc(uint8_t c) {
     // else{
     //     counterScreen = counterScreen + 1; //1 because the character is size 1 
     // }
+    // if (schedTerm != currTerm)
+    //     return;
+    // screen_x = get_cursor_x();
+    // screen_y = get_cursor_y();
+    // multi_terms[currTerm].cursor_x = get_screen_x();
+    // multi_terms[currTerm].cursor_y = get_screen_y();
+    // if (schedTerm != currTerm){
+    //     putc_background(c, currTerm, schedTerm);
+    //     screen_x = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_y;
+    //     return;
+    // }
+    // else{
+    //     putc_background(c, currTerm, schedTerm);
+    //     screen_x = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_y;
+    // }
+    // if (schedTerm != currTerm){
+    //     multi_terms[currTerm].cursor_x = get_screen_x();
+    //     multi_terms[currTerm].cursor_y = get_screen_y();
+    //     terminalPageSwitch(schedTerm);
+    //     screen_x = multi_terms[schedTerm].cursor_x;
+    //     screen_y = multi_terms[schedTerm].cursor_y;
+    // }
+
     if(c == '\n' || c == '\r') { //checks if Newline or r
         screen_y++;
         screen_x = 0;
@@ -370,9 +450,62 @@ void putc(uint8_t c) {
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
     }
+    // if (schedTerm != currTerm){
+    //     multi_terms[schedTerm].cursor_x = screen_x; 
+    //     multi_terms[schedTerm].cursor_y = screen_y;
+
+    //     screen_x = multi_terms[currTerm].cursor_x;
+    //     screen_y = multi_terms[currTerm].cursor_y;
+    //     return;
+    // }
+    multi_terms[currTerm].cursor_x = screen_x;
+    multi_terms[currTerm].cursor_y = screen_y;
     update_cursor(screen_x, screen_y);
     
 }
+
+/* void putc_background(uint8_t c, int origTerminal, int newTerminal);
+ * Inputs: uint8_t c, int origTerminal, int newTerminal
+ * Return Value: void
+ *  Function: puts c to background */
+void putc_background(uint8_t c, int origTerminal, int newTerminal){
+
+    multi_terms[origTerminal].cursor_x = screen_x; //save orig terminal screen x + y
+    multi_terms[origTerminal].cursor_y = screen_y;
+
+    screen_x = multi_terms[newTerminal].cursor_x;
+    screen_y = multi_terms[newTerminal].cursor_y;
+
+    if(c == '\n' || c == '\r') { //checks if Newline or r
+        screen_y++;
+        screen_x = 0;
+    } else {
+        if (newTerminal == 1){ //MAGIC NUMBER: 1 for first terminal
+            *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        else if (newTerminal == 2){ //MAGIC NUMBER: 2 for second terminal
+            *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        else if (newTerminal == 3){ //MAGIC NUMBER: 3 for third terminal
+            *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        screen_x++;
+        screen_x %= NUM_COLS;
+        screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;
+    }
+    update_cursor(screen_x, screen_y);
+
+    multi_terms[newTerminal].cursor_x = screen_x; //save orig terminal screen x + y
+    multi_terms[newTerminal].cursor_y = screen_y; 
+
+    screen_x = multi_terms[origTerminal].cursor_x;
+    screen_y = multi_terms[origTerminal].cursor_y;
+}
+
+
 /* void putBackspace(uint8_t c);
  * Inputs: uint_8* c = character to print
  * Return Value: void

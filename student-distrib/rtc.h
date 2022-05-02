@@ -6,6 +6,10 @@
 // Most used command & data port on x86 machines
 #define RTC_CMD         0x70
 #define RTC_DATA        0x71
+#define virtFreq        1024
+#define nByteCheck      4
+#define relativeFreq    5000
+
 
 //RTC initialization
 extern void initialize_RTC(void);

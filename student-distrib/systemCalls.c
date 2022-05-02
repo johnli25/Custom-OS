@@ -7,10 +7,17 @@
 #include "rtc.h"
 #include "filesys.h"
 
-static int program_arr[3] = {0,0,0};  
+static int program_arr[9] = {0,0,0,0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
 
 static int vp_flag = 0; //vid paging (vp) flag 
+/* getProgNum()
+ *   DESCRIPTION: returns program number
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: returns program number
+ *   SIDE EFFECTS: none
+ */
 
 int getProgNum(){
     return currentProgramNumber;
@@ -99,7 +106,6 @@ void paging_helper(int processNum){
         : 
         :"%eax" //saved "clobbered" regs 
     );
-
 }
 
 /* paging_unhelper(int processNum)
@@ -134,7 +140,29 @@ void paging_unhelper(int processNum){
     );
 }
 
-extern void vid_paging_helper(){
+void terminalPageSwitch(int newTerminal){
+    //something currTerm
+    if (currTerm == newTerminal)
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12);
+    else
+        page_tab[paging_vidmem >> 12].base_address = (paging_vidmem >> 12) + newTerminal + 1;
+    
+    asm volatile ( //flush tlb
+        "movl %%cr3, %%eax;"
+        "movl %%eax, %%cr3;"  
+        : 
+        : 
+        :"%eax" //saved "clobbered" regs 
+    );
+}
+/* vid_paging_helper()
+ *   DESCRIPTION: sets up video mapping
+ *   INPUTS: none
+ *   OUTPUTS: none
+ *   RETURN VALUE: none
+ *   SIDE EFFECTS: alters video mapping 
+ */
+void vid_paging_helper(){
     video_pt[0].p = 1; // Magic Num: sets as present
     video_pt[0].r_w = 1; //set r_w bit to 1
     video_pt[0].u_s = 1; //set user privileges for video page table ON
@@ -177,10 +205,12 @@ extern void vid_paging_helper(){
  */
 int32_t execute (const uint8_t* command){
     int32_t ret;
+    //currTerm = 0;
     if (0 == strncmp((int8_t *)command, (int8_t*)("exit\n"), 5)){ //Magic Num: 5 Used for the correct function call
         ret = 0;
         halt(ret);
         return ret; 
+        //strcpy((int8_t *)command, (int8_t *)("exit"));
     }
     if (!command)
         return ERRORRETURN; 
@@ -201,9 +231,7 @@ int32_t execute (const uint8_t* command){
         arg_buf[j] = '\0'; //MAgic Num NULL
     }
     int bufIndex = 0;
-    //index = 0;
     while(command[index] != ' ' && command[index] != '\n'){ //checks if a space or a new line
-//        if (command[index] != ' ')
         buffer[bufIndex] = command[index];
         index++;
         bufIndex++;
@@ -228,12 +256,13 @@ int32_t execute (const uint8_t* command){
         return ERRORRETURN;
 
     int myProgramNumber = 0; //starts off as zero
-    for(myProgramNumber = 0; myProgramNumber < 3; myProgramNumber++){ //magic num: 3 is the max # of processes/files
+    for(myProgramNumber = 0; myProgramNumber < 9; myProgramNumber++){ //magic num: 3 is the max # of processes/files
         if(program_arr[myProgramNumber] == 0){ //checks if free 
             program_arr[myProgramNumber] = 1; //sets to filled
+            //multi_terms[currTerm].shell_cnt++; //possibly deprecated-don't need anymore?
             break;
         }
-        if(myProgramNumber == 2){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
+        if(myProgramNumber == 8){ //MAGIC #: 2 = MAX NUMBER OF PROCESSES - 1 AKA we reached end of iteration and they were all filled (= 1)
             return ERRORRETURN; //all of the others are filled
         }
     }
@@ -241,6 +270,8 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
+
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
         mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0' - NULL
@@ -300,8 +331,22 @@ int32_t execute (const uint8_t* command){
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     mypcb -> active = 1;
+    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+        multi_terms[currTerm].progRunning = 0; //program not running on term
+    else
+        multi_terms[currTerm].progRunning = 1; //program running on term
+
+    /*fill multi_terms's pcb*/
+    multi_terms[currTerm].curr_proc = mypcb;
     
-    /*context switch*/
+    if (myProgramNumber >= 0 && myProgramNumber <= 2)
+        multi_terms[currTerm].pcb_parent = mypcb;
+    else
+        multi_terms[currTerm].pcb_parent = parentshellpcb;
+
+    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
+    
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
         "pushl %0 \n" //push USER_DS
@@ -318,6 +363,7 @@ int32_t execute (const uint8_t* command){
         : "r"(USER_DS), "r"(MB_132 - 4), "r"(USER_CS), "r"(pt_of_entry), "r"(ret)
         : "eax" //clobbered regs
     );
+    printf("%d \n", currentProgramNumber);
     return ret;
 }
 
@@ -335,6 +381,7 @@ int32_t halt(uint8_t status){
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     if (haltReturn_stat == 255) //Magic Num: 255 - Checks if it is the last 
         haltReturn_stat = 256; //Magic Num: 266 - Sets to the last possible value
+    
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
@@ -351,15 +398,15 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
+    
+    //will fish or counter halt correclty?
+    multi_terms[currTerm].progRunning = 0; //terminal not running program anymore
+    
+    // multi_terms[currTerm].shell_cnt--;
     // reload a new shell if childpcb's pid = childpcb's parent id
-    if (currentProgramNumber == cHiLdPcB->parent_id) 
+    if (currentProgramNumber == cHiLdPcB->parent_id || currentProgramNumber < 3) //if currentProgNum less than/within the 3 base shell programs
         execute((uint8_t*)"shell"); // executes shell 
     currentProgramNumber = cHiLdPcB->parent_id;    
-    // parent process done - now paging 
-    // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
-
-    cHiLdPcB -> active = 0; //unused? 
-    parentPcb -> active = 1; //set active bits for comprehension/reference
 
     paging_unhelper(cHiLdPcB->parent_id); // - flushes TLB as well 
     if (vp_flag == 1) 
@@ -526,7 +573,7 @@ int32_t getargs(uint8_t * buf, int32_t n){
     
     //initialize PCB
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
-    if (n == 0 && mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
+    if (n == 0 || mypcb->arguments[0] == '\0') //if no args in input args/buffer - NULL
         return ERRORRETURN;
 
     /*populate buffer with mypcb->args*/

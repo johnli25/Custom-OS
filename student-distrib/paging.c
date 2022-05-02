@@ -2,7 +2,6 @@
 #include "lib.h"
 
 //PD_entry page_dir[TOTAL_ENTRIES] __attribute__((aligned(4096))); //magic number: data align by 4096 = 2^12 
-PTE page_tab[TOTAL_ENTRIES] __attribute__((aligned(4096))); 
 /*above reference: https://wiki.osdev.org/Setting_Up_Paging*/
 
  /* setup_paging_structures()
@@ -86,7 +85,12 @@ void setup_paging_structures(void){
     
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].base_address = paging_vidmem >> DATA_ALIGN_SHIFT;
     page_tab[paging_vidmem >> DATA_ALIGN_SHIFT].p = 1;
-
+    page_tab[terminal_back1 >> DATA_ALIGN_SHIFT].base_address = terminal_back1 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back1 >> DATA_ALIGN_SHIFT].p = 1;
+    page_tab[terminal_back2 >> DATA_ALIGN_SHIFT].base_address = terminal_back2 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back2 >> DATA_ALIGN_SHIFT].p = 1;
+    page_tab[terminal_back3 >> DATA_ALIGN_SHIFT].base_address = terminal_back3 >> DATA_ALIGN_SHIFT;
+    page_tab[terminal_back3 >> DATA_ALIGN_SHIFT].p = 1;
     // allocating page within startup
     return;
 }

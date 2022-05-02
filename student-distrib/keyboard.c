@@ -1,15 +1,27 @@
 #include "lib.h"
 #include "i8259.h"
 #include "keyboard.h"
+#include "terminal.h"
+#include "scheduling.h"
 
 int capsLock = INTFALSE;
 int shift = INTFALSE;
 int control = INTFALSE;
+int alt = INTFALSE;
 
-int counter = 0; //starts off as zero
+//int counter = 0; //starts off as zero
+
+//static unsigned char keyboardBuffer[keyboardBufferSize]; //main keyboard buffer
+static unsigned char keyboardBuffers[NUM_OF_KEYBOARDS][keyboardBufferSize]; //buffer for each terminal
+int counters[NUM_OF_KEYBOARDS] = {0, 0, 0}; //counter for each terminal
+
+// static unsigned char keyboardBuffer0[keyboardBufferSize];
+// static unsigned char keyboardBuffer1[keyboardBufferSize];
+// static unsigned char keyboardBuffer2[keyboardBufferSize];
 
 
-static unsigned char keyboardBuffer[keyboardBufferSize];
+//static unsigned char keyboardBuffer2[NUM_OF_KEYBOARDS][keyboardBufferSize];
+//static unsigned char keyboardBuffer3[NUM_OF_KEYBOARDS][keyboardBufferSize];
 
 /* 
  *getKeyboardBuffer
@@ -19,8 +31,15 @@ static unsigned char keyboardBuffer[keyboardBufferSize];
  *   RETURN VALUE: none
  *   SIDE EFFECTS: allows other files to get the keyboard buffer
  */
-unsigned char* getKeyboardBuffer(){
-    return keyboardBuffer;
+unsigned char* getKeyboardBuffer(void){
+    // if(terminalCount == 0){
+    //     return keyboardBuffer0;
+    // }
+    // if(terminalCount == 1){
+    //     return keyboardBuffer1;
+    // }
+    // return keyboardBuffer2;
+    return keyboardBuffers[currTerm];
 }
 
 /* 
@@ -31,11 +50,35 @@ unsigned char* getKeyboardBuffer(){
  *   RETURN VALUE: none
  *   SIDE EFFECTS: allows us to clear keyboard buffer
  */
-void clearKeyboardBuffer(){
+void clearKeyboardBuffer(void){
+    // if(terminalCount == 0){
+    //     int i1 = 0;
+    //     for(i1 = 0; i1 < keyboardBufferSize; i1++){
+    //         keyboardBuffer0[i] = '\0'; //checks if NULL
+    //     }
+    //     return;
+    // }
+
+    // if(terminalCount == 1){
+    //     int i2 = 0;
+    //     for(i2 = 0; i2 < keyboardBufferSize; i2++){
+    //         keyboardBuffer1[i] = '\0'; //checks if NULL
+    //     }
+    //     return;
+    // }
+
+    // int i3 = 0;
+    // for(i3 = 0; i3 < keyboardBufferSize; i3++){
+    //     keyboardBuffer2[i] = '\0'; //checks if NULL
+    // }
+    // return;
+
     int i = 0;
     for(i = 0; i < keyboardBufferSize; i++){
-        keyboardBuffer[i] = '\0'; //checks if NULL
+        keyboardBuffers[currTerm][i] = '\0'; //checks if NULL
     }
+    return;
+    
 }
 
 
@@ -145,11 +188,11 @@ void initialize_Keyboard(void){
 void interrupt_keyboard(void){      
 
     cli();  //prevents interrupts 
-
-    if(counter == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
-        //newLine();
-        //TERMINALFLAG = INTTRUE;
-        //counter = 0;
+    int postest = 0;
+    if(counters[currTerm] == (keyboardBufferSize-1)){ //checks if the counter is equal to the max size 127
+        // newLine();
+        // //TERMINALFLAG = INTTRUE;
+        // counters[currTerm] = 0; //COMMENTED STUFF 
         // send_eoi(KEYBOARDIRQNUM);
         // sti();
         // return;
@@ -158,53 +201,65 @@ void interrupt_keyboard(void){
     uint8_t myInput = inb(KEYBOARDPORT); // grabs the input data from the keyboard
 
     if(myInput == BACKSPACEPRESS){
-        if (keyboardBuffer[counter - 1] == '\t'){ //to show a tab
-            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
-            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
-            putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer);
+        if (keyboardBuffers[currTerm][counters[currTerm] - 1] == '\t'){ //to show a tab
+            putBackspace(keyboardBuffers[currTerm][counters[currTerm]-1], (unsigned char *)keyboardBuffers[currTerm]);
+            putBackspace(keyboardBuffers[currTerm][counters[currTerm]-1], (unsigned char *)keyboardBuffers[currTerm]);
+            putBackspace(keyboardBuffers[currTerm][counters[currTerm]-1], (unsigned char *)keyboardBuffers[currTerm]);
         }
         //put 4 back
         
-        putBackspace(keyboardBuffer[counter-1], (unsigned char *)keyboardBuffer); //video memory for backspace
+        putBackspace(keyboardBuffers[currTerm][counters[currTerm]-1], (unsigned char *)keyboardBuffers[currTerm]); //video memory for backspace
        
-        if(counter != 0){
-            counter--;
-            keyboardBuffer[counter] = '\0'; //to show a NULL 
+        if(counters[currTerm] != 0){
+            counters[currTerm]--;
+            keyboardBuffers[currTerm][counters[currTerm]] = '\0'; //to show a NULL 
         }
     }
 
+    //if turns bad revert till here 
+
     if(myInput == SPACEPRESS){ //checks if it is a space
-        if(counter != (keyboardBufferSize-1)){
-            if(counter == NUM_COLS){
+        if(counters[currTerm] != (keyboardBufferSize-3)){ // MAGIC: - 3 for the correct buffer size - prevents overflow
+            postest = get_screen_x();
+            if(postest == NUM_COLS-1){
                 newLine();
+                // counters[currTerm] = 0; // - nabil added may/may not need, but will mess up a few lines below (enterpress) maybe 
             }
             putc(' ');
-            keyboardBuffer[counter] = ' '; // to show a space 
-            counter++;
+            keyboardBuffers[currTerm][counters[currTerm]] = ' '; // to show a space 
+            counters[currTerm]++;
         }
     }
     if (myInput == ENTERPRESS){
         //clearKeyboardBuffer();
-        keyboardBuffer[counter] = '\n'; //to show new line
-        counter++; //added newline character when enter pressed
+
+        // DO NOT NEED TO USE BELOW - IMPLEMENTATION OF NOT WRITING TO 2 WORKS NOW 
+        // if(counters[currTerm] > keyboardBufferSize - 3){ // FIXES PAGE FAULT - BUT HAVE TO SEE IF WE CAN USE IT
+        //     keyboardBuffers[currTerm][counters[currTerm] -1] = '\0';
+        //     keyboardBuffers[currTerm][counters[currTerm] -2] = '\0';
+        //     counters[currTerm] = counters[currTerm] - 2;
+        // }
+        keyboardBuffers[currTerm][counters[currTerm]] = '\n'; //to show new line
+        counters[currTerm]++; //added newline character when enter pressed
         TERMINALFLAG = INTTRUE;
-        counter = 0; //resets counter - may or may not need to do!
+        counters[currTerm] = 0; //resets counter - may or may not need to do!
         newLine();
     }
     if(myInput == TABPRESS){
         //flag 1
         //if counter < 124
-        if(counter < (keyboardBufferSize-4)){
+        if(counters[currTerm] < (keyboardBufferSize-5)){// MAGIC: - 5 for the correct buffer size - prevents overflow
             //80 and 76
-            if(counter < NUM_COLS && counter > NUM_COLS-4){
+             postest = get_screen_x();
+            if(postest < NUM_COLS && postest > NUM_COLS-4){// MAGIC: - 4 for the correct screen newLine
                 newLine();
             }
             putc(' ');
             putc(' ');
             putc(' ');
             putc(' ');
-            keyboardBuffer[counter] = '\t'; // to show tab
-            counter++;
+            keyboardBuffers[currTerm][counters[currTerm]] = '\t'; // to show tab
+            counters[currTerm]++;
         }
     }
 
@@ -215,6 +270,14 @@ void interrupt_keyboard(void){
         else{
             capsLock = INTFALSE;
         }
+    }
+
+    if(myInput == ALTPRESS){
+        alt = INTTRUE;
+    }
+
+    if(myInput == ALTRELEASE){
+        alt = INTFALSE;
     }
 
     if((myInput == LEFTSHIFTPRESS) || (myInput == RIGHTSHIFTPRESS)){ //checks for shift 
@@ -235,10 +298,79 @@ void interrupt_keyboard(void){
 
     if(control == INTTRUE && myInput == LCHARACTER){ //control l clears screen
         clearText();
-        counter = 0;
+        counters[currTerm] = 0; //clears counter
         clearKeyboardBuffer(); //THIS IS FROM THE TA - OKAN - TO CLEAR BUFFER 
         send_eoi(KEYBOARDIRQNUM);
         sti();
+        return;
+    }
+
+    // NOT SURE if we need to implement CONTROL C  
+    // if(control == INTTRUE && myInput == CCHARACTER){
+
+    // }
+
+    if(alt == INTTRUE && myInput == FONE){
+        //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        //currTerm = 0;
+        //int the_pid = getProgNum();
+        //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
+        //int saveTerm = currTerm;
+        switch_terms(0); //currTerm gets updated here (to 0), so...
+       // int next_pid = multi_terms[currTerm].lastAssignedProcess; //curTerm = 0
+
+        //pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        // if (multi_terms[saveTerm].progRunning == 1)
+        //     contextSwitch(mypcb, nextpcb);
+        //memcpy(keyboardBuffer, keyboardBuffers[0], sizeof(keyboardBuffers[0]));
+       // send_eoi(KEYBOARDIRQNUM);
+        
+        return;
+    }
+
+    if(alt == INTTRUE && myInput == FTWO){
+        //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        //currTerm = 1;
+       // int the_pid = getProgNum();
+        //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
+       // int saveTerm = currTerm;
+        switch_terms(1); //currTerm gets updated here, so...
+        //int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 1
+
+       // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
+
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); 
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        // if (multi_terms[saveTerm].progRunning == 1)
+        //     contextSwitch(mypcb, nextpcb); 
+        //memcpy(keyboardBuffer, keyboardBuffers[1], sizeof(keyboardBuffers[1]));
+       
+        return;
+    }
+
+    if(alt == INTTRUE && myInput == FTHREE){
+        //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
+        //currTerm = 2;
+       // int the_pid = getProgNum();
+        //multi_terms[currTerm].previous_pid = the_pid; //set pid before..
+       // int saveTerm = currTerm;
+        switch_terms(2); //currTerm gets updated here, so...
+       // int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 2
+       // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+        send_eoi(KEYBOARDIRQNUM);
+        sti();
+        // if (multi_terms[saveTerm].progRunning == 1)
+        //     contextSwitch(mypcb, nextpcb);
+        //memcpy(keyboardBuffer, keyboardBuffers[2], sizeof(keyboardBuffers[2]));
+       // send_eoi(KEYBOARDIRQNUM);
+        
         return;
     }
 
@@ -281,13 +413,14 @@ void interrupt_keyboard(void){
             myChar = scancodesCapShift[myInput]; // the corresponding character (from the table)
             
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != (keyboardBufferSize-1)){
-                    if(counter == NUM_COLS){
+                if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
+                    postest = get_screen_x();
+                    if(postest == NUM_COLS-1){ //gets the last val before screen overflow
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
-                    keyboardBuffer[counter] = myChar;
-                    counter++;
+                    keyboardBuffers[currTerm][counters[currTerm]] = myChar;
+                    counters[currTerm]++;
                 }
             }
 
@@ -296,13 +429,14 @@ void interrupt_keyboard(void){
             myChar = scancodesCapLetters[myInput]; // the corresponding character (from the table)
 
             if(myChar != ' '){ //checks if its a valid character to print
-                if(counter != (keyboardBufferSize-1)){
-                    if(counter == NUM_COLS){
+                if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
+                    postest = get_screen_x();
+                    if(postest == NUM_COLS-1){//gets the last val before screen overflow
                         newLine();
                     }
                     putc(myChar); //outputs the correct character
-                    keyboardBuffer[counter] = myChar;
-                    counter++;
+                    keyboardBuffers[currTerm][counters[currTerm]] = myChar;
+                    counters[currTerm]++;
                 }
             }
         }
@@ -312,27 +446,30 @@ void interrupt_keyboard(void){
         myChar = scancodesShift[myInput]; // the corresponding character (from the table)
 
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != (keyboardBufferSize-1)){
-                if(counter == NUM_COLS){
+            if(counters[currTerm] != (keyboardBufferSize-3)){
+                postest = get_screen_x();
+                if(postest == NUM_COLS-1){//gets the last val before screen overflow
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
-                keyboardBuffer[counter] = myChar;
-                counter++;
+                keyboardBuffers[currTerm][counters[currTerm]] = myChar;
+                counters[currTerm]++;
             }
         }
     }
     else{
         myChar = scancodes1[myInput]; // the corresponding character (from the table)
-
+        
         if(myChar != ' '){ //checks if its a valid character to print
-            if(counter != (keyboardBufferSize-1)){
-                if(counter == NUM_COLS){
+            if(counters[currTerm] != (keyboardBufferSize-3)){// MAGIC: - 3 for the correct buffer size - prevents overflow
+                postest = get_screen_x();
+                if(postest == NUM_COLS-1){//gets the last val before screen overflow
+                   // postest = get_screen_y();
                     newLine();
                 }
                 putc(myChar); //outputs the correct character
-                keyboardBuffer[counter] = myChar;
-                counter++;
+                keyboardBuffers[currTerm][counters[currTerm]] = myChar;
+                counters[currTerm]++;
             }
         }
     }

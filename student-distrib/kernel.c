@@ -11,6 +11,8 @@
 #include "rtc.h"
 #include "idt.h"
 #include "keyboard.h"
+#include "pit.h"
+#include "terminal.h"
 
 #include "paging.h"
 #include "filesys.h"
@@ -24,6 +26,14 @@
 
 /* Check if MAGIC is valid and print the Multiboot information structure
    pointed by ADDR. */
+/* 
+ *entry
+ *   DESCRIPTION: Used as the Entry for the Boot System
+ *   INPUTS: magic, addr
+ *   OUTPUTS: None
+ *   RETURN VALUE: None
+ *   SIDE EFFECTS: Checks if MAGIC is valid and prints the Multiboot info from Addr
+ */
 void entry(unsigned long magic, unsigned long addr) {
 
     multiboot_info_t *mbi;
@@ -160,7 +170,9 @@ void entry(unsigned long magic, unsigned long addr) {
 
     //printf("INITIALIZING KEYBOARD . . . \n");
     initialize_Keyboard();//keyboard initialization
- 
+
+    terminal_init();
+
     printf("INITIALIZING IDT . . . \n");
     initialize_idt(); //idt initialization
 
@@ -175,6 +187,8 @@ void entry(unsigned long magic, unsigned long addr) {
     //printf("INITIALIZING RTC . . . \n");
     initialize_RTC(); //RTC initialization
 
+    initialize_PIT();
+
     clear();
     sti(); //idt we need this anymore?
     // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1)));
@@ -185,9 +199,8 @@ void entry(unsigned long magic, unsigned long addr) {
     //launch_tests();
 #endif
     /* Execute the first program ("shell") ... */
-    //execute((uint8_t*)"shell");
-
     execute((uint8_t*)"shell");
+
     /* Spin (nicely, so we don't chew up cycles) */
     asm volatile (".1: hlt; jmp .1;");
 }
