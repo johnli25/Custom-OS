@@ -48,7 +48,7 @@ void scheduler(){
 
     pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 
-   contextSwitch(mypcb, nextpcb);
+    contextSwitch(mypcb, nextpcb);
 
 }
 

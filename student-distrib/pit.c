@@ -99,7 +99,7 @@ void interrupt_PIT(void){
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
-    scheduler();
+    //scheduler();
 
 }
 

@@ -257,7 +257,15 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
+    pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
+
     multi_terms[currTerm].curr_proc = mypcb;
+    
+    if (myProgramNumber >= 0 && myProgramNumber <= 2)
+        multi_terms[currTerm].pcb_parent = mypcb;
+    else
+        multi_terms[currTerm].pcb_parent = parentshellpcb;
+
     multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
     
     // if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
