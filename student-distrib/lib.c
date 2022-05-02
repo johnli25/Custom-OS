@@ -27,22 +27,36 @@ int counterScreen = 0; //starts off as zero
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
-static char * background_mem1 = (char *)(1 * KB_4 + VIDEO);
-static char * background_mem2 = (char *)(2 * KB_4 + VIDEO);
-static char * background_mem3 = (char *)(3 * KB_4 + VIDEO);
-
+static char * background_mem1 = (char *)(1 * KB_4 + VIDEO); //MAGIC NUMBER: 1 for first terminal
+static char * background_mem2 = (char *)(2 * KB_4 + VIDEO); //MAGIC NUMBER: 2 for second terminal
+static char * background_mem3 = (char *)(3 * KB_4 + VIDEO);//MAGIC NUMBER: 3 for third terminal
+/* get_screen_x()
+ * Inputs: none
+ * Return Value: none
+ * Function: returns screen_x */
 int get_screen_x(){
     return screen_x;
 }
-
+/* get_screen_y()
+ * Inputs: none
+ * Return Value: none
+ * Function: returns screen_y */
 int get_screen_y(){
     return screen_y;
 }
 
+/* set_screen_x(int new_x)
+ * Inputs: new_x
+ * Return Value: none
+ * Function: sets screen_x to input */
 void set_screen_x(int new_x){
     screen_x = new_x;
 }
 
+/* set_screen_y(int new_y)
+ * Inputs: new_y
+ * Return Value: none
+ * Function: sets screen_y to input */
 void set_screen_y(int new_y){
     screen_y = new_y;
 }
@@ -450,24 +464,28 @@ void putc(uint8_t c) {
     
 }
 
+/* void putc_background(uint8_t c, int origTerminal, int newTerminal);
+ * Inputs: uint8_t c, int origTerminal, int newTerminal
+ * Return Value: void
+ *  Function: puts c to background */
 void putc_background(uint8_t c, int origTerminal, int newTerminal){
 
-    screen_x = multi_terms[newTerminal].cursor_x;
-    screen_y = multi_terms[newTerminal].cursor_y;
+    screen_x = multi_terms[newTerminal].cursor_x; //new screen_x value
+    screen_y = multi_terms[newTerminal].cursor_y; //new screen_y value
 
     if(c == '\n' || c == '\r') { //checks if Newline or r
         screen_y++;
         screen_x = 0;
     } else {
-        if (newTerminal == 1){
+        if (newTerminal == 1){ //MAGIC NUMBER: 1 for first terminal
             *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         }
-        else if (newTerminal == 2){
+        else if (newTerminal == 2){ //MAGIC NUMBER: 2 for second terminal
             *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         }
-        else if (newTerminal == 3){
+        else if (newTerminal == 3){ //MAGIC NUMBER: 3 for third terminal
             *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
             *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
         }
