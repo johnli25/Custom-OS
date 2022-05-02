@@ -169,14 +169,14 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 charsPrinted--;
             }
             else{
-                //if (currTerm == schedTerm || term_shell_cnt <= 3){
+                if (currTerm == schedTerm || term_shell_cnt <= 3){
                     putc(((unsigned char *)(buf))[p]);
                     charsPrinted++;
-                // }
-                // else if (currTerm != schedTerm && term_shell_cnt > 3){
-                //     putc_background(((unsigned char *)(buf))[p], currTerm, schedTerm);
-                //     charsPrinted++;
-                // }
+                }
+                else if (currTerm != schedTerm && term_shell_cnt > 3){
+                    putc_background(((unsigned char *)(buf))[p], currTerm, schedTerm);
+                    charsPrinted++;
+                }
             }
         }
     }

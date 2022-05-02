@@ -18,6 +18,7 @@ void initialize_PIT(void){
 
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
+    cli();
     pit_count++;
     uint32_t esp;
     uint32_t ebp;
@@ -96,7 +97,8 @@ void interrupt_PIT(void){
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
-    //scheduler();
+    scheduler();
+    sti();
 
 }
 
