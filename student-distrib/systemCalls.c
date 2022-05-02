@@ -270,14 +270,7 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    multi_terms[currTerm].curr_proc = mypcb;
-    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
-    
-    // if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-    //     0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
-    //    multi_terms[currTerm].progRunning = 1; //program not running on term
-    // else
-        multi_terms[currTerm].progRunning = 1; //program running on term
+    pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
 
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
@@ -338,8 +331,22 @@ int32_t execute (const uint8_t* command){
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     mypcb -> active = 1;
+    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+        multi_terms[currTerm].progRunning = 0; //program not running on term
+    else
+        multi_terms[currTerm].progRunning = 1; //program running on term
+
+    /*fill multi_terms's pcb*/
+    multi_terms[currTerm].curr_proc = mypcb;
     
-    /*context switch*/
+    if (myProgramNumber >= 0 && myProgramNumber <= 2)
+        multi_terms[currTerm].pcb_parent = mypcb;
+    else
+        multi_terms[currTerm].pcb_parent = parentshellpcb;
+
+    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
+    
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
         "pushl %0 \n" //push USER_DS
@@ -374,6 +381,7 @@ int32_t halt(uint8_t status){
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     if (haltReturn_stat == 255) //Magic Num: 255 - Checks if it is the last 
         haltReturn_stat = 256; //Magic Num: 266 - Sets to the last possible value
+    
     tss.ss0 = KERNEL_DS;
     tss.esp0 = (EIGHTMB - (EIGHTKB * (parentPcb->pid /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
@@ -390,6 +398,8 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
+    
+    //will fish or counter halt correclty?
     multi_terms[currTerm].progRunning = 0; //terminal not running program anymore
     
     // multi_terms[currTerm].shell_cnt--;
@@ -397,11 +407,6 @@ int32_t halt(uint8_t status){
     if (currentProgramNumber == cHiLdPcB->parent_id || currentProgramNumber < 3) //if currentProgNum less than/within the 3 base shell programs
         execute((uint8_t*)"shell"); // executes shell 
     currentProgramNumber = cHiLdPcB->parent_id;    
-    // parent process done - now paging 
-    // parent paging (unpaging) - paging user program (paging.c?) 8 + (id * 4mb) or with flags into directory, flush
-
-    cHiLdPcB -> active = 0; //unused? 
-    parentPcb -> active = 1; //set active bits for comprehension/reference
 
     paging_unhelper(cHiLdPcB->parent_id); // - flushes TLB as well 
     if (vp_flag == 1) 

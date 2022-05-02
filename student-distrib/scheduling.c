@@ -48,10 +48,12 @@ void scheduler(){
     pcb_t * mypcb = multi_terms[schedTermTemp].curr_proc; //current pcb (will be saved)
     
     schedTerm++;
-    schedTerm = schedTerm % 3; //MAGIC NUMBER: 3 as we have 3 terminals. Setting to next terminal
-    if (multi_terms[schedTermTemp].progRunning != 1)
+    schedTerm = schedTerm % 3;
+    // if (multi_terms[currTerm].progRunning == 1 && multi_terms[schedTerm].progRunning != 1)
+    //     currTerm = currTerm; 
+    if (multi_terms[schedTermTemp].progRunning != 1)// == 0
         return; 
-    if (multi_terms[schedTerm].progRunning != 1)
+    if (multi_terms[schedTerm].progRunning != 1) //== 0
         return; 
 
     if(!(multi_terms[schedTerm].curr_proc)){ //if scheduled terminal process == null
@@ -61,7 +63,7 @@ void scheduler(){
 
     pcb_t * nextpcb = multi_terms[schedTerm].curr_proc; //next pcb (will be next-load it)
 
-   contextSwitch(mypcb, nextpcb);
+    contextSwitch(mypcb, nextpcb);
 
 }
 

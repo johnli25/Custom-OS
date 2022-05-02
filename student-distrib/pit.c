@@ -32,10 +32,10 @@ void initialize_PIT(void){
 */ 
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
+    cli();
     pit_count++;
-    // schedTerm++;
-    // schedTerm = schedTerm % 3;
-    //int current_pid = getProgNum();
+    //uint32_t esp;
+    //uint32_t ebp;
     switch (pit_count)
     {
     // case 0:
@@ -54,41 +54,65 @@ void interrupt_PIT(void){
             multi_terms[1].bootup_flag = 1; //marks the flag as present
         }
         break;
+        //return;
     case 2:
         if (multi_terms[2].bootup_flag == 0){ //checks if the flag is 0
             //currTerm = 2;          
-            switch_terms(2); //MAGIC: switches to the SECOND terminal
+            switch_terms(2);
+            // esp = EIGHTMB - (EIGHTKB * 0) -4;
+            // ebp = EIGHTMB - (EIGHTKB * 0) -4;
+            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
+            //     "movl %0, %%esp;" //esp contains saved_esp
+            //     "movl %1, %%ebp;" //ebp contains saved_ebp
+            //     :
+            //     : "r"(esp), "r"(ebp)
+            //     :"esp", "ebp"   //clobbers esp, ebp
+            // );
             execute((uint8_t*)"shell");
-
-            /*context switch for terminal switch*/
-            // int currProgram = getProgNum();
-
-            // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currProgram + 1))); //save current process PCB
-            // multi_terms[currTerm].curr_proc = mypcb;
-
-            // pcb_t * nextpcb = multi_terms[2].curr_proc;
-
-            // multi_terms[currTerm].curr_proc = mypcb;
-            // contextSwitch(mypcb, nextpcb);
-            /*end of context switch for terminals*/
-            multi_terms[2].bootup_flag = 1; //sets flag as present
+            multi_terms[2].bootup_flag = 1;
         }
         break;
+        //return;
     case 3:
         if (multi_terms[0].bootup_flag == 0){ //checks if flag is present
             //currTerm = 0;
-            switch_terms(0); //MAGIC: switches to ZEROth (THIRD) terminal
+            switch_terms(0);
+            // esp = EIGHTMB - (EIGHTKB * 1) -4;
+            // ebp = EIGHTMB - (EIGHTKB * 1) -4;
+            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
+            //     "movl %0, %%esp;" //esp contains saved_esp
+            //     "movl %1, %%ebp;" //ebp contains saved_ebp
+            //     :
+            //     : "r"(esp), "r"(ebp)
+            //     :"esp", "ebp"   //clobbers esp, ebp
+            // );
             execute((uint8_t*)"shell");
             multi_terms[0].bootup_flag = 1; //marks flag as present 
         }
         break;
+        //return;
+    case 4: //swap term0 and term2 that were swapped upon initialization
+        if(1){
+            terminal_t t0 = multi_terms[0];
+            terminal_t t1 = multi_terms[1];
+            terminal_t t2 = multi_terms[2];
+
+            multi_terms[0] = t1;
+            multi_terms[1] = t2;
+            multi_terms[2] = t0;
+
+            currTerm = currTerm; //dummy debug
+        }
+
+        break;       
     default:
-        return;
-        //break;
+        //return;
+        break;
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
     scheduler();
+    sti();
 
 }
 

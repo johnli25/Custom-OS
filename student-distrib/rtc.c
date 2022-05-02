@@ -39,8 +39,8 @@ void initialize_RTC(void){
 */ 
 void interrupt_RTC(void){
 
-    if (multi_terms[currTerm].relative_frequency==1)
-        multi_terms[currTerm].relative_frequency = relativeFreq; 
+    // if (multi_terms[currTerm].relative_frequency==1)
+    //     multi_terms[currTerm].relative_frequency = 1000; 
 
     multi_terms[currTerm].rtc_counter++;
     if (multi_terms[currTerm].rtc_counter == multi_terms[currTerm].relative_frequency/2) {
@@ -126,7 +126,7 @@ int32_t write_RTC (int32_t fd, const void* buf, int32_t nbytes){
     );
 
     multi_terms[currTerm].rtc_counter = 0; 
-    char rate = 16 - log_freq;			// set the RTC freq to 16 - log_2(freq) 
+    //char rate = 16 - log_freq;			// set the RTC freq to 16 - log_2(freq) 
     //printf("RATE: 0x0%x FREQ: %u \n", rate, freq);
     outb(0x8A, RTC_CMD);		// set index to register A, disable NMI
     char prev = inb(RTC_DATA);	// get initial value of register A

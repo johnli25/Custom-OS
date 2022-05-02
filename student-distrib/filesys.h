@@ -50,7 +50,7 @@ typedef struct fd_info{
 
 typedef struct pcb{
     unsigned int pid;
-    //pcb_t* pcb_parent;
+    // struct pcb_t* pcb_parent;
     unsigned int parent_id;
     fd_info_t myINFO[8];
     uint32_t saved_esp;

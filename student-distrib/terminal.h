@@ -9,6 +9,8 @@ typedef struct terminal {
     int cursor_y;
     // int curr_proc;
     pcb_t * curr_proc;
+    pcb_t* pcb_parent;
+
     int lastAssignedProcess; 
     int bootup_flag;
     // int shell_cnt;
@@ -44,6 +46,7 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 terminal_t multi_terms[3];
 int currTerm; //= 0;
 int schedTerm; // = 0;
+int term_shell_cnt;
 
 //static int newTerm = 0;
 

@@ -313,15 +313,15 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FONE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 0;
-        int the_pid = getProgNum();
+        //int the_pid = getProgNum();
         //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
-        int saveTerm = currTerm;
-        switch_terms(0); //MAGIC: SWITCHES TO 0th (THIRD) TERMINAL currTerm gets updated here (to 0), so...
-        int next_pid = multi_terms[currTerm].lastAssignedProcess; //curTerm = 0
+        //int saveTerm = currTerm;
+        switch_terms(0); //currTerm gets updated here (to 0), so...
+       // int next_pid = multi_terms[currTerm].lastAssignedProcess; //curTerm = 0
 
-        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+        //pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
 
-        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
         send_eoi(KEYBOARDIRQNUM);
         sti();
         // if (multi_terms[saveTerm].progRunning == 1)
@@ -335,15 +335,15 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTWO){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 1;
-        int the_pid = getProgNum();
+       // int the_pid = getProgNum();
         //multi_terms[currTerm].lastAssignedProcess = the_pid; //set pid before..
-        int saveTerm = currTerm;
-        switch_terms(1); //MAGIC: SWITCHES TO 1st TERMINAL currTerm gets updated here, so...
-        int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 1
+       // int saveTerm = currTerm;
+        switch_terms(1); //currTerm gets updated here, so...
+        //int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 1
 
-        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
+       // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); 
 
-        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); 
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); 
         send_eoi(KEYBOARDIRQNUM);
         sti();
         // if (multi_terms[saveTerm].progRunning == 1)
@@ -356,14 +356,14 @@ void interrupt_keyboard(void){
     if(alt == INTTRUE && myInput == FTHREE){
         //memcpy(keyboardBuffers[currTerm], keyboardBuffer, sizeof(keyboardBuffer));
         //currTerm = 2;
-        int the_pid = getProgNum();
+       // int the_pid = getProgNum();
         //multi_terms[currTerm].previous_pid = the_pid; //set pid before..
-        int saveTerm = currTerm;
-        switch_terms(2); //MAGIC: SWITCHES TO SECOND TERMINAL currTerm gets updated here, so...
-        int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 2
-        pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
+       // int saveTerm = currTerm;
+        switch_terms(2); //currTerm gets updated here, so...
+       // int next_pid = multi_terms[currTerm].lastAssignedProcess; //currTerm = 2
+       // pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (the_pid + 1))); //what's the hardcoded numerical addr?
 
-        pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
+       // pcb_t * nextpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (next_pid + 1))); //what's the hardcoded numerical addr?
         send_eoi(KEYBOARDIRQNUM);
         sti();
         // if (multi_terms[saveTerm].progRunning == 1)
