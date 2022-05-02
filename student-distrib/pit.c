@@ -69,11 +69,12 @@ void interrupt_PIT(void){
         }
         break;
     default:
-        break;
+        return;
+        //break;
     }
 
-    if (multi_terms[schedTerm].progRunning == 1)
-        scheduler();
+    // if (multi_terms[schedTerm].progRunning == 1)
+    scheduler();
 
 }
 

@@ -27,7 +27,9 @@ int counterScreen = 0; //starts off as zero
 static int screen_x;
 static int screen_y;
 static char* video_mem = (char *)VIDEO;
-
+static char * background_mem1 = (char *)(1 * KB_4 + VIDEO);
+static char * background_mem2 = (char *)(2 * KB_4 + VIDEO);
+static char * background_mem3 = (char *)(3 * KB_4 + VIDEO);
 
 int get_screen_x(){
     return screen_x;
@@ -449,8 +451,6 @@ void putc(uint8_t c) {
 }
 
 void putc_background(uint8_t c, int origTerminal, int newTerminal){
-    int newAddr = (newTerminal + 1) * KB_4 + VIDEO;
-    char* background_mem = (char *)newAddr;
 
     screen_x = multi_terms[newTerminal].cursor_x;
     screen_y = multi_terms[newTerminal].cursor_y;
@@ -459,8 +459,18 @@ void putc_background(uint8_t c, int origTerminal, int newTerminal){
         screen_y++;
         screen_x = 0;
     } else {
-        *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
-        *(uint8_t *)(background_mem + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        if (newTerminal == 1){
+            *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem1 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        else if (newTerminal == 2){
+            *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem2 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
+        else if (newTerminal == 3){
+            *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1)) = c;
+            *(uint8_t *)(background_mem3 + ((NUM_COLS * screen_y + screen_x) << 1) + 1) = ATTRIB;
+        }
         screen_x++;
         screen_x %= NUM_COLS;
         screen_y = (screen_y + (screen_x / NUM_COLS)) % NUM_ROWS;

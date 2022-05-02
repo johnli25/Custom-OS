@@ -260,10 +260,10 @@ int32_t execute (const uint8_t* command){
     multi_terms[currTerm].curr_proc = mypcb;
     multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
     
-    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
-       multi_terms[currTerm].progRunning = 0; //program not running on term
-    else
+    // if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+    //     0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+    //    multi_terms[currTerm].progRunning = 1; //program not running on term
+    // else
         multi_terms[currTerm].progRunning = 1; //program running on term
 
     int arg_i;
