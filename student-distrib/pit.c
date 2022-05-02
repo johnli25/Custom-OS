@@ -22,7 +22,33 @@ void interrupt_PIT(void){
     // schedTerm++;
     // schedTerm = schedTerm % 3;
     //int current_pid = getProgNum();
-    term_shell_cnt++;
+    // if(term_shell_cnt < 3)
+    // {
+    //     term_shell_cnt += 1;
+    //     switch_terms(term_shell_cnt - 1);
+    //     execute((uint8_t*)("shell"));
+    // }
+
+    // if (term_shell_cnt == 3)
+    // {
+    // //swap term0 and term2 that were swapped upon initialization
+    //     pcb_t * pcb0 = multi_terms[0].curr_proc;
+    //     pcb_t * pcb2 = multi_terms[2].curr_proc;
+    //     int shell0 = multi_terms[0].lastAssignedProcess;
+    //     int shell2 = multi_terms[2].lastAssignedProcess;
+
+    //     int rtc0 = multi_terms[0].rtc_counter;
+    //     int rtc2 = multi_terms[2].rtc_counter;
+
+    //     multi_terms[0].curr_proc = pcb2;
+    //     multi_terms[0].lastAssignedProcess = shell2;
+    //     multi_terms[0].rtc_counter = rtc2;
+
+    //     multi_terms[2].curr_proc = pcb0;
+    //     multi_terms[2].lastAssignedProcess = shell0;
+    //     multi_terms[2].rtc_counter = rtc0;
+    //     currTerm = currTerm; //dummy debug 
+    // }
     switch (pit_count)
     {
     // case 0:
@@ -73,23 +99,31 @@ void interrupt_PIT(void){
         break;
         //return;
     case 4: //swap term0 and term2 that were swapped upon initialization
-
         if(1){
-            pcb_t * pcb0 = multi_terms[0].curr_proc;
-            pcb_t * pcb2 = multi_terms[2].curr_proc;
-            int shell0 = multi_terms[0].lastAssignedProcess;
-            int shell2 = multi_terms[2].lastAssignedProcess;
+            // pcb_t * pcb0 = multi_terms[0].curr_proc;
+            // pcb_t * pcb2 = multi_terms[2].curr_proc;
+            // int shell0 = multi_terms[0].lastAssignedProcess;
+            // int shell2 = multi_terms[2].lastAssignedProcess;
 
-            int rtc0 = multi_terms[0].rtc_counter;
-            int rtc2 = multi_terms[2].rtc_counter;
+            // int rtc0 = multi_terms[0].rtc_counter;
+            // int rtc2 = multi_terms[2].rtc_counter;
 
-            multi_terms[0].curr_proc = pcb2;
-            multi_terms[0].lastAssignedProcess = shell2;
-            multi_terms[0].rtc_counter = rtc2;
+            // multi_terms[0].curr_proc = pcb2;
+            // multi_terms[0].lastAssignedProcess = shell2;
+            // multi_terms[0].rtc_counter = rtc2;
 
-            multi_terms[2].curr_proc = pcb0;
-            multi_terms[2].lastAssignedProcess = shell0;
-            multi_terms[2].rtc_counter = rtc0;
+            // multi_terms[2].curr_proc = pcb0;
+            // multi_terms[2].lastAssignedProcess = shell0;
+            // multi_terms[2].rtc_counter = rtc0;
+            terminal_t t0 = multi_terms[0];
+            terminal_t t1 = multi_terms[1];
+            terminal_t t2 = multi_terms[2];
+
+            multi_terms[0] = t1;
+            multi_terms[1] = t2;
+            multi_terms[2] = t0;
+
+            currTerm = currTerm; //dummy debug
         }
 
         break;       
@@ -99,7 +133,7 @@ void interrupt_PIT(void){
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
-    //scheduler();
+    scheduler();
 
 }
 

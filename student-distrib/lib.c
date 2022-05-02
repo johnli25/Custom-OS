@@ -486,6 +486,8 @@ void putc_background(uint8_t c, int origTerminal, int newTerminal){
     screen_x = multi_terms[origTerminal].cursor_x;
     screen_y = multi_terms[origTerminal].cursor_y;
 }
+
+
 /* void putBackspace(uint8_t c);
  * Inputs: uint_8* c = character to print
  * Return Value: void

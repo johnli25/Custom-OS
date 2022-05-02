@@ -259,21 +259,6 @@ int32_t execute (const uint8_t* command){
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
     pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
 
-    multi_terms[currTerm].curr_proc = mypcb;
-    
-    if (myProgramNumber >= 0 && myProgramNumber <= 2)
-        multi_terms[currTerm].pcb_parent = mypcb;
-    else
-        multi_terms[currTerm].pcb_parent = parentshellpcb;
-
-    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
-    
-    // if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-    //     0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
-    //    multi_terms[currTerm].progRunning = 1; //program not running on term
-    // else
-        multi_terms[currTerm].progRunning = 1; //program running on term
-
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
         mypcb->arguments[arg_i] = '\0';//initialize pcb->args all to '\0' - NULL
@@ -333,6 +318,21 @@ int32_t execute (const uint8_t* command){
     tss.esp0 = (EIGHTMB - (EIGHTKB * (myProgramNumber /*+ 1*/))) - 4; // magic -4: used to get the correct esp calculation
 
     mypcb -> active = 1;
+    // if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
+    //     0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
+    //    multi_terms[currTerm].progRunning = 1; //program not running on term
+    // else
+        multi_terms[currTerm].progRunning = 1; //program running on term
+
+    /*fill multi_terms's pcb*/
+    multi_terms[currTerm].curr_proc = mypcb;
+    
+    if (myProgramNumber >= 0 && myProgramNumber <= 2)
+        multi_terms[currTerm].pcb_parent = mypcb;
+    else
+        multi_terms[currTerm].pcb_parent = parentshellpcb;
+
+    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
     
     /*context switch*/
     //enable interrupt on flags: or flags x200 in assembly w register
