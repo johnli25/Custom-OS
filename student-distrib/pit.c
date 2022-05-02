@@ -22,6 +22,7 @@ void interrupt_PIT(void){
     // schedTerm++;
     // schedTerm = schedTerm % 3;
     //int current_pid = getProgNum();
+    term_shell_cnt++;
     switch (pit_count)
     {
     // case 0:
@@ -40,6 +41,7 @@ void interrupt_PIT(void){
             multi_terms[1].bootup_flag = 1;
         }
         break;
+        //return;
     case 2:
         if (multi_terms[2].bootup_flag == 0){
             //currTerm = 2;          
@@ -60,6 +62,7 @@ void interrupt_PIT(void){
             multi_terms[2].bootup_flag = 1;
         }
         break;
+        //return;
     case 3:
         if (multi_terms[0].bootup_flag == 0){
             //currTerm = 0;
@@ -68,9 +71,31 @@ void interrupt_PIT(void){
             multi_terms[0].bootup_flag = 1;
         }
         break;
+        //return;
+    case 4: //swap term0 and term2 that were swapped upon initialization
+
+        if(1){
+            pcb_t * pcb0 = multi_terms[0].curr_proc;
+            pcb_t * pcb2 = multi_terms[2].curr_proc;
+            int shell0 = multi_terms[0].lastAssignedProcess;
+            int shell2 = multi_terms[2].lastAssignedProcess;
+
+            int rtc0 = multi_terms[0].rtc_counter;
+            int rtc2 = multi_terms[2].rtc_counter;
+
+            multi_terms[0].curr_proc = pcb2;
+            multi_terms[0].lastAssignedProcess = shell2;
+            multi_terms[0].rtc_counter = rtc2;
+
+            multi_terms[2].curr_proc = pcb0;
+            multi_terms[2].lastAssignedProcess = shell0;
+            multi_terms[2].rtc_counter = rtc0;
+        }
+
+        break;       
     default:
-        return;
-        //break;
+        //return;
+        break;
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)

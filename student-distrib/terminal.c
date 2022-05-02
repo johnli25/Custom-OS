@@ -69,6 +69,7 @@ int32_t terminal_init(void){
     }
     currTerm = 0;
     schedTerm = 0;
+    term_shell_cnt = 0;
     return 0;
 }
 
@@ -156,10 +157,11 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 newLine();
             }
             else if (((unsigned char *)(buf))[p] == '\t'){ //checks if it is Tab
-                putc(' ');
-                putc(' ');
-                putc(' ');
-                putc(' ');
+                // putc(' ');
+                // putc(' ');
+                // putc(' ');
+                // putc(' ');
+                putc('\t');
                 charsPrinted = charsPrinted + 4;
             }
             else if (((unsigned char *)(buf))[p] == BACKSPACEPRESS){ //checks if it is Backspace
@@ -167,13 +169,19 @@ int32_t terminal_write(int32_t fd, const void * buf, int n){
                 charsPrinted--;
             }
             else{
-                putc(((unsigned char *)(buf))[p]);
-                charsPrinted++;
+                //if (currTerm == schedTerm || term_shell_cnt <= 3){
+                    putc(((unsigned char *)(buf))[p]);
+                    charsPrinted++;
+                // }
+                // else if (currTerm != schedTerm && term_shell_cnt > 3){
+                //     putc_background(((unsigned char *)(buf))[p], currTerm, schedTerm);
+                //     charsPrinted++;
+                // }
             }
         }
     }
-    if(charsPrinted > NUM_COLS){
-        newLine();
-    }
+    // if(charsPrinted > NUM_COLS){
+    //     newLine();
+    // }
     return n;
 }
