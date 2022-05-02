@@ -19,19 +19,19 @@ void initialize_PIT(void){
 void interrupt_PIT(void){
     send_eoi(PIT_IRQ_NUM);
     pit_count++;
-    schedTerm++;
-    schedTerm = schedTerm % 3;
-    // int current_pid = getProgNum();
+    // schedTerm++;
+    // schedTerm = schedTerm % 3;
+    //int current_pid = getProgNum();
     switch (pit_count)
     {
-    case 0:
-        if (multi_terms[1].bootup_flag == 0){
-            //currTerm = 1;
-            switch_terms(1);
-            execute((uint8_t*)"shell");
-            multi_terms[1].bootup_flag = 1;
-        }
-        break;
+    // case 0:
+    //     if (multi_terms[1].bootup_flag == 0){
+    //         //currTerm = 1;
+    //         switch_terms(1);
+    //         execute((uint8_t*)"shell");
+    //         multi_terms[1].bootup_flag = 1;
+    //     }
+    //     break;
     case 1:
         if (multi_terms[1].bootup_flag == 0){
             //currTerm = 1;
@@ -72,8 +72,8 @@ void interrupt_PIT(void){
         break;
     }
 
-    //if (multi_terms[schedTerm].progRunning == 1)
-    //scheduler();
+    if (multi_terms[schedTerm].progRunning == 1)
+        scheduler();
 
 }
 
