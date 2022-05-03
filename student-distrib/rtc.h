@@ -8,7 +8,7 @@
 #define RTC_DATA        0x71
 #define virtFreq        1024
 #define nByteCheck      4
-#define relativeFreq    5000
+#define relativeFreqModified    4096
 
 
 //RTC initialization

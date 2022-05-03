@@ -55,6 +55,8 @@ typedef struct pcb{
     fd_info_t myINFO[8];
     uint32_t saved_esp;
     uint32_t saved_ebp;
+    uint16_t ss0; 
+    uint16_t esp0;
     unsigned int active;
     uint8_t arguments[MAX_ARG_SIZE];
 
