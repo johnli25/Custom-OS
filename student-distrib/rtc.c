@@ -39,13 +39,8 @@ void initialize_RTC(void){
 */ 
 void interrupt_RTC(void){
 
-<<<<<<< HEAD
     if (multi_terms[currTerm].relative_frequency==1)
         multi_terms[currTerm].relative_frequency = relativeFreqModified; 
-=======
-    // if (multi_terms[currTerm].relative_frequency==1)
-    //     multi_terms[currTerm].relative_frequency = 1000; 
->>>>>>> parent of 3ed04f9... final comments 
 
     multi_terms[currTerm].rtc_counter++;
     if (multi_terms[currTerm].rtc_counter == multi_terms[currTerm].relative_frequency/2) {
