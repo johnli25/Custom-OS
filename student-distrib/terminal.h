@@ -17,6 +17,7 @@ typedef struct terminal {
     int progRunning;
     int rtc_counter;
     int relative_frequency;
+    int enterpress_keyb;
 
 } __attribute__((packed)) terminal_t;
 

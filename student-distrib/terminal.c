@@ -93,6 +93,7 @@ int32_t terminal_init(void){
         multi_terms[i].progRunning = 0;
         multi_terms[i].rtc_counter = 0;
         multi_terms[i].relative_frequency = 0;
+        multi_terms[i].enterpress_keyb = 0;
         //rewrite_shell();
     }
     currTerm = 0;
@@ -135,6 +136,8 @@ int32_t terminal_read(int32_t fd, void * buf, int n){
     if(n > (keyboardBufferSize-1)){ //sets n to 127 if its too big
         n = (keyboardBufferSize-1);
     }
+
+    while(multi_terms[currTerm].enterpress_keyb == 0); //while didn't press \n yet
 
     unsigned char * myKeyboardBuffer = getKeyboardBuffer();
 

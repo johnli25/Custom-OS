@@ -61,14 +61,13 @@ void scheduler(){
     
     schedTerm++;
     schedTerm = schedTerm % 3;
-    // if (multi_terms[currTerm].progRunning == 1 && multi_terms[schedTerm].progRunning != 1)
-    //     currTerm = currTerm; 
-    //if(multi_terms[currTerm].progRunning == 2) //if scheduled terminal process find instantaneous program, do NOT context switch!
-    //     return;
-    if (multi_terms[schedTermTemp].progRunning != 1)// == 0
-        return; 
-    if (multi_terms[schedTerm].progRunning != 1) //== 0
+
+    if(multi_terms[currTerm].progRunning == 2) //if scheduled terminal process find instantaneous program, do NOT context switch!
         return;
+    // if (multi_terms[schedTermTemp].progRunning != 1)// == 0
+    //     return; 
+    // if (multi_terms[schedTerm].progRunning != 1) //== 0
+    //     return;
 
     if(!(multi_terms[schedTerm].curr_proc)){ //if scheduled terminal process == null
         //schedTerm = schedTermTemp; //set schedTerm back to original one before
