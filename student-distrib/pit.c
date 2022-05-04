@@ -48,50 +48,33 @@ void interrupt_PIT(void){
     //     break;
     case 1:
         if (multi_terms[1].bootup_flag == 0){ //checks if the flag is 0
-            //currTerm = 1;
             switch_terms(1); //MAGIC: switches to the FIRST terminal
+            schedTerm = 1;
             execute((uint8_t*)"shell");
             multi_terms[1].bootup_flag = 1; //marks the flag as present
+        
         }
-        break;
-        //return;
-    case 2:
+        // break;
+        return;
+    case 2: //magic #: swithc to 2nd term
         if (multi_terms[2].bootup_flag == 0){ //checks if the flag is 0
-            //currTerm = 2;          
             switch_terms(2);
-            // esp = EIGHTMB - (EIGHTKB * 0) -4;
-            // ebp = EIGHTMB - (EIGHTKB * 0) -4;
-            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
-            //     "movl %0, %%esp;" //esp contains saved_esp
-            //     "movl %1, %%ebp;" //ebp contains saved_ebp
-            //     :
-            //     : "r"(esp), "r"(ebp)
-            //     :"esp", "ebp"   //clobbers esp, ebp
-            // );
+            schedTerm = 2;
             execute((uint8_t*)"shell");
             multi_terms[2].bootup_flag = 1;
         }
-        break;
-        //return;
-    case 3:
+        // break;
+        return;
+    case 3: //magic #: switch to 3rd term
         if (multi_terms[0].bootup_flag == 0){ //checks if flag is present
-            //currTerm = 0;
             switch_terms(0);
-            // esp = EIGHTMB - (EIGHTKB * 1) -4;
-            // ebp = EIGHTMB - (EIGHTKB * 1) -4;
-            // asm volatile( //taking esp ebp of nextpcb and storing into respective esp ebp registers
-            //     "movl %0, %%esp;" //esp contains saved_esp
-            //     "movl %1, %%ebp;" //ebp contains saved_ebp
-            //     :
-            //     : "r"(esp), "r"(ebp)
-            //     :"esp", "ebp"   //clobbers esp, ebp
-            // );
+            schedTerm = 0;
             execute((uint8_t*)"shell");
             multi_terms[0].bootup_flag = 1; //marks flag as present 
         }
-        break;
-        //return;
-    case 4: //swap term0 and term2 that were swapped upon initialization
+        // break;
+        return;
+    case 4: //magic #: swap term0 and term2 that were swapped upon initialization
         if(1){
             terminal_t t0 = multi_terms[0];
             terminal_t t1 = multi_terms[1];
@@ -102,16 +85,19 @@ void interrupt_PIT(void){
             multi_terms[2] = t0;
 
             currTerm = currTerm; //dummy debug
+            schedTerm = 0; 
+            return;
         }
 
-        break;       
+        break;      
+
     default:
         //return;
         break;
     }
 
     // if (multi_terms[schedTerm].progRunning == 1)
-    scheduler();
+    scheduler(pit_count);
     //sti();
 
 }

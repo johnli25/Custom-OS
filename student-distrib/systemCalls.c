@@ -6,6 +6,7 @@
 #include "terminal.h"
 #include "rtc.h"
 #include "filesys.h"
+#include "scheduling.h"
 
 static int program_arr[9] = {0,0,0,0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
@@ -270,7 +271,9 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
+    pcb_t * parentshellpcb0 = (pcb_t *)(EIGHTMB - (EIGHTKB * (schedTerm + 1))); //parent/shell pcb
+    // pcb_t * parentshellpcb1 = (pcb_t *)(EIGHTMB - (EIGHTKB * (1 + 1))); //parent/shell pcb
+    // pcb_t * parentshellpcb2 = (pcb_t *)(EIGHTMB - (EIGHTKB * (2 + 1))); //parent/shell pcb
 
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
@@ -346,14 +349,20 @@ int32_t execute (const uint8_t* command){
     mypcb -> active = 1;
 
     /*fill multi_terms's pcb*/
-    multi_terms[currTerm].curr_proc = mypcb;
+    multi_terms[schedTerm].curr_proc = mypcb;
     
-    if (myProgramNumber >= 0 && myProgramNumber <= 2)
-        multi_terms[currTerm].pcb_parent = mypcb;
-    else
-        multi_terms[currTerm].pcb_parent = parentshellpcb;
+    if (myProgramNumber >= 0 && myProgramNumber <= 2 ){
+        parentshellpcb0 = mypcb; //load shell prog 0,1,2 memory from mypcb into parentshellpcb0
+        multi_terms[schedTerm].pcb_parent = mypcb; //which will also save mypcb's ebp and esp
+    
+    }
+    else{
+        multi_terms[schedTerm].pcb_parent = parentshellpcb0;
+        multi_terms[schedTerm].pcb_parent->saved_esp = parentshellpcb0->saved_esp;
+        multi_terms[schedTerm].pcb_parent->saved_ebp = parentshellpcb0->saved_ebp;
+    }
 
-    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
+    multi_terms[schedTerm].lastAssignedProcess = myProgramNumber;
     
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
@@ -386,6 +395,7 @@ int32_t halt(uint8_t status){
     //first, grab esp and ebp pointers from the pcb 
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
+    
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     if (haltReturn_stat == 255) //Magic Num: 255 - Checks if it is the last 
         haltReturn_stat = 256; //Magic Num: 266 - Sets to the last possible value
@@ -406,7 +416,8 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
-    
+    // multi_terms[schedTerm].curr_proc = multi_terms[currTerm].pcb_parent;
+
     //will fish or counter halt correclty?
     multi_terms[currTerm].progRunning = 0; //terminal not running program anymore
     

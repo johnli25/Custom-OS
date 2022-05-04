@@ -20,8 +20,8 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
         : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
     );
 
-    vid_paging_helper(); //3.4 vidmap
-    paging_helper(nextpcb->pid); //paging mapper-helper for next/scheduled terminal process
+    //vid_paging_helper(); //3.4 vidmap
+    paging_helper(nextpcb->pid); //3.3 paging mapper-helper for next/scheduled terminal process
 
     mypcb->ss0 = KERNEL_DS;
     mypcb->esp0 = tss.esp0;
@@ -53,7 +53,7 @@ void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
  * Return Value: None
  * Side Effects: calls contextSwitch function
 */ 
-void scheduler(){
+void scheduler(int pit_count){
     //int cur_process_id = getProgNum();
     int schedTermTemp = schedTerm;
     
@@ -62,12 +62,12 @@ void scheduler(){
     schedTerm++;
     schedTerm = schedTerm % 3;
 
-    if(multi_terms[currTerm].progRunning == 2) //if scheduled terminal process find instantaneous program, do NOT context switch!
+    if (pit_count <= 4)
         return;
-    if (multi_terms[schedTermTemp].progRunning != 1)// == 0
-        return; 
-    if (multi_terms[schedTerm].progRunning != 1) //== 0
-        return;
+    // if (multi_terms[schedTermTemp].progRunning != 1)// == 0
+    //     return; 
+    // if (multi_terms[schedTerm].progRunning != 1) //== 0
+    //     return;
 
     if(!(multi_terms[schedTerm].curr_proc)){ //if scheduled terminal process == null
         //schedTerm = schedTermTemp; //set schedTerm back to original one before
