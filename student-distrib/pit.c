@@ -84,6 +84,10 @@ void interrupt_PIT(void){
             multi_terms[1] = t2;
             multi_terms[2] = t0;
 
+            multi_terms[0].pcb_parent = multi_terms[0].curr_proc;
+            multi_terms[1].pcb_parent = multi_terms[1].curr_proc;
+            multi_terms[2].pcb_parent = multi_terms[2].curr_proc;
+
             currTerm = currTerm; //dummy debug
             schedTerm = 0; 
             return;

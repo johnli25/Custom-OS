@@ -16,7 +16,7 @@
 void contextSwitch(pcb_t * mypcb, pcb_t * nextpcb){
     asm volatile( //save ebp and esp of scheduled terminal
         "movl %%esp, %0;"
-        "movl %%ebp, %1;"
+        "movl %%ebp, %             1;"
         : "=r"(mypcb->saved_esp), "=r"(mypcb->saved_ebp)
     );
 
@@ -62,7 +62,7 @@ void scheduler(int pit_count){
     schedTerm++;
     schedTerm = schedTerm % 3;
 
-    if (pit_count <= 4)
+    if (pit_count <= 4) 
         return;
     // if (multi_terms[schedTermTemp].progRunning != 1)// == 0
     //     return; 

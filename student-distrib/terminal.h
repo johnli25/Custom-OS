@@ -19,6 +19,9 @@ typedef struct terminal {
     int relative_frequency;
     int enterpress_keyb;
 
+    uint32_t esp_term;
+    uint32_t ebp_term;
+
 } __attribute__((packed)) terminal_t;
 
 extern int getCurrTerm();
@@ -47,6 +50,7 @@ extern int32_t terminal_write(int32_t fd, const void * buf, int n); //will add f
 terminal_t multi_terms[3];
 int currTerm; //= 0;
 int schedTerm; // = 0;
+int processingTerm;
 int term_shell_cnt;
 
 //static int newTerm = 0;

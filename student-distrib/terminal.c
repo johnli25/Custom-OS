@@ -95,9 +95,12 @@ int32_t terminal_init(void){
         multi_terms[i].relative_frequency = 0;
         multi_terms[i].enterpress_keyb = 0;
         //rewrite_shell();
+        multi_terms[i].esp_term = 0;
+        multi_terms[i].ebp_term = 0; //null for now 
     }
     currTerm = 0;
     schedTerm = 0;
+    processingTerm = 0;
     term_shell_cnt = 0;
     return 0;
 }

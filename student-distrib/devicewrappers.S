@@ -59,6 +59,7 @@ syscall_invalid:
     # popal 
     # popfl
     movl  $-1, %eax
+    sti
     iret
 
 syscall_done:
@@ -70,6 +71,7 @@ syscall_done:
     popl %edi
     popl %esi
     popfl
+    sti
     iret
 
 syscall_table:
