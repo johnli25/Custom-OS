@@ -6,6 +6,7 @@
 #include "terminal.h"
 #include "rtc.h"
 #include "filesys.h"
+#include "scheduling.h"
 
 static int program_arr[9] = {0,0,0,0,0,0,0,0,0};  
 static int currentProgramNumber = 0;
@@ -270,7 +271,7 @@ int32_t execute (const uint8_t* command){
     vp_flag = 0;
 
     pcb_t * mypcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (myProgramNumber + 1))); //what's the hardcoded numerical addr?
-    pcb_t * parentshellpcb = (pcb_t *)(EIGHTMB - (EIGHTKB * (currTerm + 1))); //parent/shell pcb
+    pcb_t * parentshellpcb0 = (pcb_t *)(EIGHTMB - (EIGHTKB * (schedTerm + 1))); //parent/shell pcb
 
     int arg_i;
     for (arg_i = 0; arg_i < MAX_ARG_SIZE; arg_i++){
@@ -279,26 +280,14 @@ int32_t execute (const uint8_t* command){
     index++;
     arg_i = 0;
     while (command[index] != '\0' && command[index] != ' ' && command[index] != '\n'){ //Magic Num: NULL or NewLine
-//        if (command[index] != ' ')
         mypcb->arguments[arg_i] = command[index];
         index++;
         arg_i++;
-    }  
-
-    if(0 == strncmp((int8_t *)buffer, (int8_t*)("shell"), 5) ||
-        0 == strncmp((int8_t *)buffer, (int8_t*)("hello"), 5)) // equal to shell or hello
-        multi_terms[currTerm].progRunning = 0; //special prog (not) running on term
-    else if (0 == strncmp((int8_t *)buffer, (int8_t*)("pingpong"), 8) ||
-        0 == strncmp((int8_t *)buffer, (int8_t*)("counter"), 7) || 
-        0 == strncmp((int8_t *)buffer, (int8_t*)("fish"), 4))
-        multi_terms[currTerm].progRunning = 1; //program running on term
-    else
-        multi_terms[currTerm].progRunning = 2; //instantaneous program
+    }
     
     uint8_t POE_buf[4]; //Magic Num: size of POE buf to get the first 4 chars 
     read_data(myDentry.inode, PO3_OF_ENTRY, POE_buf, 4); // Magic Num 4 is total size of bytes 24-27
     uint32_t pt_of_entry = *((uint32_t*)POE_buf);
-    //uint8_t * physicalMemNum = (uint8_t*) (EIGHTMB + (myProgramNumber * FOURMB));// Physical memory starts at 8MB + (process number * 4MB)
 
     //map to virtual mem:zer0padded by 22
     paging_helper(myProgramNumber);
@@ -308,8 +297,9 @@ int32_t execute (const uint8_t* command){
 
     //save user program bookkeeping info
     mypcb-> pid = myProgramNumber;
-    mypcb -> parent_id = currentProgramNumber;
+    mypcb -> parent_id = parentshellpcb0->pid; //= schedTerm
     currentProgramNumber = myProgramNumber; //update parent number
+    multi_terms[schedTerm].lastAssignedProcess = myProgramNumber;
 
     //initialize pcb's/fd aray
     mypcb-> myINFO[0].fops_table = &stdin;
@@ -343,17 +333,28 @@ int32_t execute (const uint8_t* command){
     mypcb->ss0 = tss.ss0; //added for 3.5
     mypcb->esp0 = tss.esp0;
 
+    multi_terms[schedTerm].esp_term = mypcb->saved_esp; //will these 2 lines do something?
+    multi_terms[schedTerm].ebp_term = mypcb->saved_ebp;
+
     mypcb -> active = 1;
 
     /*fill multi_terms's pcb*/
-    multi_terms[currTerm].curr_proc = mypcb;
-    
-    if (myProgramNumber >= 0 && myProgramNumber <= 2)
-        multi_terms[currTerm].pcb_parent = mypcb;
-    else
-        multi_terms[currTerm].pcb_parent = parentshellpcb;
+    multi_terms[schedTerm].curr_proc = mypcb;
+    if (multi_terms[schedTerm].progRunning == 0 && 0 != strncmp((int8_t *)buffer, (int8_t*)("shell"), 5)){ //program just started running...
+        processingTerm = schedTerm; //save schedTerm that process started on
+        multi_terms[processingTerm].progRunning = 1; //set on
+    }
 
-    multi_terms[currTerm].lastAssignedProcess = myProgramNumber;
+    if (myProgramNumber >= 0 && myProgramNumber <= 2 ){
+        //parentshellpcb0 = mypcb; //load shell prog 0,1,2 memory from mypcb into parentshellpcb0
+        multi_terms[schedTerm].pcb_parent = parentshellpcb0; //which will also save mypcb's ebp and esp
+    
+    }
+    else{
+        multi_terms[schedTerm].pcb_parent = parentshellpcb0;
+        multi_terms[schedTerm].pcb_parent->saved_esp = parentshellpcb0->saved_esp;
+        multi_terms[schedTerm].pcb_parent->saved_ebp = parentshellpcb0->saved_ebp;
+    }
     
     //enable interrupt on flags: or flags x200 in assembly w register
     asm volatile( 
@@ -386,6 +387,7 @@ int32_t halt(uint8_t status){
     //first, grab esp and ebp pointers from the pcb 
     pcb_t * cHiLdPcB = (pcb_t *)(EIGHTMB - (EIGHTKB * (currentProgramNumber + 1))); //may need this again - may not + 1
     pcb_t * parentPcb = (pcb_t *)(EIGHTMB - (EIGHTKB * ((cHiLdPcB -> parent_id) + 1))); //may need this again - may not + 1
+    
     int32_t haltReturn_stat = (int32_t)(status); //our return value, what do we return? this added as asm return
     if (haltReturn_stat == 255) //Magic Num: 255 - Checks if it is the last 
         haltReturn_stat = 256; //Magic Num: 266 - Sets to the last possible value
@@ -406,12 +408,13 @@ int32_t halt(uint8_t status){
     }
 
     program_arr[cHiLdPcB->pid] = 0; //sets to unpresent
-    
+    multi_terms[processingTerm].curr_proc = multi_terms[processingTerm].pcb_parent;
+
     //will fish or counter halt correclty?
-    multi_terms[currTerm].progRunning = 0; //terminal not running program anymore
+    multi_terms[processingTerm].progRunning = 0; //terminal not running program anymore
     
     // multi_terms[currTerm].shell_cnt--;
-    // reload a new shell if childpcb's pid = childpcb's parent id
+    // reload a new shell if  childpcb's pid = childpcb's parent id
     if (currentProgramNumber == cHiLdPcB->parent_id || currentProgramNumber < 3) //if currentProgNum less than/within the 3 base shell programs
         execute((uint8_t*)"shell"); // executes shell 
     currentProgramNumber = cHiLdPcB->parent_id;    
@@ -426,11 +429,6 @@ int32_t halt(uint8_t status){
      asm volatile( 
         "movl %0, %%esp;" //esp contains saved_esp
         "movl %1, %%ebp;" //ebp contains saved_ebp
-        //check status
-        // "cmp $1, %2;"
-        // "jne myValid;"
-        // "movl $1, %%eax;"
-        //"jmp executeEnd;"
         "Valid:"
         "andl $0, %%eax;"
         "movl %2, %%eax;" //eax contains return value

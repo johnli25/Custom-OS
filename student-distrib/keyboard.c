@@ -240,6 +240,9 @@ void interrupt_keyboard(void){
         //     counters[currTerm] = counters[currTerm] - 2;
         // }
         keyboardBuffers[currTerm][counters[currTerm]] = '\n'; //to show new line
+        
+        multi_terms[currTerm].enterpress_keyb = 1;
+        
         counters[currTerm]++; //added newline character when enter pressed
         TERMINALFLAG = INTTRUE;
         counters[currTerm] = 0; //resets counter - may or may not need to do!
