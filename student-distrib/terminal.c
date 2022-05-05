@@ -101,6 +101,7 @@ int32_t terminal_init(void){
     currTerm = 0;
     schedTerm = 0;
     processingTerm = 0;
+    schedTermTemp = 0;
     term_shell_cnt = 0;
     return 0;
 }

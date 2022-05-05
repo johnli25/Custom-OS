@@ -52,6 +52,7 @@ int currTerm; //= 0;
 int schedTerm; // = 0;
 int processingTerm;
 int term_shell_cnt;
+int schedTermTemp;
 
 //static int newTerm = 0;
 
