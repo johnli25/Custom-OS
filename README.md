@@ -1,6 +1,6 @@
-# Team: John Li, Nabil Mohiuddun, Dhyey Dixit, Vishal Rajesh
+## Team: John Li, Nabil Mohiuddun, Dhyey Dixit, Vishal Rajesh
 
-ACADEMIC INTEGRITY
+#### ACADEMIC INTEGRITY
 -----
 Please review the University of Illinois Student Code before starting,
 particularly all subsections of Article 1, Part 4 Academic Integrity and Procedure [here](http://studentcode.illinois.edu/article1_part4_1-401.html).
