@@ -1,4 +1,4 @@
-Team: John Li, Nabil Mohiuddun, Dhyey Dixit, Vishal Rajesh
+# Team: John Li, Nabil Mohiuddun, Dhyey Dixit, Vishal Rajesh
 
 ACADEMIC INTEGRITY
 -----
