@@ -1,3 +1,5 @@
+Team: John Li, Nabil Mohiuddun, Dhyey Dixit, Vishal Rajesh
+
 ACADEMIC INTEGRITY
 -----
 Please review the University of Illinois Student Code before starting,
